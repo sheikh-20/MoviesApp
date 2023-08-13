@@ -1,6 +1,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    kotlin("kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -20,25 +22,35 @@ android {
         }
         compileSdkPreview = "UpsideDownCake"
     }
-
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
     buildTypes {
+        debug {
+            isDebuggable = true
+            val TEST_API_KEY: String by project
+            buildConfigField(type = "String", name =  "API_KEY", value = TEST_API_KEY)
+            buildConfigField(type = "String", name = "BASE_URL", value = "\"https://api.themoviedb.org/\"")
+        }
         release {
+            isDebuggable = false
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            val PRO_API_KEY: String by project
+            buildConfigField(type = "String", name = "API_KEY", value = PRO_API_KEY)
+            buildConfigField(type = "String", name = "BASE_URL", value = "\"https://api.themoviedb.org/\"")
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
-    }
-    buildFeatures {
-        compose = true
+        jvmTarget = "17"
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.3"
@@ -51,6 +63,9 @@ android {
 }
 
 dependencies {
+    val lifecycle_version = "2.6.1"
+    val timber_version = "5.0.1"
+    val lottie_version = "6.1.0"
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
@@ -69,4 +84,34 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     implementation("androidx.core:core-splashscreen:1.1.0-alpha01")
+
+    // Dagger - Hilt
+    implementation("com.google.dagger:hilt-android:2.44")
+    kapt("com.google.dagger:hilt-android-compiler:2.44")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+
+    // ViewModel with ktx
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
+
+    // Compose viewmodel utility
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version")
+
+    // Timber for log
+    implementation("com.jakewharton.timber:timber:$timber_version")
+
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.3")
+
+    // Retrofit with Scalar Converter
+    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
+
+    // Lottie
+    implementation("com.airbnb.android:lottie:$lottie_version")
+
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.31.6-rc")
+
+    // Material icon extended
+    implementation("androidx.compose.material:material-icons-extended:1.6.0-alpha02")
+
 }

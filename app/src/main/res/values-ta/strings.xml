@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Movies App</string>
+    <string name="welcome_to_mflix">MFlix க்கு வரவேற்கிறோம்</string>
+    <string name="mflix_description">உங்கள் நாட்களை சிறப்பாக்க இந்த நூற்றாண்டின் சிறந்த மூவி ஸ்ட்ரீமிங் ஆப்!</string>
+    <string name="get_started">தொடங்குங்கள்</string>
+    <string name="continue_with_facebook">Facebook உடன் தொடரவும்</string>
+    <string name="continue_with_google">Google உடன் தொடரவும்</string>
+    <string name="continue_with_github">Github உடன் தொடரவும்</string>
+    <string name="signin_with_password">கடவுச்சொல் மூலம் உள்நுழையவும்</string>
+    <string name="let_s_you_in">உங்களை உள்ளே அனுமதிக்கிறது</string>
+    <string name="or">அல்லது</string>
+    <string name="don_t_have_an_account">கணக்கு இல்லையா?</string>
+    <string name="sign_up">பதிவு செய்யவும்</string>
+</resources>

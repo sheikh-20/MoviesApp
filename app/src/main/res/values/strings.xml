@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">Movies App</string>
+    <string name="welcome_to_mflix">Welcome to MFlix</string>
+    <string name="mflix_description">The best movie streaming app of the century to make your days great!</string>
+    <string name="get_started">Get started</string>
+    <string name="continue_with_facebook">Continue With Facebook</string>
+    <string name="continue_with_google">Continue With Google</string>
+    <string name="continue_with_github">Continue With Github</string>
+    <string name="signin_with_password">Sign in with password</string>
+    <string name="let_s_you_in">Let\'s you in</string>
+    <string name="or">or</string>
+    <string name="don_t_have_an_account">Don\'t have an account?</string>
+    <string name="sign_up">Sign up</string>
 </resources>
