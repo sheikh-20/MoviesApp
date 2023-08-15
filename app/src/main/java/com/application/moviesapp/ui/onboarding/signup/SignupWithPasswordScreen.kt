@@ -44,7 +44,7 @@ import com.application.moviesapp.ui.theme.MoviesAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignupWithPasswordScreen(modifier: Modifier = Modifier, onSigninClick: () -> Unit = {}) {
+fun SignupWithPasswordScreen(modifier: Modifier = Modifier, onSigninClick: () -> Unit = {}, onSignupClick: () -> Unit = {}) {
     Column(modifier = modifier
         .fillMaxSize()
         .padding(16.dp),
@@ -95,7 +95,7 @@ fun SignupWithPasswordScreen(modifier: Modifier = Modifier, onSigninClick: () ->
                 Text(text = "Remember me", style = MaterialTheme.typography.labelLarge)
             }
 
-            Button(onClick = {},
+            Button(onClick = onSignupClick,
                 modifier = modifier.fillMaxWidth(),
                 colors = ButtonDefaults.filledTonalButtonColors(containerColor = Color.Red)) {
                 Text(text = stringResource(id = R.string.sign_up), color = colorResource(id = R.color.white), modifier = modifier.padding(4.dp))

@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
 }
 
 android {
@@ -105,6 +106,12 @@ dependencies {
 
     // Retrofit with Scalar Converter
     implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
+
+    // Kotlin Serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+
+    // Retrofit with Jakewharton Converter
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
 
     // Lottie
     implementation("com.airbnb.android:lottie:$lottie_version")

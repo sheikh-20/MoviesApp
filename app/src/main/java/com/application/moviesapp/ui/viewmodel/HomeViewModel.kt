@@ -2,6 +2,7 @@ package com.application.moviesapp.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.application.moviesapp.data.api.response.MovieGenreResponse
 import com.application.moviesapp.data.repository.MoviesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +16,7 @@ import javax.inject.Inject
 
 sealed interface HomeUiState {
     object Loading: HomeUiState
-    data class Success(val movies: String): HomeUiState
+    data class Success<out T>(val movies: T): HomeUiState
     object Failure: HomeUiState
 }
 @HiltViewModel
@@ -43,6 +44,19 @@ class HomeViewModel @Inject constructor(private val moviesRepository: MoviesRepo
         }
     }
 
+    fun getMoviesGenreList() = viewModelScope.launch(Dispatchers.IO) {
+        _homeUiState.value = HomeUiState.Loading
+
+        try {
+            val result = moviesRepository.getMoviesGenreList()
+            _homeUiState.value = HomeUiState.Success<MovieGenreResponse>(result)
+            Timber.tag(TAG).d(result.toString())
+        } catch (exception: IOException) {
+            _homeUiState.value = HomeUiState.Failure
+            Timber.tag(TAG).e(exception)
+        }
+    }
+
     private fun showLoading() = viewModelScope.launch {
         delay(3_000L)
         _loading.value = false
@@ -50,6 +64,6 @@ class HomeViewModel @Inject constructor(private val moviesRepository: MoviesRepo
 
     init {
         showLoading()
-        getPopularMoviesList()
+//        getPopularMoviesList()
     }
 }

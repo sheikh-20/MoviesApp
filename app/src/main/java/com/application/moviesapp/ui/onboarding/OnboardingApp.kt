@@ -21,6 +21,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
@@ -32,6 +33,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -40,14 +43,20 @@ import androidx.navigation.compose.rememberNavController
 import com.application.moviesapp.R
 import com.application.moviesapp.ui.onboarding.login.LoginScreen
 import com.application.moviesapp.ui.onboarding.login.LoginWithPasswordScreen
+import com.application.moviesapp.ui.onboarding.signup.ChooseYourInterestScreen
+import com.application.moviesapp.ui.onboarding.signup.CreateNewPinScreen
+import com.application.moviesapp.ui.onboarding.signup.FillYourProfileScreen
+import com.application.moviesapp.ui.onboarding.signup.SetYourFingerprintScreen
 import com.application.moviesapp.ui.onboarding.signup.SignupWithPasswordScreen
+import com.application.moviesapp.ui.viewmodel.HomeViewModel
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun OnboardingApp(modifier: Modifier = Modifier, navController: NavHostController = rememberNavController()) {
+fun OnboardingApp(modifier: Modifier = Modifier, navController: NavHostController = rememberNavController(), homeViewModel: HomeViewModel = hiltViewModel()) {
 
     val backStackEntry by navController.currentBackStackEntryAsState()
+    val homeUiState by homeViewModel.homeUiState.collectAsState()
 
     Scaffold(topBar = { OnboardingAppBar(currentScreen = backStackEntry?.destination?.route ?: OnboardingScreen.Start.name, canNavigateBack = navController.previousBackStackEntry != null) { navController.navigateUp() } },
      ) { innerPadding ->
@@ -78,7 +87,37 @@ fun OnboardingApp(modifier: Modifier = Modifier, navController: NavHostControlle
                 composable(route = OnboardingScreen.SignupWithPassword.name) {
                     SignupWithPasswordScreen(
                         modifier = modifier,
-                        onSigninClick = { navController.navigate(OnboardingScreen.LoginWithPassword.name) })
+                        onSigninClick = { navController.navigate(OnboardingScreen.LoginWithPassword.name) },
+                        onSignupClick = {
+                            homeViewModel.getMoviesGenreList()
+                            navController.navigate(OnboardingScreen.ChooseYourInterest.name) }
+                    )
+                }
+
+                composable(route = OnboardingScreen.ChooseYourInterest.name) {
+                    ChooseYourInterestScreen(
+                        modifier = modifier,
+                        homeUiState = homeUiState,
+                        onContinueClick = { navController.navigate(OnboardingScreen.FillYourProfile.name) }
+                    )
+                }
+
+                composable(route = OnboardingScreen.FillYourProfile.name) {
+                    FillYourProfileScreen(
+                        modifier = modifier,
+                        onContinueClick = { navController.navigate(OnboardingScreen.CreateNewPin.name) }
+                    )
+                }
+
+                composable(route = OnboardingScreen.CreateNewPin.name) {
+                    CreateNewPinScreen(
+                        modifier = modifier,
+                        onContinueClick = { navController.navigate(OnboardingScreen.SetYourFingerprint.name) }
+                    )
+                }
+
+                composable(route = OnboardingScreen.SetYourFingerprint.name) {
+                    SetYourFingerprintScreen()
                 }
             }
         }
@@ -106,5 +145,9 @@ enum class OnboardingScreen {
     Start,
     Login,
     LoginWithPassword,
-    SignupWithPassword
+    SignupWithPassword,
+    ChooseYourInterest,
+    FillYourProfile,
+    CreateNewPin,
+    SetYourFingerprint
 }
