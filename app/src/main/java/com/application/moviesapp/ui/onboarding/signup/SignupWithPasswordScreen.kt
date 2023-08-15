@@ -1,27 +1,19 @@
-package com.application.moviesapp.ui.onboarding.login
+package com.application.moviesapp.ui.onboarding.signup
 
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import android.content.res.Configuration
 import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.outlined.Email
-import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material.icons.rounded.Lock
@@ -38,7 +30,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
@@ -53,7 +44,7 @@ import com.application.moviesapp.ui.theme.MoviesAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginWithPasswordScreen(modifier: Modifier = Modifier, onSignupClick: () -> Unit = {}) {
+fun SignupWithPasswordScreen(modifier: Modifier = Modifier, onSigninClick: () -> Unit = {}) {
     Column(modifier = modifier
         .fillMaxSize()
         .padding(16.dp),
@@ -68,7 +59,7 @@ fun LoginWithPasswordScreen(modifier: Modifier = Modifier, onSignupClick: () -> 
         )
 
         Text(
-            text = "Login To Your Account",
+            text = "Create Your Account",
             style = MaterialTheme.typography.headlineLarge
         )
 
@@ -96,7 +87,8 @@ fun LoginWithPasswordScreen(modifier: Modifier = Modifier, onSignupClick: () -> 
                 trailingIcon = {
                     Icon(imageVector = Icons.Outlined.VisibilityOff, contentDescription = null)
                 },
-                shape = RoundedCornerShape(30))
+                shape = RoundedCornerShape(30)
+            )
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(checked = false, onCheckedChange = {})
@@ -106,20 +98,11 @@ fun LoginWithPasswordScreen(modifier: Modifier = Modifier, onSignupClick: () -> 
             Button(onClick = {},
                 modifier = modifier.fillMaxWidth(),
                 colors = ButtonDefaults.filledTonalButtonColors(containerColor = Color.Red)) {
-                Text(text = stringResource(id = R.string.signin_with_password), color = colorResource(id = R.color.white), modifier = modifier.padding(4.dp))
+                Text(text = stringResource(id = R.string.sign_up), color = colorResource(id = R.color.white), modifier = modifier.padding(4.dp))
             }
-
-
         }
 
-        TextButton(onClick = { /*TODO*/ }) {
-            Text(text = "Forgot the password?", fontWeight = FontWeight.Bold)
-        }
-
-        Row(modifier = modifier
-            .fillMaxWidth()
-            .wrapContentWidth(align = Alignment.CenterHorizontally),
-            verticalAlignment = Alignment.CenterVertically,
+        Row(verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Divider(modifier = modifier.weight(1f), color = Color.LightGray)
             Text(text = "or continue with")
@@ -143,9 +126,9 @@ fun LoginWithPasswordScreen(modifier: Modifier = Modifier, onSignupClick: () -> 
         }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = "Don't have an account?")
-            TextButton(onClick = onSignupClick) {
-                Text(text = "Sign up", fontWeight = FontWeight.Bold)
+            Text(text = stringResource(id = R.string.already_have_an_account))
+            TextButton(onClick = onSigninClick) {
+                Text(text = stringResource(id = R.string.sign_in), fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -153,16 +136,16 @@ fun LoginWithPasswordScreen(modifier: Modifier = Modifier, onSignupClick: () -> 
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun LoginWithPasswordScreenLightThemePreview() {
+private fun SignupWithPasswordScreenLightThemePreview() {
     MoviesAppTheme(darkTheme = false) {
-        LoginWithPasswordScreen()
+        SignupWithPasswordScreen()
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun LoginWithPasswordScreenDarkThemePreview() {
+private fun SignupWithPasswordScreenDarkThemePreview() {
     MoviesAppTheme(darkTheme = true) {
-        LoginWithPasswordScreen()
+        SignupWithPasswordScreen()
     }
 }

@@ -27,6 +27,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -49,7 +50,7 @@ import com.application.moviesapp.R
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier, onSignInClick: () -> Unit = {}) {
+fun LoginScreen(modifier: Modifier = Modifier, onSignInClick: () -> Unit = {}, onSignupClick: () -> Unit = {}) {
     Column(modifier = modifier
         .fillMaxSize()
         .padding(16.dp),
@@ -78,22 +79,25 @@ fun LoginScreen(modifier: Modifier = Modifier, onSignInClick: () -> Unit = {}) {
         }
 
         Row(verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = modifier.padding(horizontal = 16.dp)) {
             Divider(modifier = modifier.weight(1f), color = Color.LightGray)
             Text(text = stringResource(R.string.or))
             Divider(modifier = modifier.weight(1f), color = Color.LightGray)
         }
 
         Button(onClick = onSignInClick,
-            modifier = modifier.fillMaxWidth(),
-            colors = ButtonDefaults.filledTonalButtonColors(containerColor = Color.Red)) {
-            Text(text = stringResource(id = R.string.signin_with_password), color = colorResource(id = R.color.white), modifier = modifier.padding(4.dp))
+            modifier = modifier.fillMaxWidth()) {
+            Text(text = stringResource(id = R.string.signin_with_password),
+                modifier = modifier.padding(4.dp))
         }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(text = stringResource(R.string.don_t_have_an_account))
-            TextButton(onClick = { /*TODO*/ }) {
-                Text(text = stringResource(R.string.sign_up), color = Color.Red)
+            TextButton(onClick = onSignupClick) {
+                Text(text = stringResource(R.string.sign_up),
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -101,10 +105,10 @@ fun LoginScreen(modifier: Modifier = Modifier, onSignInClick: () -> Unit = {}) {
 
 @Composable
 private fun LoginComponent(modifier: Modifier = Modifier, @DrawableRes icon: Int, @StringRes text: Int, onClick: () -> Unit) {
-    Button(onClick = { /*TODO*/ },
+    OutlinedButton(onClick = { /*TODO*/ },
         shape = RoundedCornerShape(30),
         border = BorderStroke(width = .5.dp, color =  Color.LightGray),
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
+      ) {
 
         Row(modifier = modifier
             .fillMaxWidth()
@@ -118,8 +122,8 @@ private fun LoginComponent(modifier: Modifier = Modifier, @DrawableRes icon: Int
             Spacer(modifier = modifier.padding(horizontal = 8.dp))
 
             Text(text = stringResource(id = text),
-                style = MaterialTheme.typography.bodySmall,
-                color = colorResource(id = R.color.black))
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSecondary)
         }
     }
 }

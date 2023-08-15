@@ -40,6 +40,7 @@ import androidx.navigation.compose.rememberNavController
 import com.application.moviesapp.R
 import com.application.moviesapp.ui.onboarding.login.LoginScreen
 import com.application.moviesapp.ui.onboarding.login.LoginWithPasswordScreen
+import com.application.moviesapp.ui.onboarding.signup.SignupWithPasswordScreen
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -49,25 +50,35 @@ fun OnboardingApp(modifier: Modifier = Modifier, navController: NavHostControlle
     val backStackEntry by navController.currentBackStackEntryAsState()
 
     Scaffold(topBar = { OnboardingAppBar(currentScreen = backStackEntry?.destination?.route ?: OnboardingScreen.Start.name, canNavigateBack = navController.previousBackStackEntry != null) { navController.navigateUp() } },
-        containerColor = Color.Transparent) { innerPadding ->
+     ) { innerPadding ->
             NavHost(modifier = modifier.padding(innerPadding),
                 navController = navController,
                 startDestination = OnboardingScreen.Start.name) {
 
                 composable(route = OnboardingScreen.Start.name) {
-                    OnboardingScreen {
+                    OnboardingScreen(modifier = modifier) {
                         navController.navigate(OnboardingScreen.Login.name)
                     }
                 }
 
                 composable(route = OnboardingScreen.Login.name) {
-                    LoginScreen(
-                        onSignInClick = { navController.navigate(OnboardingScreen.LoginWithPassword.name) }
+                    LoginScreen(modifier = modifier,
+                        onSignInClick = { navController.navigate(OnboardingScreen.LoginWithPassword.name) },
+                        onSignupClick = { navController.navigate(OnboardingScreen.SignupWithPassword.name) }
                     )
                 }
 
                 composable(route = OnboardingScreen.LoginWithPassword.name) {
-                    LoginWithPasswordScreen()
+                    LoginWithPasswordScreen(
+                        modifier = modifier,
+                        onSignupClick = { navController.navigate(OnboardingScreen.SignupWithPassword.name) }
+                    )
+                }
+
+                composable(route = OnboardingScreen.SignupWithPassword.name) {
+                    SignupWithPasswordScreen(
+                        modifier = modifier,
+                        onSigninClick = { navController.navigate(OnboardingScreen.LoginWithPassword.name) })
                 }
             }
         }
@@ -83,15 +94,17 @@ fun OnboardingAppBar(currentScreen: String, canNavigateBack: Boolean, onNavigate
                 IconButton(onClick = onNavigateUp) {
                     Icon(imageVector = Icons.Outlined.ArrowBack,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimary)
+                        tint = MaterialTheme.colorScheme.onSecondary)
                 }
             }
         },
-        colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent))
+        colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent)
+    )
 }
 
 enum class OnboardingScreen {
     Start,
     Login,
-    LoginWithPassword
+    LoginWithPassword,
+    SignupWithPassword
 }
