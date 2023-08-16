@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -29,12 +28,12 @@ import androidx.compose.ui.unit.dp
 import com.application.moviesapp.R
 import com.application.moviesapp.data.api.response.MovieGenreResponse
 import com.application.moviesapp.ui.theme.MoviesAppTheme
-import com.application.moviesapp.ui.viewmodel.HomeUiState
+import com.application.moviesapp.ui.utility.UiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChooseYourInterestScreen(modifier: Modifier = Modifier,
-                             homeUiState: HomeUiState = HomeUiState.Loading,
+                             uiState: UiState = UiState.Loading,
                              onContinueClick: () -> Unit = {}) {
     Column(
         modifier = modifier
@@ -42,20 +41,20 @@ fun ChooseYourInterestScreen(modifier: Modifier = Modifier,
             .padding(16.dp)
     ) {
 
-        when (homeUiState) {
-            is HomeUiState.Loading -> {
+        when (uiState) {
+            is UiState.Loading -> {
                 CircularProgressIndicator(modifier = modifier
                     .fillMaxSize()
                     .wrapContentSize(align = Alignment.Center))
             }
-            is HomeUiState.Failure -> {
+            is UiState.Failure -> {
                 Text(text = "404",
                     style = MaterialTheme.typography.displayLarge,
                     modifier = modifier
                         .fillMaxSize()
                         .wrapContentSize(align = Alignment.Center))
             }
-            is HomeUiState.Success<*> -> {
+            is UiState.Success<*> -> {
                 Text(
                     text = stringResource(R.string.choose_your_interests_description),
                     style = MaterialTheme.typography.bodyLarge
@@ -66,7 +65,7 @@ fun ChooseYourInterestScreen(modifier: Modifier = Modifier,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = modifier.weight(1f)) {
 
-                    items((homeUiState.movies as MovieGenreResponse).genres ?: listOf()) {
+                    items((uiState.movies as MovieGenreResponse).genres ?: listOf()) {
                         ElevatedSuggestionChip(onClick = {}, label = { Text(text = it?.name ?: "", textAlign = TextAlign.Center) }, shape = RoundedCornerShape(50))
                     }
                 }

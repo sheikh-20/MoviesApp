@@ -1,5 +1,6 @@
 package com.application.moviesapp.ui.onboarding.signup
 
+import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,12 +14,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.application.moviesapp.ui.home.HomeActivity
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 
 @Composable
 fun SetYourFingerprintScreen(modifier: Modifier = Modifier) {
+
+    val context = LocalContext.current
+
     Column(modifier = modifier
         .fillMaxSize()
         .padding(16.dp)) {
@@ -31,7 +37,7 @@ fun SetYourFingerprintScreen(modifier: Modifier = Modifier) {
             OutlinedButton(onClick = { /*TODO*/ }, modifier = modifier.weight(1f)) {
                 Text(text = "Skip")
             }
-            Button(onClick = {  }, modifier = modifier.weight(1f)) {
+            Button(onClick = { HomeActivity.startActivity(context as Activity) }, modifier = modifier.weight(1f)) {
                 Text(text = "Continue")
             }
         }

@@ -33,6 +33,7 @@ android {
             val TEST_API_KEY: String by project
             buildConfigField(type = "String", name =  "API_KEY", value = TEST_API_KEY)
             buildConfigField(type = "String", name = "BASE_URL", value = "\"https://api.themoviedb.org/\"")
+            buildConfigField(type = "String", name = "IMAGE_BASE_URL", value = "\"https://image.tmdb.org/t/p/original/\"")
         }
         release {
             isDebuggable = false
@@ -44,6 +45,7 @@ android {
             val PRO_API_KEY: String by project
             buildConfigField(type = "String", name = "API_KEY", value = PRO_API_KEY)
             buildConfigField(type = "String", name = "BASE_URL", value = "\"https://api.themoviedb.org/\"")
+            buildConfigField(type = "String", name = "IMAGE_BASE_URL", value = "\"https://image.tmdb.org/t/p/original/\"")
         }
     }
     compileOptions {
@@ -120,5 +122,9 @@ dependencies {
 
     // Material icon extended
     implementation("androidx.compose.material:material-icons-extended:1.6.0-alpha02")
+
+    // Coil
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
 
 }

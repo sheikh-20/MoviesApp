@@ -16,10 +16,18 @@
         android:theme="@style/Theme.CustomSplashScreenTheme"
         tools:targetApi="31">
         <activity android:name=".ui.home.HomeActivity"
-            android:exported="false"
-            android:theme="@style/Theme.CustomSplashScreenTheme"
+            android:exported="true"
+            android:theme="@style/Theme.MoviesApp"
             android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity" />
+            tools:ignore="LockedOrientationActivity" >
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
         <activity
             android:name=".ui.onboarding.OnboardingActivity"
             android:exported="true"
@@ -27,11 +35,37 @@
             android:theme="@style/Theme.CustomSplashScreenTheme"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.home.TopMoviesActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MoviesApp"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity">
+
+        </activity>
+
+        <activity
+            android:name=".ui.home.NotificationActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MoviesApp"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity">
+
+        </activity>
+
+        <activity
+            android:name=".ui.home.NewReleasesActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MoviesApp"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity">
+
         </activity>
     </application>
 
