@@ -47,33 +47,39 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.R
-import com.application.moviesapp.data.api.response.MovieNewReleasesResponse
 import com.application.moviesapp.data.mock.Datasource
-import com.application.moviesapp.ui.utility.UiState
 import com.application.moviesapp.ui.utility.toImageUrl
+import com.application.moviesapp.ui.viewmodel.MoviesWithNewReleaseUiState
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier, uiState: UiState = UiState.Loading) {
+fun HomeScreen(modifier: Modifier = Modifier, uiState: MoviesWithNewReleaseUiState = MoviesWithNewReleaseUiState.Loading) {
 
     val context = LocalContext.current
 
     when (uiState) {
-        is UiState.Loading -> {
+        is MoviesWithNewReleaseUiState.Loading -> {
             Column(modifier = modifier.fillMaxSize()) {
                 CircularProgressIndicator(modifier = modifier
                     .fillMaxSize()
                     .wrapContentSize(align = Alignment.Center))
             }
         }
-        is UiState.Failure -> {
+        is MoviesWithNewReleaseUiState.Failure -> {
             Column(modifier = modifier.fillMaxSize()) {
                 Text(text = "Failure")
             }
         }
-        is UiState.Success<*> -> {
+        is MoviesWithNewReleaseUiState.Success -> {
+
+            val titleImage = uiState.moviesWithNewReleases.topRatedResponse.results?.first()
+
             Column(modifier = modifier.fillMaxSize()) {
                 Box(modifier = modifier.height(300.dp)) {
-                    Image(painter = painterResource(id = R.drawable.doctor_strange),
+                    AsyncImage(model = ImageRequest.Builder(context = LocalContext.current)
+                        .data(titleImage?.backdropPath?.toImageUrl ?: "")
+                        .crossfade(true)
+                        .build(),
+                        placeholder = painterResource(id = R.drawable.doctor_strange),
                         contentDescription = null,
                         modifier = modifier
                             .fillMaxSize()
@@ -94,7 +100,7 @@ fun HomeScreen(modifier: Modifier = Modifier, uiState: UiState = UiState.Loading
                         .fillMaxSize()
                         .wrapContentSize(align = Alignment.BottomStart)
                         .padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text(text = "Dr. Strange 2", style = MaterialTheme.typography.titleLarge)
+                        Text(text = titleImage?.title ?: "", style = MaterialTheme.typography.titleLarge)
                         Text(text = "Action, Superhero, Science, Fiction..", style = MaterialTheme.typography.bodyMedium)
 
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -131,13 +137,8 @@ fun HomeScreen(modifier: Modifier = Modifier, uiState: UiState = UiState.Loading
                     }
 
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        items(Datasource.getMockDataList()) {
-                            Card(shape = RoundedCornerShape(10)) {
-                                Image(painter = painterResource(id = it.imageSrc),
-                                    contentDescription = null,
-                                    modifier = modifier.size(height = 200.dp, width = 150.dp),
-                                    contentScale = ContentScale.Crop)
-                            }
+                        items(uiState.moviesWithNewReleases.topRatedResponse.results?.take(10) ?: listOf()) {
+                            MovieImageCard(imageUrl = it?.posterPath ?: "", rating = it?.voteAverage.toString() ?: "")
                         }
                     }
 
@@ -158,7 +159,8 @@ fun HomeScreen(modifier: Modifier = Modifier, uiState: UiState = UiState.Loading
                     }
 
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        items((uiState.movies as MovieNewReleasesResponse).results ?: listOf()) {
+
+                        items(uiState.moviesWithNewReleases.newReleasesResponse.results ?: listOf()) {
                             MovieImageCard(imageUrl = it?.posterPath ?: "", rating = it?.voteAverage.toString() ?: "")
                         }
                     }

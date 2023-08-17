@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.moviesapp.data.api.response.MovieGenreResponse
 import com.application.moviesapp.data.repository.MoviesRepository
-import com.application.moviesapp.ui.utility.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -15,6 +14,11 @@ import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
 
+sealed interface MovieGenreUiState {
+    object Loading: MovieGenreUiState
+    data class Success(val genreResponse: MovieGenreResponse): MovieGenreUiState
+    object Failure: MovieGenreUiState
+}
 @HiltViewModel
 class OnboardingViewModel @Inject constructor(private val moviesRepository: MoviesRepository): ViewModel() {
 
@@ -22,33 +26,21 @@ class OnboardingViewModel @Inject constructor(private val moviesRepository: Movi
         const val TAG = "OnboardingViewModel"
     }
 
-    private var _uiState = MutableStateFlow<UiState>(UiState.Loading)
-    val uiState: StateFlow<UiState> = _uiState
+    private var _movieGenreUiState = MutableStateFlow<MovieGenreUiState>(MovieGenreUiState.Loading)
+    val movieGenreUiState: StateFlow<MovieGenreUiState> = _movieGenreUiState
 
     private var _loading = MutableStateFlow(true)
     val loading: StateFlow<Boolean> = _loading
 
-    fun getPopularMoviesList() = viewModelScope.launch(Dispatchers.IO) {
-        _uiState.value = UiState.Loading
-        try {
-            val result = moviesRepository.getPopularMoviesList()
-            _uiState.value = UiState.Success(result)
-            Timber.tag(TAG).d(result)
-        } catch (exception: IOException) {
-            _uiState.value = UiState.Failure
-            Timber.tag(TAG).e(exception)
-        }
-    }
-
     fun getMoviesGenreList() = viewModelScope.launch(Dispatchers.IO) {
-        _uiState.value = UiState.Loading
+        _movieGenreUiState.value = MovieGenreUiState.Loading
 
         try {
             val result = moviesRepository.getMoviesGenreList()
-            _uiState.value = UiState.Success<MovieGenreResponse>(result)
+            _movieGenreUiState.value = MovieGenreUiState.Success(result)
             Timber.tag(TAG).d(result.toString())
         } catch (exception: IOException) {
-            _uiState.value = UiState.Failure
+            _movieGenreUiState.value = MovieGenreUiState.Failure
             Timber.tag(TAG).e(exception)
         }
     }
@@ -60,6 +52,5 @@ class OnboardingViewModel @Inject constructor(private val moviesRepository: Movi
 
     init {
         showLoading()
-//        getPopularMoviesList()
     }
 }

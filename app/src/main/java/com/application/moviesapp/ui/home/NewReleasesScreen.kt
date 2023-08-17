@@ -7,14 +7,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -32,25 +28,25 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.application.moviesapp.R
-import com.application.moviesapp.data.api.response.MovieNewReleasesResponse
-import com.application.moviesapp.ui.utility.UiState
 import com.application.moviesapp.ui.utility.toImageUrl
+import com.application.moviesapp.ui.viewmodel.MovieNewReleaseUiState
+import com.application.moviesapp.ui.viewmodel.MoviesWithNewReleaseUiState
 
 @Composable
-fun NewReleasesScreen(modifier: Modifier = Modifier, uiState: UiState = UiState.Loading) {
+fun NewReleasesScreen(modifier: Modifier = Modifier, uiState: MovieNewReleaseUiState = MovieNewReleaseUiState.Loading) {
 
     when (uiState) {
-        is UiState.Loading -> {
+        is MovieNewReleaseUiState.Loading -> {
             Column(modifier = modifier.fillMaxSize()) {
                 CircularProgressIndicator(modifier = modifier
                     .fillMaxSize()
                     .wrapContentSize(align = Alignment.Center))
             }
         }
-        is UiState.Failure -> {
+        is MovieNewReleaseUiState.Failure -> {
             Text(text = "404")
         }
-        is UiState.Success<*> -> {
+        is MovieNewReleaseUiState.Success -> {
             Column(modifier = modifier
                 .fillMaxSize()
                 .padding(16.dp)) {
@@ -58,7 +54,7 @@ fun NewReleasesScreen(modifier: Modifier = Modifier, uiState: UiState = UiState.
                 LazyVerticalGrid(columns = GridCells.Fixed(2),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items((uiState.movies as MovieNewReleasesResponse).results ?: listOf()) {
+                    items(uiState.moviesNewReleases.results?.take(10) ?: listOf()) {
                         MovieImageCard(imageUrl = it?.posterPath ?: "", rating = it?.voteAverage.toString() ?: "")
                     }
                 }

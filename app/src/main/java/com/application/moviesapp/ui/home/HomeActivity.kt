@@ -4,16 +4,20 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.application.moviesapp.base.BaseActivity
 import com.application.moviesapp.ui.theme.MoviesAppTheme
+import com.application.moviesapp.ui.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HomeActivity : BaseActivity() {
+
+    private val homeViewModel: HomeViewModel by viewModels()
 
     companion object {
         fun startActivity(activity: Activity?) {
@@ -25,6 +29,9 @@ class HomeActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTransparentStatusBar()
+
+        homeViewModel.getMoviesWithNewReleases()
+
         setContent {
             MoviesAppTheme {
                 // A surface container using the 'background' color from the theme

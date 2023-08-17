@@ -1,7 +1,6 @@
 package com.application.moviesapp.ui.home
 
 import android.app.Activity
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
@@ -19,17 +18,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.application.moviesapp.ui.theme.MoviesAppTheme
-import com.application.moviesapp.ui.utility.UiState
 import com.application.moviesapp.ui.viewmodel.HomeViewModel
+import com.application.moviesapp.ui.viewmodel.MovieNewReleaseUiState
+import com.application.moviesapp.ui.viewmodel.MoviesWithNewReleaseUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewReleasesApp(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = hiltViewModel()) {
 
-    val uiState: UiState by homeViewModel.uiState.collectAsState()
+    val uiState: MovieNewReleaseUiState by homeViewModel.moviesNewReleaseUiState.collectAsState()
 
     Scaffold(
         topBar = { NewReleasesTopAppbar() },

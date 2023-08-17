@@ -3,7 +3,6 @@ package com.application.moviesapp.ui.home
 import android.app.Activity
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.rounded.NotificationsNone
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -11,7 +10,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -27,14 +25,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.application.moviesapp.R
-import com.application.moviesapp.ui.utility.UiState
 import com.application.moviesapp.ui.viewmodel.HomeViewModel
+import com.application.moviesapp.ui.viewmodel.MoviesWithNewReleaseUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeApp(modifier: Modifier = Modifier, navController: NavHostController = rememberNavController(), homeViewModel: HomeViewModel = hiltViewModel()) {
 
-    val uiState: UiState by homeViewModel.uiState.collectAsState()
+    val uiState: MoviesWithNewReleaseUiState by homeViewModel.moviesWithNewReleaseUiState.collectAsState()
 
     Scaffold(
         topBar = { HomeTopAppbar() },

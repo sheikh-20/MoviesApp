@@ -36,7 +36,7 @@ import com.application.moviesapp.ui.viewmodel.OnboardingViewModel
 fun OnboardingApp(modifier: Modifier = Modifier, navController: NavHostController = rememberNavController(), onboardingViewModel: OnboardingViewModel = hiltViewModel()) {
 
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val uiState by onboardingViewModel.uiState.collectAsState()
+    val uiState by onboardingViewModel.movieGenreUiState.collectAsState()
 
     Scaffold(topBar = { OnboardingAppBar(currentScreen = backStackEntry?.destination?.route ?: OnboardingScreen.Start.name, canNavigateBack = navController.previousBackStackEntry != null) { navController.navigateUp() } },
      ) { innerPadding ->

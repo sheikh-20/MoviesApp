@@ -28,12 +28,12 @@ import androidx.compose.ui.unit.dp
 import com.application.moviesapp.R
 import com.application.moviesapp.data.api.response.MovieGenreResponse
 import com.application.moviesapp.ui.theme.MoviesAppTheme
-import com.application.moviesapp.ui.utility.UiState
+import com.application.moviesapp.ui.viewmodel.MovieGenreUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChooseYourInterestScreen(modifier: Modifier = Modifier,
-                             uiState: UiState = UiState.Loading,
+                             uiState: MovieGenreUiState = MovieGenreUiState.Loading,
                              onContinueClick: () -> Unit = {}) {
     Column(
         modifier = modifier
@@ -42,19 +42,19 @@ fun ChooseYourInterestScreen(modifier: Modifier = Modifier,
     ) {
 
         when (uiState) {
-            is UiState.Loading -> {
+            is MovieGenreUiState.Loading -> {
                 CircularProgressIndicator(modifier = modifier
                     .fillMaxSize()
                     .wrapContentSize(align = Alignment.Center))
             }
-            is UiState.Failure -> {
+            is MovieGenreUiState.Failure -> {
                 Text(text = "404",
                     style = MaterialTheme.typography.displayLarge,
                     modifier = modifier
                         .fillMaxSize()
                         .wrapContentSize(align = Alignment.Center))
             }
-            is UiState.Success<*> -> {
+            is MovieGenreUiState.Success -> {
                 Text(
                     text = stringResource(R.string.choose_your_interests_description),
                     style = MaterialTheme.typography.bodyLarge
@@ -65,7 +65,7 @@ fun ChooseYourInterestScreen(modifier: Modifier = Modifier,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = modifier.weight(1f)) {
 
-                    items((uiState.movies as MovieGenreResponse).genres ?: listOf()) {
+                    items(uiState.genreResponse.genres ?: listOf()) {
                         ElevatedSuggestionChip(onClick = {}, label = { Text(text = it?.name ?: "", textAlign = TextAlign.Center) }, shape = RoundedCornerShape(50))
                     }
                 }
