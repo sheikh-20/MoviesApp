@@ -220,7 +220,6 @@ sealed class BottomNavigationScreens(val route: String, @StringRes val stringRes
     object Home: BottomNavigationScreens(route = "Home", stringResource = R.string.home, vectorResource = Icons.Rounded.Home)
     object Explore: BottomNavigationScreens(route = "Explore", stringResource = R.string.explore, vectorResource = Icons.Rounded.Explore)
     object MyList: BottomNavigationScreens(route = "MyList", stringResource = R.string.mylist, vectorResource = Icons.Rounded.Bookmark)
-
     object Download: BottomNavigationScreens(route = "Download", stringResource = R.string.download, vectorResource = Icons.Outlined.FileDownload)
     object Profile: BottomNavigationScreens(route = "Profile", stringResource = R.string.profile, vectorResource = Icons.Rounded.Person)
 }
