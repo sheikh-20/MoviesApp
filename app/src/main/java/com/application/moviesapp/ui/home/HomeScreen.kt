@@ -2,7 +2,6 @@ package com.application.moviesapp.ui.home
 
 import android.app.Activity
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,7 +46,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.R
-import com.application.moviesapp.data.mock.Datasource
 import com.application.moviesapp.ui.utility.toImageUrl
 import com.application.moviesapp.ui.viewmodel.MoviesWithNewReleaseUiState
 
@@ -101,7 +99,7 @@ fun HomeScreen(modifier: Modifier = Modifier, uiState: MoviesWithNewReleaseUiSta
                         .wrapContentSize(align = Alignment.BottomStart)
                         .padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(text = titleImage?.title ?: "", style = MaterialTheme.typography.titleLarge)
-                        Text(text = "Action, Superhero, Science, Fiction..", style = MaterialTheme.typography.bodyMedium)
+                        Text(text = uiState.moviesWithNewReleases.titleGenre, style = MaterialTheme.typography.bodyMedium)
 
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Button(onClick = {}) {

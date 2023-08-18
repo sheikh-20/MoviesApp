@@ -12,4 +12,9 @@
     <string name="or">அல்லது</string>
     <string name="don_t_have_an_account">கணக்கு இல்லையா?</string>
     <string name="sign_up">பதிவு செய்யவும்</string>
+    <string name="home">Home</string>
+    <string name="explore">Explore</string>
+    <string name="mylist">MyList</string>
+    <string name="download">Download</string>
+    <string name="profile">Profile</string>
 </resources>

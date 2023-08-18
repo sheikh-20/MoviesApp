@@ -14,4 +14,9 @@
     <string name="sign_in">Sign in</string>
     <string name="already_have_an_account">Already have an account</string>
     <string name="choose_your_interests_description">Choose your interests and get the best movie recommendation. Don\'t worry, you can always change it later.</string>
+    <string name="home">Home</string>
+    <string name="explore">Explore</string>
+    <string name="mylist">MyList</string>
+    <string name="download">Download</string>
+    <string name="profile">Profile</string>
 </resources>

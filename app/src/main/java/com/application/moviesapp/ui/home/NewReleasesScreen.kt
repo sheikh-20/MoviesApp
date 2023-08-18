@@ -54,7 +54,7 @@ fun NewReleasesScreen(modifier: Modifier = Modifier, uiState: MovieNewReleaseUiS
                 LazyVerticalGrid(columns = GridCells.Fixed(2),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(uiState.moviesNewReleases.results?.take(10) ?: listOf()) {
+                    items(uiState.moviesNewReleases.results ?: listOf()) {
                         MovieImageCard(imageUrl = it?.posterPath ?: "", rating = it?.voteAverage.toString() ?: "")
                     }
                 }
