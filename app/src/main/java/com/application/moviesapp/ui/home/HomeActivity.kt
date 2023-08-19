@@ -11,6 +11,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.application.moviesapp.base.BaseActivity
 import com.application.moviesapp.ui.theme.MoviesAppTheme
+import com.application.moviesapp.ui.viewmodel.ExploreViewModel
 import com.application.moviesapp.ui.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,6 +19,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class HomeActivity : BaseActivity() {
 
     private val homeViewModel: HomeViewModel by viewModels()
+    private val exploreViewModel: ExploreViewModel by viewModels()
 
     companion object {
         fun startActivity(activity: Activity?) {
@@ -31,6 +33,7 @@ class HomeActivity : BaseActivity() {
         setTransparentStatusBar()
 
         homeViewModel.getMoviesWithNewReleases()
+        exploreViewModel.getTrendingMovies()
 
         setContent {
             MoviesAppTheme {

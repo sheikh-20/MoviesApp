@@ -4,6 +4,7 @@ import com.application.moviesapp.data.api.MoviesApi
 import com.application.moviesapp.data.api.response.MovieGenreResponse
 import com.application.moviesapp.data.api.response.MovieNewReleasesResponse
 import com.application.moviesapp.data.api.response.MovieTopRatedResponse
+import com.application.moviesapp.data.api.response.MovieTrendingResponse
 import javax.inject.Inject
 
 interface MoviesRepository {
@@ -14,6 +15,8 @@ interface MoviesRepository {
     suspend fun  getNewReleasesList(): MovieNewReleasesResponse
 
     suspend fun getMoviesTopRated(): MovieTopRatedResponse
+
+    suspend fun getMovieTrending(): MovieTrendingResponse
 }
 
 class MoviesRepositoryImpl @Inject constructor(private val movies: MoviesApi): MoviesRepository {
@@ -21,4 +24,5 @@ class MoviesRepositoryImpl @Inject constructor(private val movies: MoviesApi): M
     override suspend fun getMoviesGenreList(): MovieGenreResponse = movies.getMoviesGenreList()
     override suspend fun getNewReleasesList(): MovieNewReleasesResponse = movies. getNewReleasesList()
     override suspend fun getMoviesTopRated(): MovieTopRatedResponse = movies.getMovieTopRated()
+    override suspend fun getMovieTrending(): MovieTrendingResponse = movies.getMovieTrending()
 }

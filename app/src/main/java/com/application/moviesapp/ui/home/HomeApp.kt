@@ -40,6 +40,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -50,14 +51,20 @@ import com.application.moviesapp.ui.home.download.DownloadScreen
 import com.application.moviesapp.ui.home.explore.ExploreScreen
 import com.application.moviesapp.ui.home.mylist.MyListScreen
 import com.application.moviesapp.ui.home.profile.ProfileScreen
+import com.application.moviesapp.ui.viewmodel.ExploreViewModel
 import com.application.moviesapp.ui.viewmodel.HomeViewModel
+import com.application.moviesapp.ui.viewmodel.MovieTrendingUiState
 import com.application.moviesapp.ui.viewmodel.MoviesWithNewReleaseUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeApp(modifier: Modifier = Modifier, navController: NavHostController = rememberNavController(), homeViewModel: HomeViewModel = hiltViewModel()) {
+fun HomeApp(modifier: Modifier = Modifier,
+            navController: NavHostController = rememberNavController(),
+            homeViewModel: HomeViewModel = hiltViewModel(),
+            exploreViewModel: ExploreViewModel = hiltViewModel()) {
 
-    val uiState: MoviesWithNewReleaseUiState by homeViewModel.moviesWithNewReleaseUiState.collectAsState()
+    val homeUiState: MoviesWithNewReleaseUiState by homeViewModel.moviesWithNewReleaseUiState.collectAsState()
+    val exploreUiState: MovieTrendingUiState by exploreViewModel.movieTrendingUiState.collectAsState()
 
     Scaffold(
         topBar = { HomeTopAppbar(navController) },
@@ -67,10 +74,10 @@ fun HomeApp(modifier: Modifier = Modifier, navController: NavHostController = re
         NavHost(modifier = modifier.padding(paddingValues),
             navController = navController, startDestination = BottomNavigationScreens.Home.route) {
             composable(route = BottomNavigationScreens.Home.route) {
-                HomeScreen(modifier = modifier, uiState = uiState)
+                HomeScreen(modifier = modifier, uiState = homeUiState)
             }
             composable(route = BottomNavigationScreens.Explore.route) {
-                ExploreScreen()
+                ExploreScreen(uiState = exploreUiState)
             }
             composable(route = BottomNavigationScreens.MyList.route) {
                 MyListScreen()
@@ -193,7 +200,9 @@ private fun HomeTopAppbar(navController: NavHostController) {
 }
 
 @Composable
-private fun HomeBottomBarNavigation(navController: NavHostController) {
+private fun HomeBottomBarNavigation(navController: NavHostController,
+                                    homeViewModel: HomeViewModel = viewModel(),
+                                    exploreViewModel: ExploreViewModel = viewModel()) {
 
     val navigationBarItems = listOf(
         BottomNavigationScreens.Home,
