@@ -1,5 +1,6 @@
 package com.application.moviesapp.data.api
 
+import com.application.moviesapp.data.api.response.CountryResponse
 import com.application.moviesapp.data.api.response.MovieGenreResponse
 import com.application.moviesapp.data.api.response.MovieNewReleasesResponse
 import com.application.moviesapp.data.api.response.MovieTopRatedResponse
@@ -22,4 +23,7 @@ interface MoviesApi {
 
     @GET("/3/trending/movie/{time_window}")
     suspend fun getMovieTrending(@Path("time_window") timeWindow: String = "day"): MovieTrendingResponse
+
+    @GET("3/configuration/countries")
+    suspend fun getCountries(): List<CountryResponse>
 }

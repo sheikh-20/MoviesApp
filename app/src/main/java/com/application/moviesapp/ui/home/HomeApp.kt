@@ -1,7 +1,12 @@
 package com.application.moviesapp.ui.home
 
 import android.app.Activity
+import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,28 +21,38 @@ import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.NotificationsNone
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -56,6 +71,7 @@ import com.application.moviesapp.ui.viewmodel.HomeViewModel
 import com.application.moviesapp.ui.viewmodel.MovieTrendingUiState
 import com.application.moviesapp.ui.viewmodel.MoviesWithNewReleaseUiState
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeApp(modifier: Modifier = Modifier,
@@ -65,6 +81,17 @@ fun HomeApp(modifier: Modifier = Modifier,
 
     val homeUiState: MoviesWithNewReleaseUiState by homeViewModel.moviesWithNewReleaseUiState.collectAsState()
     val exploreUiState: MovieTrendingUiState by exploreViewModel.movieTrendingUiState.collectAsState()
+
+    val coroutineScope = rememberCoroutineScope()
+    val modalSheetState = rememberModalBottomSheetState()
+
+//    ModalBottomSheet(
+//        onDismissRequest = {  },
+//        sheetState = modalSheetState,
+//
+//        ) {
+//        SortFilterContent()
+//    }
 
     Scaffold(
         topBar = { HomeTopAppbar(navController) },
@@ -119,7 +146,7 @@ private fun HomeTopAppbar(navController: NavHostController) {
                         )
                         },
                 actions = {
-                    FloatingActionButton(onClick = {  }, elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(defaultElevation = 0.dp)) {
+                    FloatingActionButton(onClick = { Toast.makeText(context, "Clicked!", Toast.LENGTH_LONG).show() }, elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(defaultElevation = 0.dp)) {
                         Icon(imageVector = Icons.Outlined.Tune, contentDescription = null)
                     }
                 },
@@ -221,6 +248,57 @@ private fun HomeBottomBarNavigation(navController: NavHostController,
                           },
                 icon = { Icon(imageVector = it.vectorResource, contentDescription = null) },
                 label = { Text(text = stringResource(id = it.stringResource)) })
+        }
+    }
+}
+
+@Composable
+private fun SortFilterContent(modifier: Modifier = Modifier) {
+    Column(modifier = modifier
+        .fillMaxSize()
+        .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.Start
+        ) {
+
+        Text(text = "Sort & Filter",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center)
+
+        HorizontalDivider()
+
+        Text(text = "Categories",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold)
+
+        Text(text = "Regions",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold)
+        
+        Text(text = "Genre",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold)
+        
+        Text(text = "Time/Periods",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold)
+
+        Text(text = "Sort",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold)
+
+        HorizontalDivider()
+
+        Row(modifier = modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlinedButton(onClick = { }, modifier = modifier.weight(1f)) {
+                Text(text = "Reset")
+            }
+            Button(onClick = { }, modifier = modifier.weight(1f)) {
+                Text(text = "Apply")
+            }
         }
     }
 }

@@ -2,6 +2,8 @@ package com.application.moviesapp.di
 
 import com.application.moviesapp.data.repository.MoviesRepository
 import com.application.moviesapp.domain.GetMoviesWithNewReleaseInteractor
+import com.application.moviesapp.domain.GetMoviesWithSortInteractor
+import com.application.moviesapp.domain.MoviesSortUseCase
 import com.application.moviesapp.domain.MoviesUseCase
 import dagger.Module
 import dagger.Provides
@@ -17,5 +19,11 @@ class UseCaseModule {
     @Singleton
     fun providesUseCase(moviesRepository: MoviesRepository): MoviesUseCase {
         return GetMoviesWithNewReleaseInteractor(moviesRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesMoviesSortUseCase(moviesRepository: MoviesRepository): MoviesSortUseCase {
+        return GetMoviesWithSortInteractor(moviesRepository)
     }
 }
