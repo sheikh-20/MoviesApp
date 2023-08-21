@@ -66,9 +66,9 @@ import com.application.moviesapp.ui.home.download.DownloadScreen
 import com.application.moviesapp.ui.home.explore.ExploreScreen
 import com.application.moviesapp.ui.home.mylist.MyListScreen
 import com.application.moviesapp.ui.home.profile.ProfileScreen
+import com.application.moviesapp.ui.viewmodel.ExploreUiState
 import com.application.moviesapp.ui.viewmodel.ExploreViewModel
 import com.application.moviesapp.ui.viewmodel.HomeViewModel
-import com.application.moviesapp.ui.viewmodel.MovieTrendingUiState
 import com.application.moviesapp.ui.viewmodel.MoviesWithNewReleaseUiState
 
 
@@ -80,7 +80,7 @@ fun HomeApp(modifier: Modifier = Modifier,
             exploreViewModel: ExploreViewModel = hiltViewModel()) {
 
     val homeUiState: MoviesWithNewReleaseUiState by homeViewModel.moviesWithNewReleaseUiState.collectAsState()
-    val exploreUiState: MovieTrendingUiState by exploreViewModel.movieTrendingUiState.collectAsState()
+    val exploreUiState: ExploreUiState by exploreViewModel.exploreUiState.collectAsState()
 
     val coroutineScope = rememberCoroutineScope()
     val modalSheetState = rememberModalBottomSheetState()
@@ -94,7 +94,7 @@ fun HomeApp(modifier: Modifier = Modifier,
 //    }
 
     Scaffold(
-        topBar = { HomeTopAppbar(navController) },
+        topBar = { HomeTopAppbar(navController, exploreViewModel) },
         bottomBar = { HomeBottomBarNavigation(navController) },
         containerColor = Color.Transparent
     ) { paddingValues ->
@@ -121,7 +121,7 @@ fun HomeApp(modifier: Modifier = Modifier,
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun HomeTopAppbar(navController: NavHostController) {
+private fun HomeTopAppbar(navController: NavHostController, exploreViewModel: ExploreViewModel = viewModel()) {
 
     val context = LocalContext.current
 
@@ -130,8 +130,8 @@ private fun HomeTopAppbar(navController: NavHostController) {
             TopAppBar(
                 title = {
                     OutlinedTextField(
-                        value = "",
-                        onValueChange = {}, 
+                        value = exploreViewModel.searchInputField,
+                        onValueChange = exploreViewModel::updateSearchField,
                         label = {  
                             Text(text = "Search")
                         },

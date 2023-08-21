@@ -1,10 +1,11 @@
 package com.application.moviesapp.ui.viewmodel
 
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.application.moviesapp.data.api.response.MovieTopRatedResponse
-import com.application.moviesapp.data.api.response.MovieTrendingResponse
+import com.application.moviesapp.data.api.response.MovieSimpleResponse
 import com.application.moviesapp.data.repository.MoviesRepository
 import com.application.moviesapp.domain.MoviesSortUseCase
 import com.application.moviesapp.domain.MoviesWithSort
@@ -17,10 +18,10 @@ import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
 
-sealed interface MovieTrendingUiState {
-    object Loading: MovieTrendingUiState
-    data class Success(val movieTrendingResponse: MovieTrendingResponse): MovieTrendingUiState
-    object Failure: MovieTrendingUiState
+sealed interface ExploreUiState {
+    object Loading: ExploreUiState
+    data class Success(val response: MovieSimpleResponse): ExploreUiState
+    object Failure: ExploreUiState
 }
 
 sealed interface MovieSortUiState {
@@ -28,6 +29,7 @@ sealed interface MovieSortUiState {
     data class Success(val moviesWithSort: MoviesWithSort): MovieSortUiState
     object Failure: MovieSortUiState
 }
+
 @HiltViewModel
 class ExploreViewModel @Inject constructor(private val useCase: MoviesSortUseCase, private val repository: MoviesRepository): ViewModel() {
 
@@ -41,18 +43,22 @@ class ExploreViewModel @Inject constructor(private val useCase: MoviesSortUseCas
     val movieSortUiState: StateFlow<MovieSortUiState> get() = _movieSortUiState
 
 
-    private var _movieTrendingUiState = MutableStateFlow<MovieTrendingUiState>(MovieTrendingUiState.Loading)
-    val movieTrendingUiState: StateFlow<MovieTrendingUiState> get() = _movieTrendingUiState
+    private var _exploreUiState = MutableStateFlow<ExploreUiState>(ExploreUiState.Loading)
+    val exploreUiState: StateFlow<ExploreUiState> get() = _exploreUiState
+
+
+    var searchInputField by mutableStateOf("")
+        private set
 
     fun getTrendingMovies() = viewModelScope.launch(Dispatchers.IO) {
-        _movieTrendingUiState.value = MovieTrendingUiState.Loading
+        _exploreUiState.value = ExploreUiState.Loading
 
         try {
             val result = repository.getMovieTrending()
-            _movieTrendingUiState.value = MovieTrendingUiState.Success(result)
-//            Timber.tag(TAG).d(result.toString())
+            _exploreUiState.value = ExploreUiState.Success(result)
+            Timber.tag(TAG).d(result.toString())
         } catch (exception: IOException) {
-            _movieTrendingUiState.value = MovieTrendingUiState.Failure
+            _exploreUiState.value = ExploreUiState.Failure
             Timber.tag(TAG).e(exception)
         }
     }
@@ -66,6 +72,33 @@ class ExploreViewModel @Inject constructor(private val useCase: MoviesSortUseCas
             Timber.tag(TAG).d(result.toString())
         } catch (exception: IOException) {
             _movieSortUiState.value = MovieSortUiState.Failure
+            Timber.tag(TAG).e(exception)
+        }
+    }
+
+    fun updateSearchField(value: String) {
+        searchInputField = value
+
+        if (searchInputField.isNotEmpty()) {
+            getSearchResults()
+        }
+    }
+
+    fun getSearchResults() = viewModelScope.launch(Dispatchers.IO) {
+        _exploreUiState.value = ExploreUiState.Loading
+
+        try {
+            val result = repository.getSearchResults(searchInputField)
+
+            if (result.results?.isEmpty() == true) {
+                throw IOException()
+            }
+
+            _exploreUiState.value = ExploreUiState.Success(result)
+
+            Timber.tag(TAG).d(result.toString())
+        } catch (exception: IOException) {
+            _exploreUiState.value = ExploreUiState.Failure
             Timber.tag(TAG).e(exception)
         }
     }
