@@ -25,39 +25,54 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.compose.LazyPagingItems
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.application.moviesapp.R
+import com.application.moviesapp.domain.model.MovieNewRelease
 import com.application.moviesapp.ui.utility.toImageUrl
 import com.application.moviesapp.ui.viewmodel.MovieNewReleaseUiState
 import com.application.moviesapp.ui.viewmodel.MoviesWithNewReleaseUiState
 
 @Composable
-fun NewReleasesScreen(modifier: Modifier = Modifier, uiState: MovieNewReleaseUiState = MovieNewReleaseUiState.Loading) {
+fun NewReleasesScreen(modifier: Modifier = Modifier, uiState: MovieNewReleaseUiState = MovieNewReleaseUiState.Loading, moviesFlow: LazyPagingItems<MovieNewRelease>) {
 
-    when (uiState) {
-        is MovieNewReleaseUiState.Loading -> {
-            Column(modifier = modifier.fillMaxSize()) {
-                CircularProgressIndicator(modifier = modifier
-                    .fillMaxSize()
-                    .wrapContentSize(align = Alignment.Center))
-            }
-        }
-        is MovieNewReleaseUiState.Failure -> {
-            Text(text = "404")
-        }
-        is MovieNewReleaseUiState.Success -> {
-            Column(modifier = modifier
-                .fillMaxSize()
-                .padding(16.dp)) {
+//    when (uiState) {
+//        is MovieNewReleaseUiState.Loading -> {
+//            Column(modifier = modifier.fillMaxSize()) {
+//                CircularProgressIndicator(modifier = modifier
+//                    .fillMaxSize()
+//                    .wrapContentSize(align = Alignment.Center))
+//            }
+//        }
+//        is MovieNewReleaseUiState.Failure -> {
+//            Text(text = "404")
+//        }
+//        is MovieNewReleaseUiState.Success -> {
+//            Column(modifier = modifier
+//                .fillMaxSize()
+//                .padding(16.dp)) {
+//
+//                LazyVerticalGrid(columns = GridCells.Fixed(2),
+//                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+//                    verticalArrangement = Arrangement.spacedBy(8.dp)) {
+//                    items(uiState.moviesNewReleases.results ?: listOf()) {
+//                        MovieImageCard(imageUrl = it?.posterPath ?: "", rating = it?.voteAverage.toString() ?: "")
+//                    }
+//                }
+//            }
+//        }
+//    }
 
-                LazyVerticalGrid(columns = GridCells.Fixed(2),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(uiState.moviesNewReleases.results ?: listOf()) {
-                        MovieImageCard(imageUrl = it?.posterPath ?: "", rating = it?.voteAverage.toString() ?: "")
-                    }
-                }
+    Column(modifier = modifier
+        .fillMaxSize()
+        .padding(16.dp)) {
+
+        LazyVerticalGrid(columns = GridCells.Fixed(2),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(moviesFlow.itemCount) { index ->
+                MovieImageCard(imageUrl = moviesFlow[index]?.posterPath ?: "", rating = moviesFlow[index]?.voteAverage.toString() ?: "")
             }
         }
     }
@@ -91,11 +106,11 @@ private fun MovieImageCard(modifier: Modifier = Modifier, imageUrl: String = "",
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun NewReleasesScreenLightThemePreview() {
-    NewReleasesScreen()
+//    NewReleasesScreen()
 }
 
 @Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun NewReleasesScreenDarkThemePreview() {
-    NewReleasesScreen()
+//    NewReleasesScreen()
 }

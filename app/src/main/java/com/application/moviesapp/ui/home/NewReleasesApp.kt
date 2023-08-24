@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.application.moviesapp.ui.viewmodel.HomeViewModel
 import com.application.moviesapp.ui.viewmodel.MovieNewReleaseUiState
 import com.application.moviesapp.ui.viewmodel.MoviesWithNewReleaseUiState
@@ -28,12 +29,13 @@ import com.application.moviesapp.ui.viewmodel.MoviesWithNewReleaseUiState
 fun NewReleasesApp(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = hiltViewModel()) {
 
     val uiState: MovieNewReleaseUiState by homeViewModel.moviesNewReleaseUiState.collectAsState()
+    val moviesNewReleasePagingFlow = homeViewModel.moviesNewReleasePagingFlow().collectAsLazyPagingItems()
 
     Scaffold(
         topBar = { NewReleasesTopAppbar() },
         containerColor = Color.Transparent
     ) { paddingValues ->
-        NewReleasesScreen(modifier = modifier.padding(paddingValues), uiState = uiState)
+        NewReleasesScreen(modifier = modifier.padding(paddingValues), uiState = uiState, moviesFlow = moviesNewReleasePagingFlow)
     }
 }
 

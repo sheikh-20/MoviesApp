@@ -7,25 +7,27 @@ import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.application.moviesapp.data.api.MoviesApi
 import com.application.moviesapp.data.local.MoviesDatabase
+import com.application.moviesapp.data.local.entity.MovieNewReleaseEntity
+import com.application.moviesapp.data.local.entity.MovieNewReleaseRemoteKeyEntity
 import com.application.moviesapp.data.local.entity.MovieRemoteKeyEntity
 import com.application.moviesapp.data.local.entity.MoviesEntity
 import com.application.moviesapp.data.mappers.toMoviesEntity
+import com.application.moviesapp.data.repository.MoviesRepository
 import retrofit2.HttpException
 import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
 
-@OptIn(ExperimentalPagingApi::class)
-class MoviesRemoteMediator @Inject constructor(private val api: MoviesApi, private val database: MoviesDatabase):  RemoteMediator<Int, MoviesEntity>() {
+@ExperimentalPagingApi
+class MoviesNewReleaseRemoteMediator @Inject constructor(private val api: MoviesApi,
+                                                         private val database: MoviesDatabase): RemoteMediator<Int, MovieNewReleaseEntity>() {
 
     private companion object {
-        const val TAG = "MoviesRemoteMediator"
+        const val TAG = "MoviesNewReleaseRemoteMediator"
     }
 
-    override suspend fun load(
-        loadType: LoadType,
-        state: PagingState<Int, MoviesEntity>
-    ): MediatorResult {
+    override suspend fun load(loadType: LoadType,
+                              state: PagingState<Int, MovieNewReleaseEntity>): MediatorResult {
         return try {
             val currentPage = when (loadType) {
                 LoadType.REFRESH -> {
@@ -53,7 +55,7 @@ class MoviesRemoteMediator @Inject constructor(private val api: MoviesApi, priva
                 }
             }
 
-            val apiResult = api.getPopularMoviesList(page = currentPage)
+            val apiResult = api.getNewReleasesList(page = currentPage)
             val endOfPaginationReached = apiResult.results?.isEmpty() ?: true
 
             val prevPage = if (currentPage == 1) null else currentPage - 1
@@ -61,22 +63,22 @@ class MoviesRemoteMediator @Inject constructor(private val api: MoviesApi, priva
 
             database.withTransaction {
                 if (loadType == LoadType.REFRESH) {
-                    database.moviesDao.clearAll()
-                    database.remoteKeyDao.deleteAllRemoteKeys()
+                    database.movieNewReleaseDao.clearAll()
+                    database.movieNewReleaseRemoteKeyDao.deleteAllRemoteKeys()
                 }
 
                 val moviesEntities = apiResult.results?.map { it?.toMoviesEntity() } ?: listOf()
-                database.moviesDao.upsertAll(moviesEntities)
+                database.movieNewReleaseDao.upsertAll(moviesEntities)
 
                 val keys = apiResult.results?.map { moviesEntity ->
-                    MovieRemoteKeyEntity(
+                    MovieNewReleaseRemoteKeyEntity(
                         id = moviesEntity?.id ?: 1,
                         previousPage = prevPage,
                         nextPage = nextPage
                     )
                 }
-                database.remoteKeyDao.upsertAll(remoteKeys = keys ?: listOf())
-                database.moviesDao.upsertAll(movies = apiResult.results?.map { it?.toMoviesEntity() } ?: listOf())
+                database.movieNewReleaseRemoteKeyDao.upsertAll(remoteKeys = keys ?: listOf())
+                database.movieNewReleaseDao.upsertAll(movies = apiResult.results?.map { it?.toMoviesEntity() } ?: listOf())
             }
 
             MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
@@ -88,28 +90,28 @@ class MoviesRemoteMediator @Inject constructor(private val api: MoviesApi, priva
         }
     }
 
-    private suspend fun getRemoteKeyClosestToCurrentPosition(state: PagingState<Int, MoviesEntity>): MovieRemoteKeyEntity? {
+
+    private suspend fun getRemoteKeyClosestToCurrentPosition(state: PagingState<Int, MovieNewReleaseEntity>): MovieNewReleaseRemoteKeyEntity? {
         return state.anchorPosition?.let {  position ->
             state.closestItemToPosition(position)?.movieId?.let {  id ->
-                database.remoteKeyDao.getRemoteKeys(id)
+                database.movieNewReleaseRemoteKeyDao.getRemoteKeys(id)
             }
         }
     }
 
-    private suspend fun getRemoteKeyForFirstItem(state: PagingState<Int, MoviesEntity>): MovieRemoteKeyEntity? {
+    private suspend fun getRemoteKeyForFirstItem(state: PagingState<Int, MovieNewReleaseEntity>): MovieNewReleaseRemoteKeyEntity? {
         return state.pages.firstOrNull {  it.data.isNotEmpty() }?.data?.firstOrNull()
             ?.let { moviesEntity ->
-                database.remoteKeyDao.getRemoteKeys(moviesEntity.movieId ?: 1)
+                database.movieNewReleaseRemoteKeyDao.getRemoteKeys(moviesEntity.movieId ?: 1)
             }
     }
 
     private suspend fun getRemoteKeyForLastItem(
-        state: PagingState<Int, MoviesEntity>
-    ): MovieRemoteKeyEntity? {
+        state: PagingState<Int, MovieNewReleaseEntity>
+    ): MovieNewReleaseRemoteKeyEntity? {
         return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()
             ?.let { moviesEntity ->
-                database.remoteKeyDao.getRemoteKeys(moviesEntity.movieId ?: 1)
+                database.movieNewReleaseRemoteKeyDao.getRemoteKeys(moviesEntity.movieId ?: 1)
             }
     }
-
 }

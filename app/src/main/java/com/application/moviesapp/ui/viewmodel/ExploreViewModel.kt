@@ -6,19 +6,24 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import com.application.moviesapp.data.api.response.MovieSimpleResponse
 import com.application.moviesapp.data.local.entity.MoviesEntity
 import com.application.moviesapp.data.mappers.toMovies
 import com.application.moviesapp.data.repository.MoviesRepository
+import com.application.moviesapp.domain.MoviesPopularUseCase
 import com.application.moviesapp.domain.MoviesSortUseCase
 import com.application.moviesapp.domain.MoviesWithSort
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.single
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.IOException
@@ -39,7 +44,8 @@ sealed interface MovieSortUiState {
 @HiltViewModel
 class ExploreViewModel @Inject constructor(private val useCase: MoviesSortUseCase,
                                            private val repository: MoviesRepository,
-                                           pager: Pager<Int, MoviesEntity>): ViewModel() {
+                                           pager: Pager<Int, MoviesEntity>,
+    private val moviesPopularUseCase: MoviesPopularUseCase): ViewModel() {
 
     private companion object {
         const val TAG = "ExploreViewModel"
@@ -57,12 +63,7 @@ class ExploreViewModel @Inject constructor(private val useCase: MoviesSortUseCas
     var searchInputField by mutableStateOf("")
         private set
 
-    val moviesPagingFlow = pager.flow.map {
-        it.map { moviesEntity ->
-            moviesEntity.toMovies()
-        }
-    }.cachedIn(viewModelScope)
-
+    val moviesPagingFlow = moviesPopularUseCase.invoke().cachedIn(viewModelScope)
 
     fun getTrendingMovies() = viewModelScope.launch(Dispatchers.IO) {
         _exploreUiState.value = ExploreUiState.Loading

@@ -4,8 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "movie_remotekey_entity")
-data class MovieRemoteKeyEntity(
+@Entity(tableName = "movie_new_release_remotekey_entity")
+data class MovieNewReleaseRemoteKeyEntity(
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo("id")
     val id: Int,

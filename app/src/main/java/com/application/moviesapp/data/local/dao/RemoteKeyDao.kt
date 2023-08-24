@@ -8,8 +8,8 @@ import com.application.moviesapp.data.local.entity.MovieRemoteKeyEntity
 @Dao
 interface RemoteKeyDao {
 
-    @Query("SELECT * FROM movie_remotekey_entity WHERE id = :id")
-    suspend fun getRemoteKeys(id: String): MovieRemoteKeyEntity
+    @Query("SELECT * FROM movie_remotekey_entity WHERE id = :movieId")
+    suspend fun getRemoteKeys(movieId: Int): MovieRemoteKeyEntity
 
     @Upsert
     suspend fun upsertAll(remoteKeys: List<MovieRemoteKeyEntity?>)

@@ -2,9 +2,12 @@ package com.application.moviesapp.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.cachedIn
 import com.application.moviesapp.data.api.response.MovieNewReleasesResponse
 import com.application.moviesapp.data.api.response.MovieTopRatedResponse
+import com.application.moviesapp.data.remote.MovieNewReleasesDto
 import com.application.moviesapp.data.repository.MoviesRepository
+import com.application.moviesapp.domain.MoviesNewReleaseUseCase
 import com.application.moviesapp.domain.MoviesUseCase
 import com.application.moviesapp.domain.MoviesWithNewReleases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +26,7 @@ sealed interface MoviesWithNewReleaseUiState {
 }
 sealed interface MovieNewReleaseUiState {
     object Loading: MovieNewReleaseUiState
-    data class Success(val moviesNewReleases: MovieNewReleasesResponse): MovieNewReleaseUiState
+    data class Success(val moviesNewReleases: MovieNewReleasesDto): MovieNewReleaseUiState
     object Failure: MovieNewReleaseUiState
 }
 sealed interface MovieTopRatedUiState {
@@ -32,7 +35,10 @@ sealed interface MovieTopRatedUiState {
     object Failure: MovieTopRatedUiState
 }
 @HiltViewModel
-class HomeViewModel @Inject constructor(private val useCase: MoviesUseCase, private val moviesRepository: MoviesRepository): ViewModel() {
+class HomeViewModel @Inject constructor(private val useCase: MoviesUseCase,
+                                        private val moviesRepository: MoviesRepository,
+                                        private val moviesNewReleaseUseCase: MoviesNewReleaseUseCase
+    ): ViewModel() {
 
     private companion object {
         const val TAG = "HomeViewModel"
@@ -85,4 +91,6 @@ class HomeViewModel @Inject constructor(private val useCase: MoviesUseCase, priv
             Timber.tag(TAG).e(exception)
         }
     }
+
+    fun moviesNewReleasePagingFlow() = moviesNewReleaseUseCase.invoke().cachedIn(viewModelScope)
 }

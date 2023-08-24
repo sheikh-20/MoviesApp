@@ -3,10 +3,11 @@ package com.application.moviesapp.domain
 import com.application.moviesapp.data.api.response.MovieGenreResponse
 import com.application.moviesapp.data.api.response.MovieNewReleasesResponse
 import com.application.moviesapp.data.api.response.MovieTopRatedResponse
+import com.application.moviesapp.data.remote.MovieNewReleasesDto
 
 data class MoviesWithNewReleases(val topRatedResponse: MovieTopRatedResponse,
                                  val genreResponse: MovieGenreResponse,
-                                 val newReleasesResponse: MovieNewReleasesResponse) {
+                                 val newReleasesResponse: MovieNewReleasesDto) {
 
     private val genreList = mutableSetOf<MovieGenreResponse.Genre?>()
     val titleGenre get() = genreList.map { it?.name }.joinToString(", ")

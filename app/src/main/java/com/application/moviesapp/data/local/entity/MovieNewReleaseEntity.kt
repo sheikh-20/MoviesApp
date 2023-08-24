@@ -2,11 +2,10 @@ package com.application.moviesapp.data.local.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "movies_entity")
-data class MoviesEntity(
+@Entity(tableName = "movie_new_release_entity")
+data class MovieNewReleaseEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     val id: Int = 0,
