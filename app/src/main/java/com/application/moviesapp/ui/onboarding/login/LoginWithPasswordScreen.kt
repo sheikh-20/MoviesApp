@@ -40,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -47,11 +48,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.application.moviesapp.R
+import com.application.moviesapp.ui.onboarding.component.SocialLoginComponent
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginWithPasswordScreen(modifier: Modifier = Modifier) {
+fun LoginWithPasswordScreen(modifier: Modifier = Modifier, onSignupClick: () -> Unit = {}) {
     Column(modifier = modifier
         .fillMaxSize()
         .padding(16.dp),
@@ -61,16 +63,17 @@ fun LoginWithPasswordScreen(modifier: Modifier = Modifier) {
         Image(
             painter = painterResource(id = R.drawable.ic_movie),
             contentDescription = null,
-            modifier = modifier.size(200.dp)
+            modifier = modifier.size(200.dp),
+            contentScale = ContentScale.Crop
         )
 
         Text(
-            text = "Create Your Account",
-            style = MaterialTheme.typography.displaySmall
+            text = "Login To Your Account",
+            style = MaterialTheme.typography.headlineLarge
         )
 
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
             OutlinedTextField(
                 value = "",
                 onValueChange = {},
@@ -97,7 +100,7 @@ fun LoginWithPasswordScreen(modifier: Modifier = Modifier) {
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(checked = false, onCheckedChange = {})
-                Text(text = "Remember me")
+                Text(text = "Remember me", style = MaterialTheme.typography.labelLarge)
             }
 
             Button(onClick = {},
@@ -105,9 +108,18 @@ fun LoginWithPasswordScreen(modifier: Modifier = Modifier) {
                 colors = ButtonDefaults.filledTonalButtonColors(containerColor = Color.Red)) {
                 Text(text = stringResource(id = R.string.signin_with_password), color = colorResource(id = R.color.white), modifier = modifier.padding(4.dp))
             }
+
+
         }
 
-        Row(verticalAlignment = Alignment.CenterVertically,
+        TextButton(onClick = { /*TODO*/ }) {
+            Text(text = "Forgot the password?", fontWeight = FontWeight.Bold)
+        }
+
+        Row(modifier = modifier
+            .fillMaxWidth()
+            .wrapContentWidth(align = Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Divider(modifier = modifier.weight(1f), color = Color.LightGray)
             Text(text = "or continue with")
@@ -119,54 +131,23 @@ fun LoginWithPasswordScreen(modifier: Modifier = Modifier) {
             .wrapContentWidth(align = Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            LoginComponent(icon = R.drawable.ic_facebook) {
+            SocialLoginComponent(icon = R.drawable.ic_facebook) {
 
             }
-            LoginComponent(icon = R.drawable.ic_google) {
+            SocialLoginComponent(icon = R.drawable.ic_google) {
 
             }
-            LoginComponent(icon = R.drawable.ic_github) {
+            SocialLoginComponent(icon = R.drawable.ic_github) {
 
             }
         }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(text = "Don't have an account?")
-            TextButton(onClick = { /*TODO*/ }) {
-                Text(text = "Sign up", color = Color.Red)
+            TextButton(onClick = onSignupClick) {
+                Text(text = "Sign up", fontWeight = FontWeight.Bold)
             }
         }
-    }
-}
-
-@Composable
-fun CustomCheckBox() {
-    Box(
-        modifier = Modifier
-            .clip(CircleShape)
-            .size(30.dp)
-            .background(Color.Red)
-            .padding(5.dp)
-            .clip(CircleShape)
-            .background(Color.Blue),
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(imageVector = Icons.Default.Check, contentDescription = "")
-    }
-}
-
-@Composable
-private fun LoginComponent(modifier: Modifier = Modifier, @DrawableRes icon: Int, onClick: () -> Unit) {
-    Button(onClick = onClick,
-        shape = RoundedCornerShape(30),
-        border = BorderStroke(width = .5.dp, color =  Color.LightGray),
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
-
-        Icon(painter = painterResource(id = icon),
-            contentDescription = null,
-            modifier = modifier
-                .size(30.dp)
-                .padding(4.dp))
     }
 }
 

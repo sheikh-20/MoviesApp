@@ -77,15 +77,17 @@ fun OnboardingScreen(modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
 
             Text(text = stringResource(id = R.string.mflix_description),
                 style = MaterialTheme.typography.bodyLarge,
-                color = colorResource(id = R.color.white),
+                color = colorResource(id = R.color.light_gray),
                 textAlign = TextAlign.Center,
                 modifier = modifier.fillMaxWidth()
                 )
 
             Button(onClick = onClick,
-                modifier = modifier.fillMaxWidth(),
-                colors = ButtonDefaults.filledTonalButtonColors(containerColor = Color.Red)) {
-                Text(text = stringResource(id = R.string.get_started), color = colorResource(id = R.color.white), modifier = modifier.padding(4.dp))
+                modifier = modifier.fillMaxWidth()) {
+                Text(
+                    text = stringResource(id = R.string.get_started),
+                    modifier = modifier.padding(4.dp)
+                )
             }
         }
     }

@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
 }
 
 android {
@@ -32,6 +33,7 @@ android {
             val TEST_API_KEY: String by project
             buildConfigField(type = "String", name =  "API_KEY", value = TEST_API_KEY)
             buildConfigField(type = "String", name = "BASE_URL", value = "\"https://api.themoviedb.org/\"")
+            buildConfigField(type = "String", name = "IMAGE_BASE_URL", value = "\"https://image.tmdb.org/t/p/original/\"")
         }
         release {
             isDebuggable = false
@@ -43,6 +45,7 @@ android {
             val PRO_API_KEY: String by project
             buildConfigField(type = "String", name = "API_KEY", value = PRO_API_KEY)
             buildConfigField(type = "String", name = "BASE_URL", value = "\"https://api.themoviedb.org/\"")
+            buildConfigField(type = "String", name = "IMAGE_BASE_URL", value = "\"https://image.tmdb.org/t/p/original/\"")
         }
     }
     compileOptions {
@@ -66,6 +69,9 @@ dependencies {
     val lifecycle_version = "2.6.1"
     val timber_version = "5.0.1"
     val lottie_version = "6.1.0"
+    val paging_version = "3.2.0"
+    val room_version = "2.5.2"
+
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
@@ -74,7 +80,8 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material3:material3:1.2.0-alpha05")
+
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -106,6 +113,12 @@ dependencies {
     // Retrofit with Scalar Converter
     implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
 
+    // Kotlin Serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+
+    // Retrofit with Jakewharton Converter
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
+
     // Lottie
     implementation("com.airbnb.android:lottie:$lottie_version")
 
@@ -113,5 +126,18 @@ dependencies {
 
     // Material icon extended
     implementation("androidx.compose.material:material-icons-extended:1.6.0-alpha02")
+
+    // Coil
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
+    // Paging 3
+    implementation("androidx.paging:paging-runtime-ktx:$paging_version")
+    implementation("androidx.paging:paging-compose:$paging_version")
+
+    // Room
+    implementation("androidx.room:room-runtime:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+    implementation("androidx.room:room-paging:$room_version")
 
 }

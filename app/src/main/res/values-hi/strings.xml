@@ -12,4 +12,9 @@
     <string name="or">या</string>
     <string name="don_t_have_an_account">कोई खाता नहीं है?</string>
     <string name="sign_up">साइन अप करें</string>
+    <string name="home">Home</string>
+    <string name="explore">Explore</string>
+    <string name="mylist">MyList</string>
+    <string name="download">Download</string>
+    <string name="profile">Profile</string>
 </resources>
