@@ -41,6 +41,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -61,6 +62,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.paging.PagingData
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.application.moviesapp.R
 import com.application.moviesapp.ui.home.download.DownloadScreen
 import com.application.moviesapp.ui.home.explore.ExploreScreen
@@ -81,6 +84,8 @@ fun HomeApp(modifier: Modifier = Modifier,
 
     val homeUiState: MoviesWithNewReleaseUiState by homeViewModel.moviesWithNewReleaseUiState.collectAsState()
     val exploreUiState: ExploreUiState by exploreViewModel.exploreUiState.collectAsState()
+
+    val moviesFlowState = exploreViewModel.moviesPagingFlow.collectAsLazyPagingItems()
 
     val coroutineScope = rememberCoroutineScope()
     val modalSheetState = rememberModalBottomSheetState()
@@ -104,7 +109,7 @@ fun HomeApp(modifier: Modifier = Modifier,
                 HomeScreen(modifier = modifier, uiState = homeUiState)
             }
             composable(route = BottomNavigationScreens.Explore.route) {
-                ExploreScreen(uiState = exploreUiState)
+                ExploreScreen(uiState = exploreUiState, moviesFlow = moviesFlowState)
             }
             composable(route = BottomNavigationScreens.MyList.route) {
                 MyListScreen()

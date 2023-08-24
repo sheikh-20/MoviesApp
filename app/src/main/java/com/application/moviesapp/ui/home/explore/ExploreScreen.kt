@@ -1,28 +1,20 @@
 package com.application.moviesapp.ui.home.explore
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -30,42 +22,58 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.PagingConfig
+import androidx.paging.compose.LazyPagingItems
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.application.moviesapp.R
+import com.application.moviesapp.domain.Movies
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.utility.toImageUrl
 import com.application.moviesapp.ui.viewmodel.ExploreUiState
-import com.application.moviesapp.ui.viewmodel.MovieNewReleaseUiState
 
 @Composable
-fun ExploreScreen(modifier: Modifier = Modifier, uiState: ExploreUiState = ExploreUiState.Loading) {
+fun ExploreScreen(modifier: Modifier = Modifier, uiState: ExploreUiState = ExploreUiState.Loading, moviesFlow: LazyPagingItems<Movies>) {
 
-    when (uiState) {
-        is ExploreUiState.Loading -> {
-            Column(modifier = modifier.fillMaxSize()) {
-                CircularProgressIndicator(modifier = modifier
-                    .fillMaxSize()
-                    .wrapContentSize(align = Alignment.Center))
-            }
-        }
-        is ExploreUiState.Failure -> {
-            Image(painter = painterResource(id = R.drawable.ic_error),
-                contentDescription = null,
-                modifier = modifier.fillMaxSize().wrapContentSize(align = Alignment.Center).padding(16.dp))
-        }
-        is ExploreUiState.Success -> {
-            Column(modifier = modifier
-                .fillMaxSize()
-                .padding(16.dp)) {
+//    when (uiState) {
+//        is ExploreUiState.Loading -> {
+//            Column(modifier = modifier.fillMaxSize()) {
+//                CircularProgressIndicator(modifier = modifier
+//                    .fillMaxSize()
+//                    .wrapContentSize(align = Alignment.Center))
+//            }
+//        }
+//        is ExploreUiState.Failure -> {
+//            Image(painter = painterResource(id = R.drawable.ic_error),
+//                contentDescription = null,
+//                modifier = modifier.fillMaxSize().wrapContentSize(align = Alignment.Center).padding(16.dp))
+//        }
+//        is ExploreUiState.Success -> {
+//            Column(modifier = modifier
+//                .fillMaxSize()
+//                .padding(16.dp)) {
+//
+//                LazyVerticalGrid(columns = GridCells.Fixed(2),
+//                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+//                    verticalArrangement = Arrangement.spacedBy(8.dp)) {
+//                    items(uiState.response.results ?: listOf()) {
+//                        MovieImageCard(imageUrl = it?.posterPath ?: "", rating = it?.voteAverage.toString() ?: "")
+//                    }
+//                }
+//            }
+//        }
+//    }
 
-                LazyVerticalGrid(columns = GridCells.Fixed(2),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(uiState.response.results ?: listOf()) {
-                        MovieImageCard(imageUrl = it?.posterPath ?: "", rating = it?.voteAverage.toString() ?: "")
-                    }
-                }
+    Column(modifier = modifier
+        .fillMaxSize()
+        .padding(16.dp)) {
+
+        LazyVerticalGrid(columns = GridCells.Fixed(2),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)) {
+
+            items(moviesFlow.itemCount) { index ->
+                MovieImageCard(imageUrl = moviesFlow[index]?.posterPath ?: "", rating = moviesFlow[index]?.voteAverage.toString() ?: "")
             }
         }
     }
@@ -100,7 +108,7 @@ private fun MovieImageCard(modifier: Modifier = Modifier, imageUrl: String = "",
 @Composable
 private fun ExploreScreenLightThemePreview() {
     MoviesAppTheme(darkTheme = false) {
-        ExploreScreen()
+//        ExploreScreen()
     }
 }
 
@@ -108,6 +116,6 @@ private fun ExploreScreenLightThemePreview() {
 @Composable
 private fun ExploreScreenDarkThemePreview() {
     MoviesAppTheme(darkTheme = true) {
-        ExploreScreen()
+//        ExploreScreen()
     }
 }

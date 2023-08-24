@@ -69,6 +69,9 @@ dependencies {
     val lifecycle_version = "2.6.1"
     val timber_version = "5.0.1"
     val lottie_version = "6.1.0"
+    val paging_version = "3.2.0"
+    val room_version = "2.5.2"
+
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
@@ -126,5 +129,15 @@ dependencies {
 
     // Coil
     implementation("io.coil-kt:coil-compose:2.4.0")
+
+    // Paging 3
+    implementation("androidx.paging:paging-runtime-ktx:$paging_version")
+    implementation("androidx.paging:paging-compose:$paging_version")
+
+    // Room
+    implementation("androidx.room:room-runtime:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+    implementation("androidx.room:room-paging:$room_version")
 
 }

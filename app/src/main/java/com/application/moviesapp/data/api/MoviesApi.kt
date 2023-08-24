@@ -5,13 +5,14 @@ import com.application.moviesapp.data.api.response.MovieGenreResponse
 import com.application.moviesapp.data.api.response.MovieNewReleasesResponse
 import com.application.moviesapp.data.api.response.MovieSimpleResponse
 import com.application.moviesapp.data.api.response.MovieTopRatedResponse
+import com.application.moviesapp.data.remote.MoviesDto
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface MoviesApi {
     @GET("/3/movie/popular")
-    suspend fun getPopularMoviesList(): String
+    suspend fun getPopularMoviesList(@Query("language") language: String = "en-US", @Query("page") page: Int = 1): MoviesDto
 
     @GET("/3/genre/movie/list")
     suspend fun getMoviesGenreList(): MovieGenreResponse
