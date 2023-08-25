@@ -12,11 +12,14 @@ import com.application.moviesapp.data.api.response.MovieNewReleasesResponse
 import com.application.moviesapp.data.api.response.MovieTopRatedResponse
 import com.application.moviesapp.data.local.MoviesDatabase
 import com.application.moviesapp.data.local.entity.MovieNewReleaseEntity
+import com.application.moviesapp.data.local.entity.MovieUpcomingEntity
 import com.application.moviesapp.data.local.entity.MoviesEntity
 import com.application.moviesapp.data.remote.MovieNewReleasesDto
+import com.application.moviesapp.data.remote.MovieUpcomingDto
 import com.application.moviesapp.data.remote.MoviesDto
 import com.application.moviesapp.data.remote.MoviesNewReleaseRemoteMediator
 import com.application.moviesapp.data.remote.MoviesRemoteMediator
+import com.application.moviesapp.data.remote.MoviesUpcomingRemoteMediator
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -38,6 +41,10 @@ interface MoviesRepository {
     fun getMoviesPagingFlow(): Flow<PagingData<MoviesEntity>>
 
     fun getMoviesNewReleasePagingFlow(): Flow<PagingData<MovieNewReleaseEntity>>
+
+    suspend fun getMoviesUpcoming(): MovieUpcomingDto
+
+    fun getMoviesUpcomingPagingFlow(): Flow<PagingData<MovieUpcomingEntity>>
 }
 
 @OptIn(ExperimentalPagingApi::class)
@@ -66,4 +73,13 @@ class MoviesRepositoryImpl @Inject constructor(private val movies: MoviesApi, pr
         }
     ).flow
 
+    override suspend fun getMoviesUpcoming(): MovieUpcomingDto = movies.getMovieUpcomingList()
+
+    override fun getMoviesUpcomingPagingFlow(): Flow<PagingData<MovieUpcomingEntity>> = Pager(
+        config = PagingConfig(pageSize = 20),
+        remoteMediator = MoviesUpcomingRemoteMediator(movies, database),
+        pagingSourceFactory = {
+            database.moviesUpcomingDao.pagingSource()
+        }
+    ).flow
 }

@@ -9,6 +9,8 @@ import com.application.moviesapp.domain.MoviesPopularInteractor
 import com.application.moviesapp.domain.MoviesPopularUseCase
 import com.application.moviesapp.domain.MoviesSortUseCase
 import com.application.moviesapp.domain.MoviesUseCase
+import com.application.moviesapp.domain.usecase.MoviesUpcomingInterator
+import com.application.moviesapp.domain.usecase.MoviesUpcomingUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -41,5 +43,11 @@ class UseCaseModule {
     @Singleton
     fun providesMoviesNewReleaseUseCase(moviesRepository: MoviesRepository): MoviesNewReleaseUseCase {
         return GetMoviesNewReleaseInteractor(moviesRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesMoviesUpcomingUseCase(moviesRepository: MoviesRepository): MoviesUpcomingUseCase {
+        return MoviesUpcomingInterator(moviesRepository)
     }
 }

@@ -15,21 +15,17 @@ import com.application.moviesapp.ui.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class TopMoviesActivity: BaseActivity() {
+class UpcomingMoviesActivity: BaseActivity() {
     companion object {
         fun startActivity(activity: Activity?) {
-            val intent = Intent(activity, TopMoviesActivity::class.java)
+            val intent = Intent(activity, UpcomingMoviesActivity::class.java)
             activity?.startActivity(intent)
         }
     }
 
-    private val viewModel: HomeViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTransparentStatusBar()
-
-        viewModel.getMoviesTopRated()
 
         setContent {
             MoviesAppTheme {
@@ -38,7 +34,7 @@ class TopMoviesActivity: BaseActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    TopMoviesApp()
+                    UpcomingMoviesApp()
                 }
             }
         }

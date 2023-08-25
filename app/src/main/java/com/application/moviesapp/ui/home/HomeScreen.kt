@@ -69,7 +69,7 @@ fun HomeScreen(modifier: Modifier = Modifier, uiState: MoviesWithNewReleaseUiSta
         }
         is MoviesWithNewReleaseUiState.Success -> {
 
-            val titleImage = uiState.moviesWithNewReleases.topRatedResponse.results?.first()
+            val titleImage = uiState.moviesWithNewReleases.upcomingResponse.results?.first()
 
             Column(modifier = modifier.fillMaxSize()) {
                 Box(modifier = modifier.height(300.dp)) {
@@ -120,12 +120,12 @@ fun HomeScreen(modifier: Modifier = Modifier, uiState: MoviesWithNewReleaseUiSta
                     verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                         Text(
-                            text = "Top 10 Movies This Week",
+                            text = "Upcoming Movies",
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.SemiBold
                         )
 
-                        TextButton(onClick = { TopMoviesActivity.startActivity(context as Activity) }) {
+                        TextButton(onClick = { UpcomingMoviesActivity.startActivity(context as Activity) }) {
                             Text(
                                 text = "See all",
                                 style = MaterialTheme.typography.titleMedium,
@@ -135,7 +135,7 @@ fun HomeScreen(modifier: Modifier = Modifier, uiState: MoviesWithNewReleaseUiSta
                     }
 
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        items(uiState.moviesWithNewReleases.topRatedResponse.results?.take(10) ?: listOf()) {
+                        items(uiState.moviesWithNewReleases.upcomingResponse.results ?: listOf()) {
                             MovieImageCard(imageUrl = it?.posterPath ?: "", rating = it?.voteAverage.toString() ?: "")
                         }
                     }

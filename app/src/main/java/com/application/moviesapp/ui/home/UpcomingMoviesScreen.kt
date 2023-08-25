@@ -25,39 +25,54 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.application.moviesapp.R
+import com.application.moviesapp.domain.model.MovieUpcoming
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.utility.toImageUrl
-import com.application.moviesapp.ui.viewmodel.MovieNewReleaseUiState
 import com.application.moviesapp.ui.viewmodel.MovieTopRatedUiState
 
 @Composable
-fun TopMoviesScreen(modifier: Modifier = Modifier, uiState: MovieTopRatedUiState = MovieTopRatedUiState.Loading) {
-    when (uiState) {
-        is MovieTopRatedUiState.Loading -> {
-            Column(modifier = modifier.fillMaxSize()) {
-                CircularProgressIndicator(modifier = modifier
-                    .fillMaxSize()
-                    .wrapContentSize(align = Alignment.Center))
-            }
-        }
-        is MovieTopRatedUiState.Failure -> {
-            Text(text = "404")
-        }
-        is MovieTopRatedUiState.Success -> {
-            Column(modifier = modifier
-                .fillMaxSize()
-                .padding(16.dp)) {
+fun TopMoviesScreen(modifier: Modifier = Modifier, uiState: MovieTopRatedUiState = MovieTopRatedUiState.Loading, moviesFlow: LazyPagingItems<MovieUpcoming>) {
+//    when (uiState) {
+//        is MovieTopRatedUiState.Loading -> {
+//            Column(modifier = modifier.fillMaxSize()) {
+//                CircularProgressIndicator(modifier = modifier
+//                    .fillMaxSize()
+//                    .wrapContentSize(align = Alignment.Center))
+//            }
+//        }
+//        is MovieTopRatedUiState.Failure -> {
+//            Text(text = "404")
+//        }
+//        is MovieTopRatedUiState.Success -> {
+//            Column(modifier = modifier
+//                .fillMaxSize()
+//                .padding(16.dp)) {
+//
+//                LazyVerticalGrid(columns = GridCells.Fixed(2),
+//                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+//                    verticalArrangement = Arrangement.spacedBy(8.dp)) {
+//                    items(uiState.movieTopRated.results ?: listOf()) {
+//                        MovieImageCard(imageUrl = it?.posterPath ?: "", rating = it?.voteAverage.toString() ?: "")
+//                    }
+//                }
+//            }
+//        }
+//    }
 
-                LazyVerticalGrid(columns = GridCells.Fixed(2),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(uiState.movieTopRated.results ?: listOf()) {
-                        MovieImageCard(imageUrl = it?.posterPath ?: "", rating = it?.voteAverage.toString() ?: "")
-                    }
-                }
+    Column(modifier = modifier
+        .fillMaxSize()
+        .padding(16.dp)) {
+
+        LazyVerticalGrid(columns = GridCells.Fixed(2),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(moviesFlow.itemCount) { index ->
+                MovieImageCard(imageUrl = moviesFlow[index]?.posterPath ?: "", rating = moviesFlow[index]?.voteAverage.toString() ?: "")
             }
         }
     }
@@ -92,7 +107,7 @@ private fun MovieImageCard(modifier: Modifier = Modifier, imageUrl: String = "",
 @Composable
 private fun TopMoviesScreenLightThemePreview() {
     MoviesAppTheme(darkTheme = false) {
-        TopMoviesScreen()
+//        TopMoviesScreen()
     }
 }
 
@@ -100,7 +115,7 @@ private fun TopMoviesScreenLightThemePreview() {
 @Composable
 private fun TopMoviesScreenDarkThemePreview() {
     MoviesAppTheme(darkTheme = true) {
-        TopMoviesScreen()
+//        TopMoviesScreen()
     }
 }
 

@@ -16,21 +16,22 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.application.moviesapp.ui.viewmodel.HomeViewModel
 import com.application.moviesapp.ui.viewmodel.MovieTopRatedUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopMoviesApp(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = hiltViewModel()) {
+fun UpcomingMoviesApp(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = hiltViewModel()) {
 
     val uiState: MovieTopRatedUiState by homeViewModel.movieTopRatedUiState.collectAsState()
+    val moviesFlow = homeViewModel.moviesUpcomingPagingFlow().collectAsLazyPagingItems()
 
     Scaffold(
         topBar = { TopMoviesTopAppbar() }
     ) { paddingValues ->
-        TopMoviesScreen(modifier = modifier.padding(paddingValues), uiState = uiState)
+        TopMoviesScreen(modifier = modifier.padding(paddingValues), uiState = uiState, moviesFlow = moviesFlow)
     }
 }
 
@@ -41,7 +42,7 @@ private fun TopMoviesTopAppbar() {
     val context = LocalContext.current
 
     TopAppBar(
-        title = { Text(text = "Top 10 Movies This Week") },
+        title = { Text(text = "Upcoming Movies") },
         navigationIcon = {
             IconButton(onClick = { (context as Activity).finish() }) {
                 Icon(imageVector = Icons.Rounded.ArrowBack, contentDescription = null)

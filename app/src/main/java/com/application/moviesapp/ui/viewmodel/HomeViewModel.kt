@@ -10,6 +10,7 @@ import com.application.moviesapp.data.repository.MoviesRepository
 import com.application.moviesapp.domain.MoviesNewReleaseUseCase
 import com.application.moviesapp.domain.MoviesUseCase
 import com.application.moviesapp.domain.MoviesWithNewReleases
+import com.application.moviesapp.domain.usecase.MoviesUpcomingUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,7 +38,8 @@ sealed interface MovieTopRatedUiState {
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val useCase: MoviesUseCase,
                                         private val moviesRepository: MoviesRepository,
-                                        private val moviesNewReleaseUseCase: MoviesNewReleaseUseCase
+                                        private val moviesNewReleaseUseCase: MoviesNewReleaseUseCase,
+                                        private val moviesUpcomingUseCase: MoviesUpcomingUseCase
     ): ViewModel() {
 
     private companion object {
@@ -93,4 +95,6 @@ class HomeViewModel @Inject constructor(private val useCase: MoviesUseCase,
     }
 
     fun moviesNewReleasePagingFlow() = moviesNewReleaseUseCase.invoke().cachedIn(viewModelScope)
+
+    fun moviesUpcomingPagingFlow() = moviesUpcomingUseCase.invoke().cachedIn(viewModelScope)
 }

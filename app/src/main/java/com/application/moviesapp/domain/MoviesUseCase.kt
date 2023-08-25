@@ -14,10 +14,10 @@ class GetMoviesWithNewReleaseInteractor @Inject constructor(private val moviesRe
 
     override suspend operator fun invoke(): MoviesWithNewReleases =
         withContext(Dispatchers.Default) {
-            val topRated = async { moviesRepository.getMoviesTopRated() }
+            val upcoming = async { moviesRepository.getMoviesUpcoming() }
             val newReleases = async { moviesRepository.getNewReleasesList() }
             val genres = async { moviesRepository.getMoviesGenreList() }
 
-            return@withContext MoviesWithNewReleases(topRatedResponse = topRated.await(), genreResponse = genres.await(), newReleasesResponse = newReleases.await())
+            return@withContext MoviesWithNewReleases(upcomingResponse = upcoming.await(), genreResponse = genres.await(), newReleasesResponse = newReleases.await())
         }
 }
