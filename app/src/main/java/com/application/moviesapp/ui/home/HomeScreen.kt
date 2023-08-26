@@ -5,6 +5,7 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -50,7 +51,10 @@ import com.application.moviesapp.ui.utility.toImageUrl
 import com.application.moviesapp.ui.viewmodel.MoviesWithNewReleaseUiState
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier, uiState: MoviesWithNewReleaseUiState = MoviesWithNewReleaseUiState.Loading) {
+fun HomeScreen(modifier: Modifier = Modifier,
+               uiState: MoviesWithNewReleaseUiState = MoviesWithNewReleaseUiState.Loading,
+               bottomPadding: PaddingValues = PaddingValues()
+) {
 
     val context = LocalContext.current
 
@@ -71,8 +75,8 @@ fun HomeScreen(modifier: Modifier = Modifier, uiState: MoviesWithNewReleaseUiSta
 
             val titleImage = uiState.moviesWithNewReleases.upcomingResponse.results?.first()
 
-            Column(modifier = modifier.fillMaxSize()) {
-                Box(modifier = modifier.height(300.dp)) {
+            Column(modifier = modifier.fillMaxSize().padding(bottom = bottomPadding.calculateBottomPadding())) {
+                Box(modifier = modifier.height(350.dp)) {
                     AsyncImage(model = ImageRequest.Builder(context = LocalContext.current)
                         .data(titleImage?.backdropPath?.toImageUrl ?: "")
                         .crossfade(true)

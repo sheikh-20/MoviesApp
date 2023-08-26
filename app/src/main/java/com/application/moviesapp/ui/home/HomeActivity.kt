@@ -9,10 +9,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.WindowCompat
 import com.application.moviesapp.base.BaseActivity
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.viewmodel.ExploreViewModel
 import com.application.moviesapp.ui.viewmodel.HomeViewModel
+import com.application.moviesapp.ui.viewmodel.OnboardingViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

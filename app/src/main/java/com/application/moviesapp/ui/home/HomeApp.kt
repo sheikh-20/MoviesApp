@@ -3,13 +3,17 @@ package com.application.moviesapp.ui.home
 import android.app.Activity
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FileDownload
@@ -42,6 +46,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -73,6 +78,7 @@ import com.application.moviesapp.ui.viewmodel.ExploreUiState
 import com.application.moviesapp.ui.viewmodel.ExploreViewModel
 import com.application.moviesapp.ui.viewmodel.HomeViewModel
 import com.application.moviesapp.ui.viewmodel.MoviesWithNewReleaseUiState
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -90,6 +96,13 @@ fun HomeApp(modifier: Modifier = Modifier,
     val coroutineScope = rememberCoroutineScope()
     val modalSheetState = rememberModalBottomSheetState()
 
+//    val systemUiController = rememberSystemUiController()
+//    SideEffect {
+//        systemUiController.setStatusBarColor(
+//            color = Color.Transparent
+//        )
+//    }
+
 //    ModalBottomSheet(
 //        onDismissRequest = {  },
 //        sheetState = modalSheetState,
@@ -101,15 +114,14 @@ fun HomeApp(modifier: Modifier = Modifier,
     Scaffold(
         topBar = { HomeTopAppbar(navController, exploreViewModel) },
         bottomBar = { HomeBottomBarNavigation(navController) },
-        containerColor = Color.Transparent
     ) { paddingValues ->
-        NavHost(modifier = modifier.padding(paddingValues),
+        NavHost(
             navController = navController, startDestination = BottomNavigationScreens.Home.route) {
             composable(route = BottomNavigationScreens.Home.route) {
-                HomeScreen(modifier = modifier, uiState = homeUiState)
+                HomeScreen(modifier = modifier, uiState = homeUiState, bottomPadding = paddingValues)
             }
             composable(route = BottomNavigationScreens.Explore.route) {
-                ExploreScreen(uiState = exploreUiState, moviesFlow = moviesFlowState)
+                ExploreScreen(modifier = modifier.padding(paddingValues), uiState = exploreUiState, moviesFlow = moviesFlowState)
             }
             composable(route = BottomNavigationScreens.MyList.route) {
                 MyListScreen()
@@ -225,7 +237,7 @@ private fun HomeTopAppbar(navController: NavHostController, exploreViewModel: Ex
                         Icon(imageVector = Icons.Rounded.NotificationsNone, contentDescription = null)
                     }
                 },
-                colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         }
     }
