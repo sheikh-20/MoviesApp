@@ -67,7 +67,7 @@ class HomeViewModel @Inject constructor(private val useCase: MoviesUseCase,
             Timber.tag(TAG).e(exception)
         }
     }
-
+ 
     fun getMovieNewReleases() = viewModelScope.launch(Dispatchers.IO) {
         _moviesNewReleaseUiState.value = MovieNewReleaseUiState.Loading
 

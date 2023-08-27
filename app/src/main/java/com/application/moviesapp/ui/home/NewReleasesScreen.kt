@@ -88,7 +88,7 @@ private fun MovieImageCard(modifier: Modifier = Modifier, imageUrl: String = "",
                     .crossfade(true)
                     .build(),
                 error = painterResource(id = R.drawable.ic_broken_image),
-                placeholder = painterResource(id = R.drawable.ic_loading_placeholder),
+                placeholder = painterResource(id = R.drawable.ic_image_placeholder),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = modifier.height(250.dp))
