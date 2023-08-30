@@ -74,6 +74,7 @@ import com.application.moviesapp.ui.home.download.DownloadScreen
 import com.application.moviesapp.ui.home.explore.ExploreScreen
 import com.application.moviesapp.ui.home.mylist.MyListScreen
 import com.application.moviesapp.ui.home.profile.ProfileScreen
+import com.application.moviesapp.ui.onboarding.OnboardingActivity
 import com.application.moviesapp.ui.viewmodel.ExploreUiState
 import com.application.moviesapp.ui.viewmodel.ExploreViewModel
 import com.application.moviesapp.ui.viewmodel.HomeViewModel
@@ -90,11 +91,14 @@ fun HomeApp(modifier: Modifier = Modifier,
 
     val homeUiState: MoviesWithNewReleaseUiState by homeViewModel.moviesWithNewReleaseUiState.collectAsState()
     val exploreUiState: ExploreUiState by exploreViewModel.exploreUiState.collectAsState()
+    val profileUiState by homeViewModel.profileInfoUiState.collectAsState()
 
     val moviesFlowState = exploreViewModel.moviesPagingFlow.collectAsLazyPagingItems()
 
     val coroutineScope = rememberCoroutineScope()
     val modalSheetState = rememberModalBottomSheetState()
+
+    val context = LocalContext.current
 
 //    val systemUiController = rememberSystemUiController()
 //    SideEffect {
@@ -130,7 +134,11 @@ fun HomeApp(modifier: Modifier = Modifier,
                 DownloadScreen()
             }
             composable(route = BottomNavigationScreens.Profile.route) {
-                ProfileScreen()
+                ProfileScreen(uiState = profileUiState, onSignOutClick = {
+                    homeViewModel.signOut()
+                    (context as Activity).finish()
+                    OnboardingActivity.startActivity(context as Activity)
+                })
             }
         }
     }

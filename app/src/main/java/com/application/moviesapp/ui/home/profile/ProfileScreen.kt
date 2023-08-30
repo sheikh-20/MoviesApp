@@ -42,10 +42,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.application.moviesapp.R
+import com.application.moviesapp.ui.signin.UserData
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 
 @Composable
-fun ProfileScreen(modifier: Modifier = Modifier) {
+fun ProfileScreen(modifier: Modifier = Modifier, uiState: UserData? = null, onSignOutClick: () -> Unit = {}) {
     Column(modifier = modifier
         .fillMaxSize()
         .wrapContentSize(align = Alignment.Center)
@@ -65,7 +66,7 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
                     .clip(RoundedCornerShape(50)),
                 contentScale = ContentScale.Crop)
             
-            Text(text = "Sheikh Mohideen",
+            Text(text = uiState?.userName ?: "Sheikh",
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold)
             
@@ -177,7 +178,7 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
 
                 Text(text = "Logout", modifier = modifier.weight(1f))
 
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = onSignOutClick) {
                     Icon(imageVector = Icons.Rounded.ArrowForwardIos, contentDescription = null)
                 }
             }

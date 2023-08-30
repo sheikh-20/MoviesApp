@@ -19,4 +19,6 @@
     <string name="mylist">MyList</string>
     <string name="download">Download</string>
     <string name="profile">Profile</string>
+
+    <string name="web_client_id" translatable="false">408930274923-k579km7q6h0orfj9eggapr81jjlnleve.apps.googleusercontent.com</string>
 </resources>

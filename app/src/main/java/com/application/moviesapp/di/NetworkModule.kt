@@ -1,8 +1,11 @@
 package com.application.moviesapp.di
 
+import android.app.Application
 import com.application.moviesapp.BuildConfig
 import com.application.moviesapp.data.api.MoviesApi
 import com.application.moviesapp.data.api.NetworkInterceptor
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
@@ -43,4 +46,8 @@ object NetworkModule {
     fun providesMoviesApi(okHttpClient: OkHttpClient, retrofitBuilder: Retrofit.Builder): MoviesApi {
         return retrofitBuilder.client(okHttpClient).build().create(MoviesApi::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun providesApplicationContext(application: Application) = application.applicationContext
 }

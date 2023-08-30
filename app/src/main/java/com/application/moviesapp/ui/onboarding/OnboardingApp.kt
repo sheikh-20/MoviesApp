@@ -1,5 +1,11 @@
 package com.application.moviesapp.ui.onboarding
 
+import android.app.Activity
+import android.app.Activity.RESULT_OK
+import android.content.IntentSender
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -14,14 +20,18 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.application.moviesapp.ui.home.HomeActivity
 import com.application.moviesapp.ui.onboarding.login.LoginScreen
 import com.application.moviesapp.ui.onboarding.login.LoginWithPasswordScreen
 import com.application.moviesapp.ui.onboarding.signup.ChooseYourInterestScreen
@@ -29,14 +39,28 @@ import com.application.moviesapp.ui.onboarding.signup.CreateNewPinScreen
 import com.application.moviesapp.ui.onboarding.signup.FillYourProfileScreen
 import com.application.moviesapp.ui.onboarding.signup.SetYourFingerprintScreen
 import com.application.moviesapp.ui.onboarding.signup.SignupWithPasswordScreen
+import com.application.moviesapp.ui.signin.SignInViewModel
 import com.application.moviesapp.ui.viewmodel.OnboardingViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
+private const val TAG = "OnboardingApp"
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun OnboardingApp(modifier: Modifier = Modifier, navController: NavHostController = rememberNavController(), onboardingViewModel: OnboardingViewModel = hiltViewModel()) {
+fun OnboardingApp(modifier: Modifier = Modifier,
+                  navController: NavHostController = rememberNavController(),
+                  onboardingViewModel: OnboardingViewModel = hiltViewModel()) {
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val uiState by onboardingViewModel.movieGenreUiState.collectAsState()
+
+    val onBoardingState = onboardingViewModel.googleIntent
+    val onGoogleIntentState = onboardingViewModel.googleResult
+
+    val coroutineScope = rememberCoroutineScope()
+
+    val context = LocalContext.current
 
     Scaffold(topBar = { OnboardingAppBar(currentScreen = backStackEntry?.destination?.route ?: OnboardingScreen.Start.name, canNavigateBack = navController.previousBackStackEntry != null) { navController.navigateUp() } },
      ) { innerPadding ->
@@ -53,7 +77,11 @@ fun OnboardingApp(modifier: Modifier = Modifier, navController: NavHostControlle
                 composable(route = OnboardingScreen.Login.name) {
                     LoginScreen(modifier = modifier,
                         onSignInClick = { navController.navigate(OnboardingScreen.LoginWithPassword.name) },
-                        onSignupClick = { navController.navigate(OnboardingScreen.SignupWithPassword.name) }
+                        onSignupClick = { navController.navigate(OnboardingScreen.SignupWithPassword.name) },
+                        onGoogleSignInClick = { onboardingViewModel.signInGoogle() },
+                        uiState = onBoardingState,
+                        onSignInWithIntent = onboardingViewModel::signInIntent,
+                        resultUiState = onGoogleIntentState
                     )
                 }
 

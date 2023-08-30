@@ -4,6 +4,7 @@ plugins {
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -71,6 +72,7 @@ dependencies {
     val lottie_version = "6.1.0"
     val paging_version = "3.2.0"
     val room_version = "2.5.2"
+    val firebase_version = "22.1.1"
 
 
     implementation("androidx.core:core-ktx:1.9.0")
@@ -140,4 +142,6 @@ dependencies {
     implementation("androidx.room:room-ktx:$room_version")
     implementation("androidx.room:room-paging:$room_version")
 
+    implementation("com.google.firebase:firebase-auth-ktx:$firebase_version")
+    implementation("com.google.android.gms:play-services-auth:20.6.0")
 }

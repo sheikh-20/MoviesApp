@@ -1,5 +1,7 @@
 package com.application.moviesapp.di
 
+import com.application.moviesapp.data.repository.AuthRepository
+import com.application.moviesapp.data.repository.AuthRepositoryImpl
 import com.application.moviesapp.data.repository.MoviesRepository
 import com.application.moviesapp.data.repository.MoviesRepositoryImpl
 import dagger.Binds
@@ -12,4 +14,7 @@ import dagger.hilt.components.SingletonComponent
 abstract class RepositoryModule {
     @Binds
     abstract fun providesMoviesRepositoryImpl(moviesRepositoryImpl: MoviesRepositoryImpl): MoviesRepository
+
+    @Binds
+    abstract fun providesAuthRepositoryImpl(authRepositoryImpl: AuthRepositoryImpl): AuthRepository
 }
