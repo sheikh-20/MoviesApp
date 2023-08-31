@@ -32,9 +32,13 @@ android {
         debug {
             isDebuggable = true
             val TEST_API_KEY: String by project
+            val FACEBOOK_APP_ID: String by project
+
             buildConfigField(type = "String", name =  "API_KEY", value = TEST_API_KEY)
             buildConfigField(type = "String", name = "BASE_URL", value = "\"https://api.themoviedb.org/\"")
             buildConfigField(type = "String", name = "IMAGE_BASE_URL", value = "\"https://image.tmdb.org/t/p/original/\"")
+            resValue("string", "FACEBOOK_APP_ID", FACEBOOK_APP_ID)
+
         }
         release {
             isDebuggable = false
@@ -44,9 +48,12 @@ android {
                 "proguard-rules.pro"
             )
             val PRO_API_KEY: String by project
+            val FACEBOOK_APP_ID: String by project
+
             buildConfigField(type = "String", name = "API_KEY", value = PRO_API_KEY)
             buildConfigField(type = "String", name = "BASE_URL", value = "\"https://api.themoviedb.org/\"")
             buildConfigField(type = "String", name = "IMAGE_BASE_URL", value = "\"https://image.tmdb.org/t/p/original/\"")
+            resValue("string", "FACEBOOK_APP_ID", FACEBOOK_APP_ID)
         }
     }
     compileOptions {
