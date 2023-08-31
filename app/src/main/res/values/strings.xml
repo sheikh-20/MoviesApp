@@ -20,5 +20,10 @@
     <string name="download">Download</string>
     <string name="profile">Profile</string>
 
+    <!--    Google-->
     <string name="web_client_id" translatable="false">408930274923-k579km7q6h0orfj9eggapr81jjlnleve.apps.googleusercontent.com</string>
+
+    <!--Facebook-->
+    <string name="facebook_app_id" translatable="false">201783502905844</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb5bf07f71c1ca9d88a0b302</string>
 </resources>

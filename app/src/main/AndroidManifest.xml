@@ -15,6 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CustomSplashScreenTheme"
         tools:targetApi="31">
+
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+
         <activity android:name=".ui.home.HomeActivity"
             android:exported="true"
             android:theme="@style/Theme.MoviesApp"

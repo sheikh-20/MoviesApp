@@ -144,4 +144,6 @@ dependencies {
 
     implementation("com.google.firebase:firebase-auth-ktx:$firebase_version")
     implementation("com.google.android.gms:play-services-auth:20.6.0")
+
+    implementation("com.facebook.android:facebook-android-sdk:12.1.0")
 }
