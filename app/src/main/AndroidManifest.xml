@@ -15,61 +15,59 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CustomSplashScreenTheme"
         tools:targetApi="31">
-
-        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
-
-        <activity android:name=".ui.home.HomeActivity"
-            android:exported="true"
-            android:theme="@style/Theme.MoviesApp"
+        <activity
+            android:name=".ui.detail.DetailActivity"
+            android:exported="false"
             android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity" >
-
-        </activity>
+            android:theme="@style/Theme.MoviesApp"
+            tools:ignore="LockedOrientationActivity"/>
+        <activity
+            android:name=".ui.home.HomeActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MoviesApp"
+            tools:ignore="LockedOrientationActivity"></activity>
         <activity
             android:name=".ui.onboarding.OnboardingActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.CustomSplashScreenTheme"
             android:screenOrientation="portrait"
+            android:theme="@style/Theme.CustomSplashScreenTheme"
             tools:ignore="LockedOrientationActivity">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
-
         <activity
             android:name=".ui.home.UpcomingMoviesActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.MoviesApp"
             android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity">
-
-        </activity>
-
+            android:theme="@style/Theme.MoviesApp"
+            tools:ignore="LockedOrientationActivity"></activity>
         <activity
             android:name=".ui.home.NotificationActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.MoviesApp"
             android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity">
-
-        </activity>
-
+            android:theme="@style/Theme.MoviesApp"
+            tools:ignore="LockedOrientationActivity"></activity>
         <activity
             android:name=".ui.home.NewReleasesActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.MoviesApp"
             android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity">
+            android:theme="@style/Theme.MoviesApp"
+            tools:ignore="LockedOrientationActivity"></activity>
 
-        </activity>
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+        <meta-data
+            android:name="com.facebook.sdk.ClientToken"
+            android:value="@string/facebook_client_token" />
     </application>
 
 </manifest>

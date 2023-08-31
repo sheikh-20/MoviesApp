@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.IntentSender
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultRegistryOwner
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -81,7 +82,10 @@ fun OnboardingApp(modifier: Modifier = Modifier,
                         onGoogleSignInClick = { onboardingViewModel.signInGoogle() },
                         uiState = onBoardingState,
                         onSignInWithIntent = onboardingViewModel::signInIntent,
-                        resultUiState = onGoogleIntentState
+                        resultUiState = onGoogleIntentState,
+                        onFacebookSignInClick = {
+                            onboardingViewModel.loginManager.logInWithReadPermissions(context as ActivityResultRegistryOwner, onboardingViewModel.callbackManager, mutableListOf("email", "public_profile"))
+                        }
                     )
                 }
 

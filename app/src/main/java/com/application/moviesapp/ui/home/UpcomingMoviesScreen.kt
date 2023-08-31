@@ -1,5 +1,6 @@
 package com.application.moviesapp.ui.home
 
+import android.app.Activity
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +33,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.application.moviesapp.R
 import com.application.moviesapp.domain.model.MovieUpcoming
+import com.application.moviesapp.ui.detail.DetailActivity
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.utility.toImageUrl
 import com.application.moviesapp.ui.viewmodel.MovieTopRatedUiState
@@ -78,9 +81,13 @@ fun TopMoviesScreen(modifier: Modifier = Modifier, uiState: MovieTopRatedUiState
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MovieImageCard(modifier: Modifier = Modifier, imageUrl: String = "", rating: String = "") {
-    Card(shape = RoundedCornerShape(10)) {
+
+    val context = LocalContext.current
+
+    Card(shape = RoundedCornerShape(10), onClick = { DetailActivity.startActivity(context as Activity) }) {
         Box {
             AsyncImage(
                 model = ImageRequest.Builder(context = LocalContext.current)

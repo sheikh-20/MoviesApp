@@ -25,6 +25,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -47,6 +48,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.R
+import com.application.moviesapp.ui.detail.DetailActivity
 import com.application.moviesapp.ui.utility.toImageUrl
 import com.application.moviesapp.ui.viewmodel.MoviesWithNewReleaseUiState
 
@@ -172,9 +174,13 @@ fun HomeScreen(modifier: Modifier = Modifier,
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MovieImageCard(modifier: Modifier = Modifier, imageUrl: String = "", rating: String = "") {
-    Card(shape = RoundedCornerShape(10)) {
+
+    val context = LocalContext.current
+
+    Card(shape = RoundedCornerShape(10), onClick = { DetailActivity.startActivity(context as Activity) }) {
         Box {
             AsyncImage(
                 model = ImageRequest.Builder(context = LocalContext.current)

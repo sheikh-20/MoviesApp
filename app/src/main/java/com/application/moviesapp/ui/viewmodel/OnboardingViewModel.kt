@@ -12,6 +12,14 @@ import com.application.moviesapp.domain.usecase.SignInGoogleUseCase
 import com.application.moviesapp.domain.usecase.UserInfoUseCase
 import com.application.moviesapp.ui.onboarding.OnboardingActivity
 import com.application.moviesapp.ui.signin.SignInResult
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.login.LoginManager
+import com.facebook.login.LoginResult
+import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -56,6 +64,9 @@ class OnboardingViewModel @Inject constructor(private val moviesRepository: Movi
     private var _googleResult = MutableSharedFlow<Resource<SignInResult>>()
     val googleResult get() = _googleResult.asSharedFlow()
 
+    private var _facebookSignIn = MutableSharedFlow<Resource<AuthCredential>>()
+    val facebookSignIn get() = _facebookSignIn.asSharedFlow()
+
 
     fun getMoviesGenreList() = viewModelScope.launch(Dispatchers.IO) {
         _movieGenreUiState.value = MovieGenreUiState.Loading
@@ -88,7 +99,30 @@ class OnboardingViewModel @Inject constructor(private val moviesRepository: Movi
 
     fun getUserInfo() = userInfoUseCase()
 
+    val loginManager = LoginManager.getInstance()
+    val callbackManager = CallbackManager.Factory.create()
+    private val facebookCallback = object : FacebookCallback<LoginResult> {
+        override fun onCancel() {
+            TODO("Not yet implemented")
+        }
+
+        override fun onError(error: FacebookException) {
+            viewModelScope.launch {
+                _facebookSignIn.emit(Resource.Failure(error))
+            }
+        }
+
+        override fun onSuccess(result: LoginResult) {
+            val credential = FacebookAuthProvider.getCredential(result.accessToken.token)
+            Timber.tag(TAG).d(credential.toString())
+            viewModelScope.launch {
+                _facebookSignIn.emit(Resource.Success(credential))
+            }
+        }
+    }
+
     init {
         showLoading()
+        loginManager.registerCallback(callbackManager, facebookCallback)
     }
 }

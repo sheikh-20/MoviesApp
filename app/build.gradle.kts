@@ -67,6 +67,8 @@ android {
 }
 
 dependencies {
+    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
+    androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     val lifecycle_version = "2.6.1"
     val timber_version = "5.0.1"
     val lottie_version = "6.1.0"
@@ -146,4 +148,5 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:20.6.0")
 
     implementation("com.facebook.android:facebook-android-sdk:12.1.0")
+    implementation ("com.facebook.android:facebook-login:14.1.0")
 }

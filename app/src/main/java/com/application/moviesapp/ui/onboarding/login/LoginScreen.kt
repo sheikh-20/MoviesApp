@@ -75,7 +75,8 @@ fun LoginScreen(modifier: Modifier = Modifier,
                 onGoogleSignInClick: () -> Unit = {},
                 uiState: SharedFlow<Resource<IntentSender>>? = null,
                 onSignInWithIntent: (Intent) -> Unit = {},
-                resultUiState: SharedFlow<Resource<SignInResult>>? = null
+                resultUiState: SharedFlow<Resource<SignInResult>>? = null,
+                onFacebookSignInClick: () -> Unit = {}
                 ) {
 
     val coroutineScope = rememberCoroutineScope()
@@ -137,9 +138,10 @@ fun LoginScreen(modifier: Modifier = Modifier,
 
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            LoginComponent(icon = R.drawable.ic_facebook, text = R.string.continue_with_facebook) {
-
-            }
+            LoginComponent(
+                icon = R.drawable.ic_facebook,
+                text = R.string.continue_with_facebook,
+                onClick = onFacebookSignInClick)
 
             LoginComponent(
                 icon = R.drawable.ic_google,
