@@ -1,5 +1,6 @@
 package com.application.moviesapp.data.mappers
 
+import com.application.moviesapp.data.api.response.MovieDetailsDto
 import com.application.moviesapp.data.local.entity.MovieNewReleaseEntity
 import com.application.moviesapp.data.local.entity.MovieUpcomingEntity
 import com.application.moviesapp.data.local.entity.MoviesEntity
@@ -9,6 +10,7 @@ import com.application.moviesapp.data.remote.MoviesDto
 import com.application.moviesapp.domain.Movies
 import com.application.moviesapp.domain.model.MovieNewRelease
 import com.application.moviesapp.domain.model.MovieUpcoming
+import com.application.moviesapp.domain.model.MoviesDetail
 
 fun MoviesDto.Result.toMoviesEntity(): MoviesEntity {
     return MoviesEntity(
@@ -70,6 +72,7 @@ fun MovieNewReleaseEntity.toMovies(): MovieNewRelease {
         adult = adult,
         backdropPath = backdropPath,
         id = id,
+        movieId = movieId,
         originalLanguage = originalLanguage,
         originalTitle = originalTitle,
         overview = overview,
@@ -107,6 +110,7 @@ fun MovieUpcomingEntity.toMovies(): MovieUpcoming {
         adult = adult,
         backdropPath = backdropPath,
         id = id,
+        movieId = movieId,
         originalLanguage = originalLanguage,
         originalTitle = originalTitle,
         overview = overview,

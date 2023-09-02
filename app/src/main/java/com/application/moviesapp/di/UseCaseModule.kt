@@ -10,7 +10,9 @@ import com.application.moviesapp.domain.MoviesPopularInteractor
 import com.application.moviesapp.domain.MoviesPopularUseCase
 import com.application.moviesapp.domain.MoviesSortUseCase
 import com.application.moviesapp.domain.MoviesUseCase
+import com.application.moviesapp.domain.usecase.GetMovieDetailInteractor
 import com.application.moviesapp.domain.usecase.GetUserInfoInteractor
+import com.application.moviesapp.domain.usecase.MovieDetailsUseCase
 import com.application.moviesapp.domain.usecase.MoviesUpcomingInterator
 import com.application.moviesapp.domain.usecase.MoviesUpcomingUseCase
 import com.application.moviesapp.domain.usecase.SignInGoogleInteractor
@@ -66,5 +68,11 @@ class UseCaseModule {
     @Singleton
     fun providesUserInfoUseCase(authRepository: AuthRepository): UserInfoUseCase {
         return GetUserInfoInteractor(authRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesMovieDetailsUseCase(moviesRepository: MoviesRepository): MovieDetailsUseCase {
+        return GetMovieDetailInteractor(moviesRepository)
     }
 }

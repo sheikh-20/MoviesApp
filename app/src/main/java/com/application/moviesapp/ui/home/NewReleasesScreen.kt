@@ -75,7 +75,7 @@ fun NewReleasesScreen(modifier: Modifier = Modifier, uiState: MovieNewReleaseUiS
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(moviesFlow.itemCount) { index ->
-                MovieImageCard(imageUrl = moviesFlow[index]?.posterPath ?: "", rating = moviesFlow[index]?.voteAverage.toString() ?: "")
+                MovieImageCard(imageUrl = moviesFlow[index]?.posterPath ?: "", rating = moviesFlow[index]?.voteAverage.toString() ?: "", movieId = moviesFlow[index]?.movieId ?: 0)
             }
         }
     }
@@ -83,11 +83,11 @@ fun NewReleasesScreen(modifier: Modifier = Modifier, uiState: MovieNewReleaseUiS
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun MovieImageCard(modifier: Modifier = Modifier, imageUrl: String = "", rating: String = "") {
+private fun MovieImageCard(modifier: Modifier = Modifier, imageUrl: String = "", rating: String = "", movieId: Int = 0) {
 
     val context = LocalContext.current
 
-    Card(shape = RoundedCornerShape(10), onClick = { DetailActivity.startActivity(context as Activity) }) {
+    Card(shape = RoundedCornerShape(10), onClick = { DetailActivity.startActivity(context as Activity, movieId) }) {
         Box {
             AsyncImage(
                 model = ImageRequest.Builder(context = LocalContext.current)

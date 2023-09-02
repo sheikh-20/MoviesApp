@@ -10,17 +10,25 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.application.moviesapp.ui.viewmodel.DetailsViewModel
 
 @Composable
-fun DetailScreenApp(modifier: Modifier = Modifier) {
+fun DetailScreenApp(modifier: Modifier = Modifier, viewModel: DetailsViewModel = hiltViewModel()) {
+
+    val uiState by viewModel.movieDetailResponse.collectAsState()
+
     Scaffold(
         topBar = { DetailTopAppbar() },
         containerColor = Color.Transparent) { paddingValues ->
-        DetailScreen(modifier = modifier.padding(paddingValues))
+        DetailScreen(modifier = modifier, uiState = uiState)
     }
 }
 
@@ -41,5 +49,6 @@ private fun DetailTopAppbar(modifier: Modifier = Modifier) {
             IconButton(onClick = {}) {
                 Icon(imageVector = Icons.Rounded.Cast, contentDescription = null)
             }
-        })
+        },
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent))
 }

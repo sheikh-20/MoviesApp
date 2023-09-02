@@ -51,6 +51,7 @@ import com.application.moviesapp.R
 import com.application.moviesapp.ui.detail.DetailActivity
 import com.application.moviesapp.ui.utility.toImageUrl
 import com.application.moviesapp.ui.viewmodel.MoviesWithNewReleaseUiState
+import timber.log.Timber
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier,
@@ -122,9 +123,9 @@ fun HomeScreen(modifier: Modifier = Modifier,
 
                 Column(modifier = modifier
                     .verticalScroll(rememberScrollState())
-                    .padding(16.dp),
+                    .padding(vertical = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                    Row(modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                         Text(
                             text = "Upcoming Movies",
                             style = MaterialTheme.typography.titleLarge,
@@ -140,13 +141,13 @@ fun HomeScreen(modifier: Modifier = Modifier,
                         }
                     }
 
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         items(uiState.moviesWithNewReleases.upcomingResponse.results ?: listOf()) {
-                            MovieImageCard(imageUrl = it?.posterPath ?: "", rating = it?.voteAverage.toString() ?: "")
+                            MovieImageCard(imageUrl = it?.posterPath ?: "", rating = it?.voteAverage.toString() ?: "", movieId = it?.id)
                         }
                     }
 
-                    Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                    Row(modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                         Text(
                             text = "New Releases",
                             style = MaterialTheme.typography.titleLarge,
@@ -162,10 +163,10 @@ fun HomeScreen(modifier: Modifier = Modifier,
                         }
                     }
 
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
 
                         items(uiState.moviesWithNewReleases.newReleasesResponse.results ?: listOf()) {
-                            MovieImageCard(imageUrl = it?.posterPath ?: "", rating = it?.voteAverage.toString() ?: "")
+                            MovieImageCard(imageUrl = it?.posterPath ?: "", rating = it?.voteAverage.toString() ?: "", movieId = it?.id)
                         }
                     }
                 }
@@ -176,11 +177,13 @@ fun HomeScreen(modifier: Modifier = Modifier,
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun MovieImageCard(modifier: Modifier = Modifier, imageUrl: String = "", rating: String = "") {
+private fun MovieImageCard(modifier: Modifier = Modifier, imageUrl: String = "", rating: String = "", movieId: Int? = null) {
 
     val context = LocalContext.current
 
-    Card(shape = RoundedCornerShape(10), onClick = { DetailActivity.startActivity(context as Activity) }) {
+    Timber.tag("Card").d(movieId.toString())
+
+    Card(shape = RoundedCornerShape(10), onClick = { DetailActivity.startActivity(context as Activity, movieId) }) {
         Box {
             AsyncImage(
                 model = ImageRequest.Builder(context = LocalContext.current)

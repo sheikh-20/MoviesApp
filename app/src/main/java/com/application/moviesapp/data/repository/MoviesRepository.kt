@@ -7,8 +7,9 @@ import androidx.paging.PagingData
 import com.application.moviesapp.data.api.response.MovieSimpleResponse
 import com.application.moviesapp.data.api.MoviesApi
 import com.application.moviesapp.data.api.response.CountryResponse
+import com.application.moviesapp.data.api.response.MovieDetailsCastDto
+import com.application.moviesapp.data.api.response.MovieDetailsDto
 import com.application.moviesapp.data.api.response.MovieGenreResponse
-import com.application.moviesapp.data.api.response.MovieNewReleasesResponse
 import com.application.moviesapp.data.api.response.MovieTopRatedResponse
 import com.application.moviesapp.data.local.MoviesDatabase
 import com.application.moviesapp.data.local.entity.MovieNewReleaseEntity
@@ -21,6 +22,7 @@ import com.application.moviesapp.data.remote.MoviesNewReleaseRemoteMediator
 import com.application.moviesapp.data.remote.MoviesRemoteMediator
 import com.application.moviesapp.data.remote.MoviesUpcomingRemoteMediator
 import kotlinx.coroutines.flow.Flow
+import retrofit2.Response
 import javax.inject.Inject
 
 interface MoviesRepository {
@@ -45,6 +47,10 @@ interface MoviesRepository {
     suspend fun getMoviesUpcoming(): MovieUpcomingDto
 
     fun getMoviesUpcomingPagingFlow(): Flow<PagingData<MovieUpcomingEntity>>
+
+    suspend fun getMoviesDetailById(movieId: Int): Response<MovieDetailsDto>
+
+    suspend fun getMovieDetailsCast(movieId: Int): Response<MovieDetailsCastDto>
 }
 
 @OptIn(ExperimentalPagingApi::class)
@@ -82,4 +88,8 @@ class MoviesRepositoryImpl @Inject constructor(private val movies: MoviesApi, pr
             database.moviesUpcomingDao.pagingSource()
         }
     ).flow
+
+    override suspend fun getMoviesDetailById(movieId: Int): Response<MovieDetailsDto> = movies.getMovieDetailsById(movieId)
+
+    override suspend fun getMovieDetailsCast(movieId: Int): Response<MovieDetailsCastDto> = movies.getMovieDetailsCast(movieId)
 }
