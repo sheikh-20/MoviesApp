@@ -113,6 +113,7 @@ fun LoginScreen(modifier: Modifier = Modifier,
                }
                is Resource.Failure -> {
                    Toast.makeText(context, "Failure..", Toast.LENGTH_LONG).show()
+                   Timber.tag("Login").e(it.throwable)
                }
                is Resource.Success -> {
                    Toast.makeText(context, "Success..", Toast.LENGTH_LONG).show()
