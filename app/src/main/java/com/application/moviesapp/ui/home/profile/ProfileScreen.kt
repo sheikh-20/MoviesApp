@@ -70,7 +70,7 @@ fun ProfileScreen(modifier: Modifier = Modifier, uiState: UserData? = null, onSi
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold)
             
-            Text(text = "sheikhzs1032@gmail.com", style = MaterialTheme.typography.bodyLarge)
+            Text(text = uiState?.email ?: "sheikhzs1032@gmail.com", style = MaterialTheme.typography.bodyLarge)
         }
 
         Column(modifier = modifier.verticalScroll(rememberScrollState())) {

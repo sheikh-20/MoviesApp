@@ -15,7 +15,6 @@ import androidx.lifecycle.lifecycleScope
 import com.application.moviesapp.base.BaseActivity
 import com.application.moviesapp.data.common.Resource
 import com.application.moviesapp.ui.home.HomeActivity
-import com.application.moviesapp.ui.signin.GoogleAuthUiClient
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.viewmodel.OnboardingViewModel
 import com.google.android.gms.auth.api.identity.Identity

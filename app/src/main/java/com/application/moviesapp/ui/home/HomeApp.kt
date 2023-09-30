@@ -21,6 +21,7 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.rounded.Bookmark
 import androidx.compose.material.icons.rounded.Explore
+import androidx.compose.material.icons.rounded.FileDownload
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.NotificationsNone
 import androidx.compose.material.icons.rounded.Person
@@ -32,10 +33,12 @@ import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalAbsoluteTonalElevation
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -44,6 +47,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -52,6 +56,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -79,6 +84,7 @@ import com.application.moviesapp.ui.viewmodel.ExploreUiState
 import com.application.moviesapp.ui.viewmodel.ExploreViewModel
 import com.application.moviesapp.ui.viewmodel.HomeViewModel
 import com.application.moviesapp.ui.viewmodel.MoviesWithNewReleaseUiState
+import com.application.moviesapp.ui.viewmodel.MyListViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 
@@ -87,11 +93,13 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 fun HomeApp(modifier: Modifier = Modifier,
             navController: NavHostController = rememberNavController(),
             homeViewModel: HomeViewModel = hiltViewModel(),
-            exploreViewModel: ExploreViewModel = hiltViewModel()) {
+            exploreViewModel: ExploreViewModel = hiltViewModel(),
+            myListViewModel: MyListViewModel = hiltViewModel()) {
 
     val homeUiState: MoviesWithNewReleaseUiState by homeViewModel.moviesWithNewReleaseUiState.collectAsState()
     val exploreUiState: ExploreUiState by exploreViewModel.exploreUiState.collectAsState()
     val profileUiState by homeViewModel.profileInfoUiState.collectAsState()
+    val myListUiState by myListViewModel.movieFavourite.collectAsState()
 
     val moviesFlowState = exploreViewModel.moviesPagingFlow.collectAsLazyPagingItems()
 
@@ -99,21 +107,6 @@ fun HomeApp(modifier: Modifier = Modifier,
     val modalSheetState = rememberModalBottomSheetState()
 
     val context = LocalContext.current
-
-//    val systemUiController = rememberSystemUiController()
-//    SideEffect {
-//        systemUiController.setStatusBarColor(
-//            color = Color.Transparent
-//        )
-//    }
-
-//    ModalBottomSheet(
-//        onDismissRequest = {  },
-//        sheetState = modalSheetState,
-//
-//        ) {
-//        SortFilterContent()
-//    }
 
     Scaffold(
         topBar = { HomeTopAppbar(navController, exploreViewModel) },
@@ -128,7 +121,9 @@ fun HomeApp(modifier: Modifier = Modifier,
                 ExploreScreen(modifier = modifier.padding(paddingValues), uiState = exploreUiState, moviesFlow = moviesFlowState)
             }
             composable(route = BottomNavigationScreens.MyList.route) {
-                MyListScreen()
+                MyListScreen(modifier = modifier.padding(paddingValues),
+                    uiState = myListUiState,
+                    onFavouriteCalled = myListViewModel::getMovieFavourite)
             }
             composable(route = BottomNavigationScreens.Download.route) {
                 DownloadScreen()
@@ -238,11 +233,11 @@ private fun HomeTopAppbar(navController: NavHostController, exploreViewModel: Ex
                 },
                 actions = {
                     IconButton(onClick = {}) {
-                        Icon(imageVector = Icons.Rounded.Search, contentDescription = null)
+                        Icon(imageVector = Icons.Rounded.Search, contentDescription = null, tint = Color.White)
                     }
 
                     IconButton(onClick = { NotificationActivity.startActivity(context as Activity) }) {
-                        Icon(imageVector = Icons.Rounded.NotificationsNone, contentDescription = null)
+                        Icon(imageVector = Icons.Rounded.NotificationsNone, contentDescription = null, tint = Color.White)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
@@ -263,7 +258,10 @@ private fun HomeBottomBarNavigation(navController: NavHostController,
         BottomNavigationScreens.Download,
         BottomNavigationScreens.Profile)
 
-    NavigationBar {
+    NavigationBar(modifier = Modifier.clip(shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)),
+     containerColor = Color.Transparent,
+        tonalElevation = 3.dp
+        ) {
         navigationBarItems.forEach { 
             NavigationBarItem(
                 selected = navController.currentBackStackEntryAsState().value?.destination?.route == it.route,
@@ -272,7 +270,13 @@ private fun HomeBottomBarNavigation(navController: NavHostController,
                     navController.navigate(it.route)
                           },
                 icon = { Icon(imageVector = it.vectorResource, contentDescription = null) },
-                label = { Text(text = stringResource(id = it.stringResource)) })
+                label = { Text(text = stringResource(id = it.stringResource)) },
+                colors = NavigationBarItemDefaults.colors(
+                    unselectedIconColor = Color.Gray, selectedIconColor = MaterialTheme.colorScheme.primary,
+                    unselectedTextColor = Color.Gray, selectedTextColor = MaterialTheme.colorScheme.primary,
+                    indicatorColor = MaterialTheme.colorScheme.surfaceColorAtElevation(LocalAbsoluteTonalElevation.current)
+                ),
+                )
         }
     }
 }
@@ -332,6 +336,6 @@ sealed class BottomNavigationScreens(val route: String, @StringRes val stringRes
     object Home: BottomNavigationScreens(route = "Home", stringResource = R.string.home, vectorResource = Icons.Rounded.Home)
     object Explore: BottomNavigationScreens(route = "Explore", stringResource = R.string.explore, vectorResource = Icons.Rounded.Explore)
     object MyList: BottomNavigationScreens(route = "MyList", stringResource = R.string.mylist, vectorResource = Icons.Rounded.Bookmark)
-    object Download: BottomNavigationScreens(route = "Download", stringResource = R.string.download, vectorResource = Icons.Outlined.FileDownload)
+    object Download: BottomNavigationScreens(route = "Download", stringResource = R.string.download, vectorResource = Icons.Rounded.FileDownload)
     object Profile: BottomNavigationScreens(route = "Profile", stringResource = R.string.profile, vectorResource = Icons.Rounded.Person)
 }

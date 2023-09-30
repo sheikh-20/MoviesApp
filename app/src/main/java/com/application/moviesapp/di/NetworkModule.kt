@@ -12,10 +12,12 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -24,26 +26,29 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    @Named("movies_api_key")
     fun providesApiKey(): String {
         return BuildConfig.API_KEY
     }
 
     @Provides
     @Singleton
+    @Named("movies_retrofit_builder")
     fun providesRetrofitBuilder(): Retrofit.Builder {
         return Retrofit.Builder().baseUrl(BuildConfig.BASE_URL)
-            .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+            .addConverterFactory(Json{ ignoreUnknownKeys = true }.asConverterFactory("application/json".toMediaType()))
     }
 
     @Provides
     @Singleton
+    @Named("movies_http_client")
     fun providesOKHttpClient(networkInterceptor: NetworkInterceptor): OkHttpClient {
         return OkHttpClient.Builder().addInterceptor(networkInterceptor).build()
     }
 
     @Provides
     @Singleton
-    fun providesMoviesApi(okHttpClient: OkHttpClient, retrofitBuilder: Retrofit.Builder): MoviesApi {
+    fun providesMoviesApi(@Named("movies_http_client") okHttpClient: OkHttpClient, @Named("movies_retrofit_builder") retrofitBuilder: Retrofit.Builder): MoviesApi {
         return retrofitBuilder.client(okHttpClient).build().create(MoviesApi::class.java)
     }
 

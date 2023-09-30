@@ -2,6 +2,7 @@ package com.application.moviesapp.domain.usecase
 
 import android.graphics.Movie
 import com.application.moviesapp.data.api.response.MovieDetailsCastDto
+import com.application.moviesapp.data.api.response.MovieGenreResponse
 import com.application.moviesapp.data.common.Resource
 import com.application.moviesapp.data.repository.MoviesRepository
 import com.application.moviesapp.domain.model.MoviesDetail
@@ -33,17 +34,27 @@ class GetMovieDetailInteractor @Inject constructor(private val moviesRepository:
 
                 val movieDetails = async { moviesRepository.getMoviesDetailById(movieId) }
                 val movieCast = async { moviesRepository.getMovieDetailsCast(movieId) }
+                val movieGenre = async { moviesRepository.getMoviesGenreList() }
 
                 val movieDetailsOutput = movieDetails.await()
                 val movieCastOutput = movieCast.await()
+                val movieGenreOutput = movieGenre.await()
+
 
                 if (movieDetailsOutput.isSuccessful && movieCastOutput.isSuccessful) {
+
                     val result = MoviesDetail(
                         adult = movieDetailsOutput.body()?.adult,
                         backdropPath = movieDetailsOutput.body()?.backdropPath,
                         belongsToCollection = MoviesDetail.Collection(id = movieDetailsOutput.body()?.belongsToCollection?.id, name = movieDetailsOutput.body()?.belongsToCollection?.name, posterPath = movieDetailsOutput.body()?.belongsToCollection?.posterPath, backdropPath = movieDetailsOutput.body()?.belongsToCollection?.backdropPath),
                         budget = movieDetailsOutput.body()?.budget,
-                        genres = movieDetailsOutput.body()?.genres?.map { MoviesDetail.Genre(id = it?.id, name = it?.name) },
+
+
+                        genres = movieDetailsOutput.body()?.genres?.filter { genre ->
+                            movieGenreOutput.genres?.filter { genre?.equals(it?.id) == true } != null
+                        }?.map { it?.name }?.joinToString(", "),
+
+
                         homepage = movieDetailsOutput.body()?.homepage,
                         id = movieDetailsOutput.body()?.id,
                         imdbId = movieDetailsOutput.body()?.imdbId,

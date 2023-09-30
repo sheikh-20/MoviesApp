@@ -9,6 +9,8 @@ data class Movies(
 
     val id: Int?,
 
+    val movieId: Int?,
+
     val originalLanguage: String?,
 
     val originalTitle: String?,

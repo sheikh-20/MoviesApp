@@ -6,7 +6,7 @@ data class MoviesDetail(
     val backdropPath: String?,
     val belongsToCollection: Collection?,
     val budget: Int?,
-    val genres: List<Genre?>?,
+    val genres: String?,
     val homepage: String?,
     val id: Int?,
     val imdbId: String?,

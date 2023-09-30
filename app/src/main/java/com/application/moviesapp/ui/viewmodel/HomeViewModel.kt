@@ -11,6 +11,7 @@ import com.application.moviesapp.data.repository.MoviesRepository
 import com.application.moviesapp.domain.MoviesNewReleaseUseCase
 import com.application.moviesapp.domain.MoviesUseCase
 import com.application.moviesapp.domain.MoviesWithNewReleases
+import com.application.moviesapp.domain.usecase.MovieUpdateFavouriteInteractor
 import com.application.moviesapp.domain.usecase.MoviesUpcomingUseCase
 import com.application.moviesapp.ui.signin.UserData
 import com.google.firebase.auth.ktx.auth
@@ -20,6 +21,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONException
+import org.json.JSONObject
 import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
@@ -44,7 +49,9 @@ class HomeViewModel @Inject constructor(private val useCase: MoviesUseCase,
                                         private val moviesRepository: MoviesRepository,
                                         private val moviesNewReleaseUseCase: MoviesNewReleaseUseCase,
                                         private val moviesUpcomingUseCase: MoviesUpcomingUseCase,
-                                        private val authRepository: AuthRepository
+                                        private val authRepository: AuthRepository,
+
+
     ): ViewModel() {
 
     private companion object {
@@ -62,7 +69,7 @@ class HomeViewModel @Inject constructor(private val useCase: MoviesUseCase,
 
     private val auth = Firebase.auth
 
-    private var _profileInfoUiState = MutableStateFlow<UserData>(getSignedInUser() ?: UserData(userId = "", userName = "", profilePictureUrl = ""))
+    private var _profileInfoUiState = MutableStateFlow<UserData>(getSignedInUser() ?: UserData(userId = "", userName = "", profilePictureUrl = "", email = ""))
     val profileInfoUiState: StateFlow<UserData> = _profileInfoUiState
 
     fun getMoviesWithNewReleases() = viewModelScope.launch(Dispatchers.IO) {
@@ -108,11 +115,20 @@ class HomeViewModel @Inject constructor(private val useCase: MoviesUseCase,
 
     fun moviesUpcomingPagingFlow() = moviesUpcomingUseCase.invoke().cachedIn(viewModelScope)
 
+
     private fun getSignedInUser(): UserData? = auth.currentUser?.run {
-        UserData(userId = uid, userName = displayName, profilePictureUrl = photoUrl.toString())
+        UserData(
+            userId = uid,
+            userName = displayName,
+            profilePictureUrl = photoUrl.toString(),
+            email = email
+            )
     }
 
     fun signOut() = viewModelScope.launch {
         authRepository.signOut()
     }
+
+
+
 }

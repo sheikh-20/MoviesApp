@@ -16,21 +16,22 @@
         android:theme="@style/Theme.CustomSplashScreenTheme"
         tools:targetApi="31">
         <activity
+            android:name=".ui.accountsetup.AccountSetupActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MoviesApp"
+            tools:ignore="LockedOrientationActivity">
+
+        </activity>
+        <activity
             android:name=".ui.detail.DetailActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.MoviesApp"
-            tools:ignore="LockedOrientationActivity"/>
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".ui.home.HomeActivity"
             android:exported="true"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.MoviesApp"
-            tools:ignore="LockedOrientationActivity"></activity>
-        <activity
-            android:name=".ui.onboarding.OnboardingActivity"
-            android:exported="true"
-            android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.CustomSplashScreenTheme"
             tools:ignore="LockedOrientationActivity">
@@ -41,26 +42,40 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".ui.onboarding.OnboardingActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.CustomSplashScreenTheme"
+            tools:ignore="LockedOrientationActivity"></activity>
+        <activity
             android:name=".ui.home.UpcomingMoviesActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.MoviesApp"
-            tools:ignore="LockedOrientationActivity"></activity>
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".ui.home.NotificationActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.MoviesApp"
-            tools:ignore="LockedOrientationActivity"></activity>
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".ui.home.NewReleasesActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.MoviesApp"
-            tools:ignore="LockedOrientationActivity"></activity>
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".ui.play.PlayActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MoviesApp"
+            tools:ignore="LockedOrientationActivity" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"

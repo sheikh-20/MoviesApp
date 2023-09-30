@@ -33,10 +33,13 @@ android {
             isDebuggable = true
             val TEST_API_KEY: String by project
             val FACEBOOK_APP_ID: String by project
+            val YOUTUBE_API_KEY: String by project
 
             buildConfigField(type = "String", name =  "API_KEY", value = TEST_API_KEY)
             buildConfigField(type = "String", name = "BASE_URL", value = "\"https://api.themoviedb.org/\"")
             buildConfigField(type = "String", name = "IMAGE_BASE_URL", value = "\"https://image.tmdb.org/t/p/original/\"")
+            buildConfigField(type = "String", name = "YOUTUBE_API_KEY", value = YOUTUBE_API_KEY)
+            buildConfigField(type = "String", name = "YOUTUBE_BASE_URL", value = "\"https://youtube.googleapis.com/\"")
             resValue("string", "FACEBOOK_APP_ID", FACEBOOK_APP_ID)
 
         }
@@ -49,10 +52,13 @@ android {
             )
             val PRO_API_KEY: String by project
             val FACEBOOK_APP_ID: String by project
+            val YOUTUBE_API_KEY: String by project
 
             buildConfigField(type = "String", name = "API_KEY", value = PRO_API_KEY)
             buildConfigField(type = "String", name = "BASE_URL", value = "\"https://api.themoviedb.org/\"")
             buildConfigField(type = "String", name = "IMAGE_BASE_URL", value = "\"https://image.tmdb.org/t/p/original/\"")
+            buildConfigField(type = "String", name = "YOUTUBE_API_KEY", value = YOUTUBE_API_KEY)
+            buildConfigField(type = "String", name = "YOUTUBE_BASE_URL", value = "\"https://youtube.googleapis.com/\"")
             resValue("string", "FACEBOOK_APP_ID", FACEBOOK_APP_ID)
         }
     }
@@ -75,6 +81,8 @@ android {
 
 dependencies {
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
+    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
+    androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     val lifecycle_version = "2.6.1"
     val timber_version = "5.0.1"
@@ -156,4 +164,15 @@ dependencies {
 
     implementation("com.facebook.android:facebook-android-sdk:12.1.0")
     implementation ("com.facebook.android:facebook-login:14.1.0")
+
+    // Pager
+    implementation("com.google.accompanist:accompanist-pager:0.23.1")
+    implementation("com.google.accompanist:accompanist-pager-indicators:0.23.1")
+
+    // Media 3
+    implementation("androidx.media3:media3-ui:1.2.0-alpha01")
+    implementation("androidx.media3:media3-exoplayer:1.2.0-alpha01")
+    implementation("androidx.media3:media3-session:1.2.0-alpha01")
+
+    implementation("com.google.accompanist:accompanist-flowlayout:0.32.0")
 }

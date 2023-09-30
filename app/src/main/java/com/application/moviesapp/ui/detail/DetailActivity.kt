@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.application.moviesapp.base.BaseActivity
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.viewmodel.DetailsViewModel
+import com.application.moviesapp.ui.viewmodel.MyListViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -32,12 +33,14 @@ class DetailActivity : BaseActivity() {
     }
 
     private val viewModel: DetailsViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTransparentStatusBar()
 
-        viewModel.getMovieDetail(intent.getIntExtra(MOVIE_ID, 0))
+        val movieId = intent.getIntExtra(MOVIE_ID, 0)
+        viewModel.getMovieDetail(movieId)
+        viewModel.getMovieTrailer(movieId)
+        viewModel.getMovieState(movieId)
 
         setContent {
             MoviesAppTheme {

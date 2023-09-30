@@ -1,13 +1,19 @@
 package com.application.moviesapp.ui.viewmodel
 
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.moviesapp.data.api.response.MovieGenreResponse
 import com.application.moviesapp.data.common.Resource
+import com.application.moviesapp.data.repository.AuthRepo
 import com.application.moviesapp.data.repository.AuthRepository
 import com.application.moviesapp.data.repository.MoviesRepository
+import com.application.moviesapp.domain.usecase.SignInFacebookUseCase
+import com.application.moviesapp.domain.usecase.SignInGithubUseCase
+import com.application.moviesapp.domain.usecase.SignInGoogleInteractor
 import com.application.moviesapp.domain.usecase.SignInGoogleUseCase
 import com.application.moviesapp.domain.usecase.UserInfoUseCase
 import com.application.moviesapp.ui.onboarding.OnboardingActivity
@@ -44,7 +50,9 @@ sealed interface MovieGenreUiState {
 class OnboardingViewModel @Inject constructor(private val moviesRepository: MoviesRepository,
                                               private val signInGoogleUseCase: SignInGoogleUseCase,
                                               private val authRepository: AuthRepository,
-                                                private val userInfoUseCase: UserInfoUseCase
+                                                private val userInfoUseCase: UserInfoUseCase,
+    private val signInGithubUseCase: SignInGithubUseCase,
+    private val signInFacebookUseCase: SignInFacebookUseCase,
     ): ViewModel() {
 
     private companion object {
@@ -57,16 +65,9 @@ class OnboardingViewModel @Inject constructor(private val moviesRepository: Movi
     private var _loading = MutableStateFlow(true)
     val loading: StateFlow<Boolean> = _loading
 
-    private var _googleIntent = MutableSharedFlow<Resource<IntentSender>>()
-    val googleIntent get() = _googleIntent.asSharedFlow()
 
-
-    private var _googleResult = MutableSharedFlow<Resource<SignInResult>>()
-    val googleResult get() = _googleResult.asSharedFlow()
-
-    private var _facebookSignIn = MutableSharedFlow<Resource<AuthCredential>>()
-    val facebookSignIn get() = _facebookSignIn.asSharedFlow()
-
+    private var _socialSignIn = MutableSharedFlow<Resource<AuthResult>>()
+    val socialSignIn get() = _socialSignIn.asSharedFlow()
 
     fun getMoviesGenreList() = viewModelScope.launch(Dispatchers.IO) {
         _movieGenreUiState.value = MovieGenreUiState.Loading
@@ -85,44 +86,29 @@ class OnboardingViewModel @Inject constructor(private val moviesRepository: Movi
         _loading.value = false
     }
 
-    fun signInGoogle() = viewModelScope.launch {
-        signInGoogleUseCase().collectLatest {
-            _googleIntent.emit(it)
-        }
-    }
-
-    fun signInIntent(intent: Intent) = viewModelScope.launch {
-        authRepository.signInWithIntent(intent).collectLatest {
-            _googleResult.emit(it)
-        }
-    }
-
     fun getUserInfo() = userInfoUseCase()
 
-    val loginManager = LoginManager.getInstance()
-    val callbackManager = CallbackManager.Factory.create()
-    private val facebookCallback = object : FacebookCallback<LoginResult> {
-        override fun onCancel() {
-            TODO("Not yet implemented")
+    fun signInGithub(activity: Activity) = viewModelScope.launch {
+        signInGithubUseCase(activity).collectLatest {
+            _socialSignIn.emit(it)
         }
+    }
 
-        override fun onError(error: FacebookException) {
-            viewModelScope.launch {
-                _facebookSignIn.emit(Resource.Failure(error))
-            }
+    fun signInFacebook() = viewModelScope.launch {
+        Timber.tag(TAG).d("Facebook called!")
+        signInFacebookUseCase().collectLatest {
+            _socialSignIn.emit(it)
         }
+    }
 
-        override fun onSuccess(result: LoginResult) {
-            val credential = FacebookAuthProvider.getCredential(result.accessToken.token)
-            Timber.tag(TAG).d(credential.toString())
-            viewModelScope.launch {
-                _facebookSignIn.emit(Resource.Success(credential))
-            }
+    fun signInGoogle(activity: Activity?, intent: Intent?) = viewModelScope.launch {
+        signInGoogleUseCase(activity, intent).collectLatest {
+            Timber.tag(TAG).d("Google called")
+            _socialSignIn.emit(it)
         }
     }
 
     init {
         showLoading()
-        loginManager.registerCallback(callbackManager, facebookCallback)
     }
 }

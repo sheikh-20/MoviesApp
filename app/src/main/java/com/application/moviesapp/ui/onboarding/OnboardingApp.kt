@@ -32,6 +32,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.application.moviesapp.domain.usecase.GetSignInFacebookInteractor
+import com.application.moviesapp.domain.usecase.SignInFacebookUseCase
 import com.application.moviesapp.ui.home.HomeActivity
 import com.application.moviesapp.ui.onboarding.login.LoginScreen
 import com.application.moviesapp.ui.onboarding.login.LoginWithPasswordScreen
@@ -56,8 +58,7 @@ fun OnboardingApp(modifier: Modifier = Modifier,
     val backStackEntry by navController.currentBackStackEntryAsState()
     val uiState by onboardingViewModel.movieGenreUiState.collectAsState()
 
-    val onBoardingState = onboardingViewModel.googleIntent
-    val onGoogleIntentState = onboardingViewModel.googleResult
+    val onSocialSignIn = onboardingViewModel.socialSignIn
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -79,13 +80,13 @@ fun OnboardingApp(modifier: Modifier = Modifier,
                     LoginScreen(modifier = modifier,
                         onSignInClick = { navController.navigate(OnboardingScreen.LoginWithPassword.name) },
                         onSignupClick = { navController.navigate(OnboardingScreen.SignupWithPassword.name) },
-                        onGoogleSignInClick = { onboardingViewModel.signInGoogle() },
-                        uiState = onBoardingState,
-                        onSignInWithIntent = onboardingViewModel::signInIntent,
-                        resultUiState = onGoogleIntentState,
+                        onGoogleSignInClick = { activity, intent ->  onboardingViewModel.signInGoogle(activity, intent) },
+                        onGithubSignInClick = { onboardingViewModel.signInGithub(context as Activity) },
                         onFacebookSignInClick = {
-                            onboardingViewModel.loginManager.logInWithReadPermissions(context as ActivityResultRegistryOwner, onboardingViewModel.callbackManager, mutableListOf("email", "public_profile"))
-                        }
+                            GetSignInFacebookInteractor.loginManager.logInWithReadPermissions(context as ActivityResultRegistryOwner, GetSignInFacebookInteractor.callbackManager, mutableListOf("email", "public_profile"))
+                            onboardingViewModel.signInFacebook()
+                        },
+                        onSocialSignIn = onSocialSignIn,
                     )
                 }
 
@@ -101,35 +102,9 @@ fun OnboardingApp(modifier: Modifier = Modifier,
                         modifier = modifier,
                         onSigninClick = { navController.navigate(OnboardingScreen.LoginWithPassword.name) },
                         onSignupClick = {
-                            onboardingViewModel.getMoviesGenreList()
-                            navController.navigate(OnboardingScreen.ChooseYourInterest.name) }
+//                            navController.navigate(OnboardingScreen.ChooseYourInterest.name)
+                                                }
                     )
-                }
-
-                composable(route = OnboardingScreen.ChooseYourInterest.name) {
-                    ChooseYourInterestScreen(
-                        modifier = modifier,
-                        uiState = uiState,
-                        onContinueClick = { navController.navigate(OnboardingScreen.FillYourProfile.name) }
-                    )
-                }
-
-                composable(route = OnboardingScreen.FillYourProfile.name) {
-                    FillYourProfileScreen(
-                        modifier = modifier,
-                        onContinueClick = { navController.navigate(OnboardingScreen.CreateNewPin.name) }
-                    )
-                }
-
-                composable(route = OnboardingScreen.CreateNewPin.name) {
-                    CreateNewPinScreen(
-                        modifier = modifier,
-                        onContinueClick = { navController.navigate(OnboardingScreen.SetYourFingerprint.name) }
-                    )
-                }
-
-                composable(route = OnboardingScreen.SetYourFingerprint.name) {
-                    SetYourFingerprintScreen()
                 }
             }
         }
@@ -158,8 +133,4 @@ enum class OnboardingScreen {
     Login,
     LoginWithPassword,
     SignupWithPassword,
-    ChooseYourInterest,
-    FillYourProfile,
-    CreateNewPin,
-    SetYourFingerprint
 }

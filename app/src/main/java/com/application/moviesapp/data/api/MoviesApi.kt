@@ -3,14 +3,21 @@ package com.application.moviesapp.data.api
 import com.application.moviesapp.data.api.response.CountryResponse
 import com.application.moviesapp.data.api.response.MovieDetailsCastDto
 import com.application.moviesapp.data.api.response.MovieDetailsDto
+import com.application.moviesapp.data.api.response.MovieFavouriteDto
 import com.application.moviesapp.data.api.response.MovieGenreResponse
 import com.application.moviesapp.data.api.response.MovieSimpleResponse
+import com.application.moviesapp.data.api.response.MovieStateDto
 import com.application.moviesapp.data.api.response.MovieTopRatedResponse
+import com.application.moviesapp.data.api.response.MovieTrailerDto
+import com.application.moviesapp.data.api.response.MovieUpdateFavouriteDto
 import com.application.moviesapp.data.remote.MovieNewReleasesDto
 import com.application.moviesapp.data.remote.MovieUpcomingDto
 import com.application.moviesapp.data.remote.MoviesDto
+import okhttp3.RequestBody
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -44,4 +51,16 @@ interface MoviesApi {
 
     @GET("/3/movie/{movie_id}/credits")
     suspend fun getMovieDetailsCast(@Path("movie_id") movieId: Int): Response<MovieDetailsCastDto>
+
+    @GET("/3/movie/{movie_id}/videos")
+    suspend fun getMovieTrailer(@Path("movie_id") movieId: Int): Response<MovieTrailerDto>
+
+    @GET("/3/account/{account_id}/favorite/movies")
+    suspend fun getMovieFavourite(@Path("account_id") accountId: Int = 20210857): Response<MovieFavouriteDto>
+
+    @POST("/3/account/{account_id}/favorite")
+    suspend fun updateMovieFavourite(@Path("account_id") accountId: Int = 20210857, @Body body: RequestBody): Response<MovieUpdateFavouriteDto>
+
+    @GET("/3/movie/{movie_id}/account_states")
+    suspend fun getMovieState(@Path("movie_id") movieId: Int): Response<MovieStateDto>
 }

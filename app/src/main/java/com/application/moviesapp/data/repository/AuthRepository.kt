@@ -1,5 +1,6 @@
 package com.application.moviesapp.data.repository
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
@@ -10,9 +11,14 @@ import com.application.moviesapp.ui.signin.UserData
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.BeginSignInRequest.GoogleIdTokenRequestOptions
 import com.google.android.gms.auth.api.identity.SignInClient
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.OAuthProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.cancel
@@ -29,6 +35,69 @@ interface AuthRepository {
     fun signInWithIntent(intent: Intent): Flow<Resource<SignInResult>>
 
     suspend fun signOut()
+}
+
+interface AuthRepo {
+    fun signIn(activity: Activity? = null, token: String? = null): Flow<Resource<AuthResult>>
+}
+
+class AuthRepoImpl @Inject constructor(private val context: Context,private val auth: FirebaseAuth): AuthRepo {
+
+    private companion object {
+        const val TAG = "AuthRepoImpl"
+    }
+
+    override fun signIn(activity: Activity?, token: String?): Flow<Resource<AuthResult>> = flow {
+        emit(Resource.Loading)
+
+        val provider = OAuthProvider.newBuilder("github.com")
+        val result = auth.startActivityForSignInWithProvider(activity ?: throw Throwable(), provider.build()).await()
+        emit(Resource.Success(result))
+    }.catch {
+        it.printStackTrace()
+        emit(Resource.Failure(it))
+    }
+}
+
+class FacebookRepoImpl @Inject constructor(private val context: Context, private val auth: FirebaseAuth): AuthRepo {
+
+    private companion object {
+        const val TAG = "FacebookRepoImpl"
+    }
+
+    override fun signIn(activity: Activity?, token: String?): Flow<Resource<AuthResult>> = flow {
+        emit(Resource.Loading)
+
+        val result = auth.signInWithCredential(FacebookAuthProvider.getCredential(token  ?: throw  Throwable() )).await()
+
+        Timber.tag(TAG).d(result.additionalUserInfo.toString())
+        emit(Resource.Success(result))
+    }.catch {
+        Timber.tag(TAG).e(it)
+        it.printStackTrace()
+        emit(Resource.Failure(it))
+    }
+}
+
+class GoogleRepoImpl @Inject constructor(private val context: Context,
+                                         private val auth: FirebaseAuth): AuthRepo {
+    private companion object {
+        const val TAG = "GoogleRepoImpl"
+    }
+
+    override fun signIn(activity: Activity?, token: String?): Flow<Resource<AuthResult>> = flow {
+        emit(Resource.Loading)
+
+        val result = auth.signInWithCredential(GoogleAuthProvider.getCredential(token ?: throw Throwable(), null)).await()
+
+        Timber.tag(TAG).d(result.additionalUserInfo.toString())
+        emit(Resource.Success(result))
+    }.catch {
+        Timber.tag(TAG).e(it)
+        it.printStackTrace()
+        emit(Resource.Failure(it))
+    }
+
 }
 
 class AuthRepositoryImpl @Inject constructor(private val auth: FirebaseAuth,
@@ -69,7 +138,8 @@ class AuthRepositoryImpl @Inject constructor(private val auth: FirebaseAuth,
                 UserData(
                     userId = uid,
                     userName = displayName,
-                    profilePictureUrl = photoUrl.toString()
+                    profilePictureUrl = photoUrl.toString(),
+                    email = ""
                 ) },
             errorMessage = null
         )
@@ -80,7 +150,7 @@ class AuthRepositoryImpl @Inject constructor(private val auth: FirebaseAuth,
     }
 
     override fun getUserInfo(): UserData? = auth.currentUser?.run {
-        UserData(userId = uid, userName = displayName, profilePictureUrl = photoUrl.toString())
+        UserData(userId = uid, userName = displayName, profilePictureUrl = photoUrl.toString(), email = "")
     }
 
     override suspend fun signOut() {

@@ -59,9 +59,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.application.moviesapp.R
 import com.application.moviesapp.data.common.Resource
+import com.application.moviesapp.domain.usecase.SignInGoogleInteractor
+import com.application.moviesapp.ui.accountsetup.AccountSetupActivity
+import com.application.moviesapp.ui.accountsetup.AccountSetupApp
 import com.application.moviesapp.ui.home.HomeActivity
 import com.application.moviesapp.ui.signin.SignInResult
 import com.application.moviesapp.ui.theme.MoviesAppTheme
+import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.AuthResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -72,11 +77,10 @@ import timber.log.Timber
 fun LoginScreen(modifier: Modifier = Modifier,
                 onSignInClick: () -> Unit = {},
                 onSignupClick: () -> Unit = {},
-                onGoogleSignInClick: () -> Unit = {},
-                uiState: SharedFlow<Resource<IntentSender>>? = null,
-                onSignInWithIntent: (Intent) -> Unit = {},
-                resultUiState: SharedFlow<Resource<SignInResult>>? = null,
-                onFacebookSignInClick: () -> Unit = {}
+                onGoogleSignInClick: (Activity?, Intent?) -> Unit = { _, _ ->},
+                onGithubSignInClick: () -> Unit = {},
+                onFacebookSignInClick: () -> Unit = {},
+                onSocialSignIn: SharedFlow<Resource<AuthResult>>? = null
                 ) {
 
     val coroutineScope = rememberCoroutineScope()
@@ -86,42 +90,40 @@ fun LoginScreen(modifier: Modifier = Modifier,
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                Timber.tag("LoginScreen").d(result.data?.data.toString())
-                onSignInWithIntent(result.data ?: return@rememberLauncherForActivityResult)
+                Timber.tag("LoginScreen").d("OK -> ${result.data.toString()}")
+
+                onGoogleSignInClick(context as Activity, result.data)
+            } else {
+                Timber.tag("LoginScreen").e("ERROR")
             }
         }
     )
 
     LaunchedEffect(key1 = Unit) {
-        resultUiState?.collectLatest {
-            when (it) {
-                is Resource.Loading -> {  }
-                is Resource.Failure -> { }
+        onSocialSignIn?.collectLatest {
+            when(it) {
+                is Resource.Loading -> {
+                    Timber.tag("Login").d("Google Loading")
+                    Toast.makeText(context, "Loading..", Toast.LENGTH_LONG).show()
+                }
+                is Resource.Failure -> {
+                    Toast.makeText(context, "Failure..", Toast.LENGTH_LONG).show()
+                    Timber.tag("Login").e(it.throwable)
+                }
                 is Resource.Success -> {
-                    (context as Activity).finish()
-                    HomeActivity.startActivity((context as Activity))
+                    Timber.tag("Login").d("Google Success")
+
+                    if (it.data.additionalUserInfo?.isNewUser == true) {
+                        (context as Activity).finish()
+                        AccountSetupActivity.startActivity(context as Activity)
+                    } else {
+                        (context as Activity).finish()
+                        HomeActivity.startActivity((context as Activity))
+                    }
                 }
             }
         }
     }
-
-   LaunchedEffect(key1 = Unit) {
-       uiState?.collectLatest {
-           when (it) {
-               is Resource.Loading -> {
-                   Toast.makeText(context, "Loading..", Toast.LENGTH_LONG).show()
-               }
-               is Resource.Failure -> {
-                   Toast.makeText(context, "Failure..", Toast.LENGTH_LONG).show()
-                   Timber.tag("Login").e(it.throwable)
-               }
-               is Resource.Success -> {
-                   Toast.makeText(context, "Success..", Toast.LENGTH_LONG).show()
-                   launcher.launch(IntentSenderRequest.Builder(it.data).build())
-               }
-           }
-       }
-   }
 
     Column(modifier = modifier
         .fillMaxSize()
@@ -147,11 +149,18 @@ fun LoginScreen(modifier: Modifier = Modifier,
             LoginComponent(
                 icon = R.drawable.ic_google,
                 text = R.string.continue_with_google,
-                onClick = onGoogleSignInClick)
+                onClick = {
+                    coroutineScope.launch {
+                        val result = SignInGoogleInteractor.signIn(context)
+                        launcher.launch(IntentSenderRequest.Builder(result ?: return@launch).build())
+                    }
+                }
+            )
 
-            LoginComponent(icon = R.drawable.ic_github, text = R.string.continue_with_github) {
-
-            }
+            LoginComponent(
+                icon = R.drawable.ic_github,
+                text = R.string.continue_with_github,
+                onClick = onGithubSignInClick)
         }
 
         Row(verticalAlignment = Alignment.CenterVertically,
