@@ -13,6 +13,8 @@ interface UserInfoUseCase {
     operator fun invoke(): UserData?
 }
 
-class GetUserInfoInteractor @Inject constructor(private val authRepository: AuthRepository): UserInfoUseCase {
-    override fun invoke(): UserData? = authRepository.getUserInfo()
+class GetUserInfoInteractor @Inject constructor(): UserInfoUseCase {
+    override fun invoke(): UserData? {
+        TODO()
+    }
 }

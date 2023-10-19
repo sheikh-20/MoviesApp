@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option java_package = "com.application.moviesapp";
+option java_multiple_files = true;
+
+message UserPreferences {
+  string user_id = 1;
+
+  //movie genre
+  message MovieGenre {
+    int32 id = 1;
+    string name = 2;
+  }
+
+  repeated MovieGenre genre = 2;
+
+  string name = 3;
+  string nickname = 4;
+  string email = 5;
+  int64 phone_number = 6;
+  string gender = 7;
+}

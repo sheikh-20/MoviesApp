@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.rounded.ArrowDropDown
@@ -23,20 +25,38 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.application.moviesapp.R
+import com.application.moviesapp.ui.accountsetup.UserProfile
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FillYourProfileScreen(modifier: Modifier = Modifier, onContinueClick: () -> Unit = {}) {
+fun FillYourProfileScreen(modifier: Modifier = Modifier, onContinueClick: (UserProfile) -> Unit = {  }) {
+
+    var fullName by remember { mutableStateOf("") }
+    var nickName by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var phoneNumber by remember { mutableStateOf("") }
+
+    val focusManager = LocalFocusManager.current
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -51,34 +71,57 @@ fun FillYourProfileScreen(modifier: Modifier = Modifier, onContinueClick: () -> 
         Column(modifier = modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedTextField(
-                value = "",
-                onValueChange = {},
+                value = fullName,
+                onValueChange = { fullName = it },
                 label = { Text(text = "Full Name") },
                 modifier = modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(30)
+                shape = RoundedCornerShape(30),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Text
+                ),
+                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
             )
 
             OutlinedTextField(
-                value = "",
-                onValueChange = {},
+                value = nickName,
+                onValueChange = { nickName = it },
                 label = { Text(text = "Nick Name") },
                 modifier = modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(30))
+                shape = RoundedCornerShape(30),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Text
+                ),
+                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
+                )
 
             OutlinedTextField(
-                value = "",
-                onValueChange = {},
+                value = email,
+                onValueChange = { email = it },
                 label = { Text(text = "Email") },
                 trailingIcon = { Icon(imageVector = Icons.Rounded.Email, contentDescription = null) },
                 modifier = modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(30))
+                shape = RoundedCornerShape(30),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Email
+                ),
+                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
+            )
 
             OutlinedTextField(
-                value = "",
-                onValueChange = {},
+                value = phoneNumber,
+                onValueChange = { phoneNumber = it },
                 label = { Text(text = "Phone Number") },
                 modifier = modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(30))
+                shape = RoundedCornerShape(30),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Phone
+                ),
+                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
+            )
 
             OutlinedTextField(
                 value = "",
@@ -89,7 +132,13 @@ fun FillYourProfileScreen(modifier: Modifier = Modifier, onContinueClick: () -> 
                     contentDescription = null
                 ) },
                 modifier = modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(30))
+                shape = RoundedCornerShape(30),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Text
+                ),
+                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
+            )
         }
 
         Row(modifier = modifier.fillMaxWidth(),
@@ -98,7 +147,7 @@ fun FillYourProfileScreen(modifier: Modifier = Modifier, onContinueClick: () -> 
             OutlinedButton(onClick = { /*TODO*/ }, modifier = modifier.weight(1f)) {
                 Text(text = "Skip")
             }
-            Button(onClick = onContinueClick, modifier = modifier.weight(1f)) {
+            Button(onClick = { onContinueClick(UserProfile(fullName, nickName, email, phoneNumber.toLongOrNull() ?: 0L, "")) }, modifier = modifier.weight(1f)) {
                 Text(text = "Continue")
             }
         }

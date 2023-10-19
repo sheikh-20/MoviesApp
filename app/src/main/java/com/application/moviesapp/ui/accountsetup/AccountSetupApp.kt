@@ -26,13 +26,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.application.moviesapp.ui.home.HomeActivity
-import com.application.moviesapp.ui.onboarding.OnboardingScreen
 import com.application.moviesapp.ui.onboarding.signup.ChooseYourInterestScreen
 import com.application.moviesapp.ui.onboarding.signup.CreateNewPinScreen
 import com.application.moviesapp.ui.onboarding.signup.FillYourProfileScreen
 import com.application.moviesapp.ui.onboarding.signup.SetYourFingerprintScreen
 import com.application.moviesapp.ui.viewmodel.OnboardingViewModel
+import timber.log.Timber
 
+private const val TAG = "AccountSetupApp"
 @Composable
 fun AccountSetupApp(modifier: Modifier = Modifier,
                     navController: NavHostController = rememberNavController(),
@@ -41,6 +42,10 @@ fun AccountSetupApp(modifier: Modifier = Modifier,
     val context = LocalContext.current
     val backStackEntry by navController.currentBackStackEntryAsState()
     val uiState by onboardingViewModel.movieGenreUiState.collectAsState()
+
+    val movieGenre by onboardingViewModel.readUserPreference.collectAsState()
+
+    Timber.tag(TAG).d(movieGenre.genreList.toString())
 
     Scaffold(
         topBar = {
@@ -53,14 +58,21 @@ fun AccountSetupApp(modifier: Modifier = Modifier,
                 ChooseYourInterestScreen(
                     modifier = modifier,
                     uiState = uiState,
-                    onContinueClick = { navController.navigate(AccountSetupScreen.FillYourProfile.title) }
+                    onContinueClick = {
+                        onboardingViewModel.saveMovieGenre()
+                        navController.navigate(AccountSetupScreen.FillYourProfile.title)
+                                      },
+                    onGenreClick = { onboardingViewModel.updateMovieGenre(it) }
                 )
             }
 
             composable(route = AccountSetupScreen.FillYourProfile.title) {
                 FillYourProfileScreen(
                     modifier = modifier,
-                    onContinueClick = { navController.navigate(AccountSetupScreen.CreateNewPin.title) }
+                    onContinueClick = {
+                        onboardingViewModel.updateProfile(it.fullName, it.nickName, it.email, it.phoneNumber, it.gender)
+                        navController.navigate(AccountSetupScreen.CreateNewPin.title)
+                    }
                 )
             }
 

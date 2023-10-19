@@ -1,13 +1,15 @@
 package com.application.moviesapp.di
 
-import com.application.moviesapp.data.repository.AuthRepo
-import com.application.moviesapp.data.repository.AuthRepoImpl
 import com.application.moviesapp.data.repository.AuthRepository
 import com.application.moviesapp.data.repository.AuthRepositoryImpl
-import com.application.moviesapp.data.repository.FacebookRepoImpl
-import com.application.moviesapp.data.repository.GoogleRepoImpl
+import com.application.moviesapp.data.repository.FacebookRepositoryImpl
+import com.application.moviesapp.data.repository.GoogleRepositoryImpl
 import com.application.moviesapp.data.repository.MoviesRepository
 import com.application.moviesapp.data.repository.MoviesRepositoryImpl
+import com.application.moviesapp.data.repository.SignInEmailRepositoryImpl
+import com.application.moviesapp.data.repository.SignUpEmailRepositoryImpl
+import com.application.moviesapp.data.repository.UserPreferenceRepoImpl
+import com.application.moviesapp.data.repository.UserPreferenceRepository
 import com.application.moviesapp.data.repository.YoutubeRepository
 import com.application.moviesapp.data.repository.YoutubeRepositoryImpl
 import dagger.Binds
@@ -23,26 +25,34 @@ abstract class RepositoryModule {
     abstract fun providesMoviesRepositoryImpl(moviesRepositoryImpl: MoviesRepositoryImpl): MoviesRepository
 
     @Binds
-    abstract fun providesAuthRepositoryImpl(authRepositoryImpl: AuthRepositoryImpl): AuthRepository
-
+    abstract fun providesUserPreferencesRepositoryImpl(userPreferenceRepoImpl: UserPreferenceRepoImpl): UserPreferenceRepository
 
     //Google
     @Binds
     @Named("GoogleRepo")
-    abstract fun providesGoogleRepoImpl(googleRepoImpl: GoogleRepoImpl): AuthRepo
+    abstract fun providesGoogleRepoImpl(googleRepoImpl: GoogleRepositoryImpl): AuthRepository
 
     //Github
     @Binds
     @Named("GithubRepo")
-    abstract fun providesGithubRepoImpl(authRepoImpl: AuthRepoImpl): AuthRepo
-
+    abstract fun providesGithubRepoImpl(authRepoImpl: AuthRepositoryImpl): AuthRepository
 
     //Facebook
     @Binds
     @Named("FacebookRepo")
-    abstract fun providesFacebookRepoImpl(facebookRepoImpl: FacebookRepoImpl): AuthRepo
+    abstract fun providesFacebookRepoImpl(facebookRepoImpl: FacebookRepositoryImpl): AuthRepository
+
+    //Email
+    @Binds
+    @Named("SignInEmailRepo")
+    abstract fun providesSignInEmailRepoImpl(signInEmailRepoImpl: SignInEmailRepositoryImpl): AuthRepository
+
+    @Binds
+    @Named("SignUpEmailRepo")
+    abstract fun providesSignUpEmailRepoImpl(signUpEmailRepoImpl: SignUpEmailRepositoryImpl): AuthRepository
 
     @Binds
     abstract fun providesYoutubeRepositoryImpl(youtubeRepositoryImpl: YoutubeRepositoryImpl): YoutubeRepository
+
 
 }

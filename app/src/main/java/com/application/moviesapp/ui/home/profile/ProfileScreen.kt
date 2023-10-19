@@ -46,7 +46,9 @@ import com.application.moviesapp.ui.signin.UserData
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 
 @Composable
-fun ProfileScreen(modifier: Modifier = Modifier, uiState: UserData? = null, onSignOutClick: () -> Unit = {}) {
+fun ProfileScreen(modifier: Modifier = Modifier,
+                  uiState: UserData? = null,
+                  onSignOutClick: () -> Unit = {}) {
     Column(modifier = modifier
         .fillMaxSize()
         .wrapContentSize(align = Alignment.Center)

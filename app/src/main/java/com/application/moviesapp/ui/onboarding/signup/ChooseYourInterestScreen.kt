@@ -36,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.application.moviesapp.R
 import com.application.moviesapp.data.api.response.MovieGenreResponse
+import com.application.moviesapp.domain.model.MoviesDetail
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.viewmodel.MovieGenreUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,7 +45,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 @Composable
 fun ChooseYourInterestScreen(modifier: Modifier = Modifier,
                              uiState: MovieGenreUiState = MovieGenreUiState.Loading,
-                             onContinueClick: () -> Unit = {}) {
+                             onContinueClick: () -> Unit = {},
+                             onGenreClick: (MoviesDetail.Genre) -> Unit = { }) {
 
     var selectedGenre by remember { mutableStateOf(false) }
 
@@ -81,7 +83,9 @@ fun ChooseYourInterestScreen(modifier: Modifier = Modifier,
                     uiState.genreResponse.genres?.forEachIndexed { index, genre ->
                         FilterChip(
                             modifier = modifier.heightIn(min = 40.dp),
-                            onClick = { selectedGenre = !selectedGenre },
+                            onClick = {
+                                onGenreClick(MoviesDetail.Genre(genre?.id, genre?.name))
+                                      },
                             label = { Text(text = genre?.name ?: "", textAlign = TextAlign.Center) },
                             selected = selectedGenre,
                             shape = RoundedCornerShape(50)

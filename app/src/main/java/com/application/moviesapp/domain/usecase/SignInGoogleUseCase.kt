@@ -1,20 +1,17 @@
 package com.application.moviesapp.domain.usecase
 
 import android.app.Activity
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import com.application.moviesapp.R
 import com.application.moviesapp.data.common.Resource
-import com.application.moviesapp.data.repository.AuthRepo
 import com.application.moviesapp.data.repository.AuthRepository
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.AuthResult
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 import java.util.concurrent.CancellationException
@@ -24,7 +21,7 @@ interface SignInGoogleUseCase {
     operator fun invoke(activity: Activity?, intent: Intent?): Flow<Resource<AuthResult>>
 }
 
-class SignInGoogleInteractor @Inject constructor(private val repository: AuthRepo,
+class SignInGoogleInteractor @Inject constructor(private val repository: AuthRepository,
                                                  private val oneTapClient: SignInClient): SignInGoogleUseCase {
 
     companion object {

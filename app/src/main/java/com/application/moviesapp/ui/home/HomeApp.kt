@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.Search
@@ -26,6 +27,8 @@ import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.NotificationsNone
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -53,7 +56,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -64,6 +70,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -86,6 +93,7 @@ import com.application.moviesapp.ui.viewmodel.HomeViewModel
 import com.application.moviesapp.ui.viewmodel.MoviesWithNewReleaseUiState
 import com.application.moviesapp.ui.viewmodel.MyListViewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -104,9 +112,18 @@ fun HomeApp(modifier: Modifier = Modifier,
     val moviesFlowState = exploreViewModel.moviesPagingFlow.collectAsLazyPagingItems()
 
     val coroutineScope = rememberCoroutineScope()
-    val modalSheetState = rememberModalBottomSheetState()
+    var showBottomSheet by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
+
+    if (showBottomSheet) { BottomSheet(
+        onDismiss = { showBottomSheet = false },
+        onNegativeClick = { showBottomSheet = false },
+        onPositiveClick = {
+            homeViewModel.signOut()
+            (context as Activity).finish()
+            OnboardingActivity.startActivity(context as Activity)
+        }) }
 
     Scaffold(
         topBar = { HomeTopAppbar(navController, exploreViewModel) },
@@ -129,11 +146,67 @@ fun HomeApp(modifier: Modifier = Modifier,
                 DownloadScreen()
             }
             composable(route = BottomNavigationScreens.Profile.route) {
-                ProfileScreen(uiState = profileUiState, onSignOutClick = {
-                    homeViewModel.signOut()
-                    (context as Activity).finish()
-                    OnboardingActivity.startActivity(context as Activity)
-                })
+                ProfileScreen(
+                    uiState = profileUiState,
+                    onSignOutClick = {
+                        showBottomSheet = true
+                    },)
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun BottomSheet(modifier: Modifier = Modifier, onDismiss: () -> Unit = {}, onNegativeClick: () -> Unit = {}, onPositiveClick: () -> Unit = {}) {
+    val bottomSheet = rememberModalBottomSheetState()
+    val coroutineScope = rememberCoroutineScope()
+
+    ModalBottomSheet(
+        modifier = modifier,
+        onDismissRequest = {
+            coroutineScope.launch {
+                onDismiss()
+                bottomSheet.hide()
+            }
+        },
+        sheetState = bottomSheet,
+        dragHandle = { BottomSheetDefaults.DragHandle() },
+    ) {
+        BottomSheetContent(
+            onNegativeClick = onNegativeClick,
+            onPositiveClick = onPositiveClick
+        )
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun BottomSheetContent(modifier: Modifier = Modifier, onNegativeClick: () -> Unit = { }, onPositiveClick: () -> Unit = {}) {
+    Column(modifier = modifier.padding(16.dp).systemBarsPadding(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Text(text = "Logout",
+            style = MaterialTheme.typography.headlineSmall,
+            textAlign = TextAlign.Center,
+            modifier = modifier.fillMaxWidth())
+
+        Divider()
+
+        Text(text = "Are you sure you want to log out?",
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = modifier.fillMaxWidth())
+
+        Row(modifier = modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically) {
+
+            OutlinedButton(onClick = onNegativeClick, modifier = modifier.weight(1f)) {
+                Text(text = "Cancel")
+            }
+
+            Button(onClick = onPositiveClick, modifier = modifier.weight(1f)) {
+                Text(text = "Yes, Logout")
             }
         }
     }
@@ -331,6 +404,7 @@ private fun SortFilterContent(modifier: Modifier = Modifier) {
         }
     }
 }
+
 
 sealed class BottomNavigationScreens(val route: String, @StringRes val stringResource: Int, val vectorResource: ImageVector) {
     object Home: BottomNavigationScreens(route = "Home", stringResource = R.string.home, vectorResource = Icons.Rounded.Home)

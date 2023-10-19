@@ -16,11 +16,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -58,13 +61,17 @@ fun OnboardingApp(modifier: Modifier = Modifier,
     val backStackEntry by navController.currentBackStackEntryAsState()
     val uiState by onboardingViewModel.movieGenreUiState.collectAsState()
 
+    val snackbarHostState = remember { SnackbarHostState() }
+
     val onSocialSignIn = onboardingViewModel.socialSignIn
 
     val coroutineScope = rememberCoroutineScope()
 
     val context = LocalContext.current
 
-    Scaffold(topBar = { OnboardingAppBar(currentScreen = backStackEntry?.destination?.route ?: OnboardingScreen.Start.name, canNavigateBack = navController.previousBackStackEntry != null) { navController.navigateUp() } },
+    Scaffold(
+        topBar = { OnboardingAppBar(currentScreen = backStackEntry?.destination?.route ?: OnboardingScreen.Start.name, canNavigateBack = navController.previousBackStackEntry != null) { navController.navigateUp() } },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
      ) { innerPadding ->
             NavHost(modifier = modifier.padding(innerPadding),
                 navController = navController,
@@ -82,10 +89,6 @@ fun OnboardingApp(modifier: Modifier = Modifier,
                         onSignupClick = { navController.navigate(OnboardingScreen.SignupWithPassword.name) },
                         onGoogleSignInClick = { activity, intent ->  onboardingViewModel.signInGoogle(activity, intent) },
                         onGithubSignInClick = { onboardingViewModel.signInGithub(context as Activity) },
-                        onFacebookSignInClick = {
-                            GetSignInFacebookInteractor.loginManager.logInWithReadPermissions(context as ActivityResultRegistryOwner, GetSignInFacebookInteractor.callbackManager, mutableListOf("email", "public_profile"))
-                            onboardingViewModel.signInFacebook()
-                        },
                         onSocialSignIn = onSocialSignIn,
                     )
                 }
@@ -93,17 +96,24 @@ fun OnboardingApp(modifier: Modifier = Modifier,
                 composable(route = OnboardingScreen.LoginWithPassword.name) {
                     LoginWithPasswordScreen(
                         modifier = modifier,
-                        onSignupClick = { navController.navigate(OnboardingScreen.SignupWithPassword.name) }
+                        onSignInClick = { email: String?, password: String? -> onboardingViewModel.signInEmail(email, password) },
+                        onSignupClick = { navController.navigate(OnboardingScreen.SignupWithPassword.name) },
+                        onGoogleSignInClick = { activity, intent ->  onboardingViewModel.signInGoogle(activity, intent) },
+                        onGithubSignInClick = { onboardingViewModel.signInGithub(context as Activity) },
+                        onSocialSignIn = onSocialSignIn,
+                        snackbarHostState = snackbarHostState
                     )
                 }
 
                 composable(route = OnboardingScreen.SignupWithPassword.name) {
                     SignupWithPasswordScreen(
                         modifier = modifier,
-                        onSigninClick = { navController.navigate(OnboardingScreen.LoginWithPassword.name) },
-                        onSignupClick = {
-//                            navController.navigate(OnboardingScreen.ChooseYourInterest.name)
-                                                }
+                        onSignInClick = { navController.navigate(OnboardingScreen.LoginWithPassword.name) },
+                        onSignupClick = { email: String?, password: String? -> onboardingViewModel.signUpEmail(email, password) },
+                        onGoogleSignInClick = { activity, intent ->  onboardingViewModel.signInGoogle(activity, intent) },
+                        onGithubSignInClick = { onboardingViewModel.signInGithub(context as Activity) },
+                        onSocialSignIn = onSocialSignIn,
+                        snackbarHostState = snackbarHostState
                     )
                 }
             }

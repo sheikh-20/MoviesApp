@@ -49,7 +49,6 @@ class HomeViewModel @Inject constructor(private val useCase: MoviesUseCase,
                                         private val moviesRepository: MoviesRepository,
                                         private val moviesNewReleaseUseCase: MoviesNewReleaseUseCase,
                                         private val moviesUpcomingUseCase: MoviesUpcomingUseCase,
-                                        private val authRepository: AuthRepository,
 
 
     ): ViewModel() {
@@ -126,7 +125,7 @@ class HomeViewModel @Inject constructor(private val useCase: MoviesUseCase,
     }
 
     fun signOut() = viewModelScope.launch {
-        authRepository.signOut()
+        auth.signOut()
     }
 
 

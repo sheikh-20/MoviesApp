@@ -1,8 +1,8 @@
 package com.application.moviesapp.di
 
-import com.application.moviesapp.data.repository.AuthRepo
 import com.application.moviesapp.data.repository.AuthRepository
 import com.application.moviesapp.data.repository.MoviesRepository
+import com.application.moviesapp.data.repository.UserPreferenceRepository
 import com.application.moviesapp.data.repository.YoutubeRepository
 import com.application.moviesapp.domain.GetMoviesNewReleaseInteractor
 import com.application.moviesapp.domain.GetMoviesWithNewReleaseInteractor
@@ -14,23 +14,29 @@ import com.application.moviesapp.domain.MoviesSortUseCase
 import com.application.moviesapp.domain.MoviesUseCase
 import com.application.moviesapp.domain.usecase.GetMovieDetailInteractor
 import com.application.moviesapp.domain.usecase.GetMovieFavouriteInteractor
+import com.application.moviesapp.domain.usecase.GetAccountSetupInteractor
 import com.application.moviesapp.domain.usecase.GetMovieStateInteractor
 import com.application.moviesapp.domain.usecase.GetMovieTrailerInteractor
 import com.application.moviesapp.domain.usecase.GetSignInFacebookInteractor
 import com.application.moviesapp.domain.usecase.GetUserInfoInteractor
 import com.application.moviesapp.domain.usecase.MovieDetailsUseCase
 import com.application.moviesapp.domain.usecase.MovieFavouriteUseCase
+import com.application.moviesapp.domain.usecase.AccountSetupUseCase
 import com.application.moviesapp.domain.usecase.MovieStateUseCase
 import com.application.moviesapp.domain.usecase.MovieTrailerUseCase
 import com.application.moviesapp.domain.usecase.MovieUpdateFavouriteInteractor
 import com.application.moviesapp.domain.usecase.MovieUpdateFavouriteUseCase
 import com.application.moviesapp.domain.usecase.MoviesUpcomingInterator
 import com.application.moviesapp.domain.usecase.MoviesUpcomingUseCase
+import com.application.moviesapp.domain.usecase.SignInEmailInteractor
+import com.application.moviesapp.domain.usecase.SignInEmailUseCase
 import com.application.moviesapp.domain.usecase.SignInFacebookUseCase
 import com.application.moviesapp.domain.usecase.SignInGithubInteractor
 import com.application.moviesapp.domain.usecase.SignInGithubUseCase
 import com.application.moviesapp.domain.usecase.SignInGoogleInteractor
 import com.application.moviesapp.domain.usecase.SignInGoogleUseCase
+import com.application.moviesapp.domain.usecase.SignUpEmailInteractor
+import com.application.moviesapp.domain.usecase.SignUpEmailUseCase
 import com.application.moviesapp.domain.usecase.UserInfoUseCase
 import com.application.moviesapp.domain.usecase.YoutubeThumbnailInteractor
 import com.application.moviesapp.domain.usecase.YoutubeThumbnailUseCase
@@ -78,26 +84,32 @@ class UseCaseModule {
 
     @Provides
     @Singleton
-    fun providesSignInGoogleUseCase(@Named("GoogleRepo") authRepo: AuthRepo, oneTapClient: SignInClient): SignInGoogleUseCase {
-        return SignInGoogleInteractor(authRepo, oneTapClient)
+    fun providesSignInGoogleUseCase(@Named("GoogleRepo") authRepository: AuthRepository, oneTapClient: SignInClient): SignInGoogleUseCase {
+        return SignInGoogleInteractor(authRepository, oneTapClient)
     }
 
     @Provides
     @Singleton
-    fun providesSignInGithubUseCase(@Named("GithubRepo") authRepo: AuthRepo): SignInGithubUseCase {
-        return SignInGithubInteractor(authRepo)
+    fun providesSignInGithubUseCase(@Named("GithubRepo") authRepository: AuthRepository): SignInGithubUseCase {
+        return SignInGithubInteractor(authRepository)
     }
 
     @Provides
     @Singleton
-    fun providesSignInFacebookUseCase(@Named("FacebookRepo") authRepo: AuthRepo): SignInFacebookUseCase {
-        return GetSignInFacebookInteractor(authRepo)
+    fun providesSignInFacebookUseCase(@Named("FacebookRepo") authRepository: AuthRepository): SignInFacebookUseCase {
+        return GetSignInFacebookInteractor(authRepository)
     }
 
     @Provides
     @Singleton
-    fun providesUserInfoUseCase(authRepository: AuthRepository): UserInfoUseCase {
-        return GetUserInfoInteractor(authRepository)
+    fun providesSignInEmailUseCase(@Named("SignInEmailRepo") authRepository: AuthRepository): SignInEmailUseCase {
+        return SignInEmailInteractor(authRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesSignUpEmailUseCase(@Named("SignUpEmailRepo") authRepository: AuthRepository): SignUpEmailUseCase {
+        return SignUpEmailInteractor(authRepository)
     }
 
     @Provides
@@ -138,4 +150,11 @@ class UseCaseModule {
     fun providesMovieStateUseCase(moviesRepository: MoviesRepository): MovieStateUseCase {
         return GetMovieStateInteractor(moviesRepository)
     }
+
+    @Provides
+    @Singleton
+    fun providesSetAccountSetupUseCase(userPreferenceRepository: UserPreferenceRepository): AccountSetupUseCase {
+        return GetAccountSetupInteractor(userPreferenceRepository)
+    }
 }
+

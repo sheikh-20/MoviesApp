@@ -17,6 +17,11 @@ import com.application.moviesapp.data.common.Resource
 import com.application.moviesapp.ui.home.HomeActivity
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.viewmodel.OnboardingViewModel
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.login.LoginManager
+import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,6 +38,10 @@ import kotlin.coroutines.coroutineContext
 class OnboardingActivity: BaseActivity() {
 
     companion object {
+        val loginManager = LoginManager.getInstance()
+        val callbackManager = CallbackManager.Factory.create()
+
+
         private const val TAG = "OnboardingActivity"
 
         fun startActivity(activity: Activity?) {
@@ -42,6 +51,21 @@ class OnboardingActivity: BaseActivity() {
     }
 
     private val viewModel: OnboardingViewModel by viewModels()
+
+    private val facebookCallback  = object : FacebookCallback<LoginResult> {
+        override fun onCancel() {
+
+        }
+
+        override fun onError(error: FacebookException) {
+            Timber.tag(TAG).e(error.message.toString())
+        }
+
+        override fun onSuccess(result: LoginResult) {
+            Timber.tag(TAG).d(result.accessToken.token)
+            viewModel.signInFacebook(result.accessToken.token)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,5 +96,9 @@ class OnboardingActivity: BaseActivity() {
                 }
             }
         }
+    }
+
+    init {
+        loginManager.registerCallback(callbackManager, facebookCallback)
     }
 }

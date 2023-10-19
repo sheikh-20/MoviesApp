@@ -6,6 +6,7 @@ import android.content.IntentSender
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultRegistryOwner
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
@@ -59,12 +60,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.application.moviesapp.R
 import com.application.moviesapp.data.common.Resource
+import com.application.moviesapp.domain.usecase.GetSignInFacebookInteractor
 import com.application.moviesapp.domain.usecase.SignInGoogleInteractor
 import com.application.moviesapp.ui.accountsetup.AccountSetupActivity
 import com.application.moviesapp.ui.accountsetup.AccountSetupApp
 import com.application.moviesapp.ui.home.HomeActivity
+import com.application.moviesapp.ui.onboarding.OnboardingActivity
+import com.application.moviesapp.ui.onboarding.OnboardingScreen
 import com.application.moviesapp.ui.signin.SignInResult
 import com.application.moviesapp.ui.theme.MoviesAppTheme
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.login.LoginResult
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
 import kotlinx.coroutines.flow.Flow
@@ -79,7 +86,6 @@ fun LoginScreen(modifier: Modifier = Modifier,
                 onSignupClick: () -> Unit = {},
                 onGoogleSignInClick: (Activity?, Intent?) -> Unit = { _, _ ->},
                 onGithubSignInClick: () -> Unit = {},
-                onFacebookSignInClick: () -> Unit = {},
                 onSocialSignIn: SharedFlow<Resource<AuthResult>>? = null
                 ) {
 
@@ -144,7 +150,9 @@ fun LoginScreen(modifier: Modifier = Modifier,
             LoginComponent(
                 icon = R.drawable.ic_facebook,
                 text = R.string.continue_with_facebook,
-                onClick = onFacebookSignInClick)
+                onClick = {
+                    OnboardingActivity.loginManager.logInWithReadPermissions(context as ActivityResultRegistryOwner, OnboardingActivity.callbackManager, mutableListOf("email", "public_profile"))
+                })
 
             LoginComponent(
                 icon = R.drawable.ic_google,
