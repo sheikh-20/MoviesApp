@@ -3,22 +3,22 @@ package com.application.moviesapp.ui.home
 import android.app.Activity
 import android.widget.Toast
 import androidx.annotation.StringRes
-import androidx.compose.foundation.background
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.FileDownload
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.rounded.Bookmark
 import androidx.compose.material.icons.rounded.Explore
@@ -27,7 +27,6 @@ import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.NotificationsNone
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -45,16 +44,14 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -79,7 +76,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.application.moviesapp.R
 import com.application.moviesapp.ui.home.download.DownloadScreen
@@ -92,7 +88,6 @@ import com.application.moviesapp.ui.viewmodel.ExploreViewModel
 import com.application.moviesapp.ui.viewmodel.HomeViewModel
 import com.application.moviesapp.ui.viewmodel.MoviesWithNewReleaseUiState
 import com.application.moviesapp.ui.viewmodel.MyListViewModel
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.launch
 
 
@@ -125,9 +120,27 @@ fun HomeApp(modifier: Modifier = Modifier,
             OnboardingActivity.startActivity(context as Activity)
         }) }
 
+    val exploreScrollState = rememberLazyGridState()
+    val exploreHideTopAppBar by remember(exploreScrollState) {
+        derivedStateOf {
+            exploreScrollState.firstVisibleItemIndex == 0
+        }
+    }
+
+    val myListScrollState = rememberLazyGridState()
+    val myListHideTopAppBar by remember(myListScrollState) {
+        derivedStateOf {
+            myListScrollState.firstVisibleItemIndex == 0
+        }
+    }
+
     Scaffold(
-        topBar = { HomeTopAppbar(navController, exploreViewModel) },
-        bottomBar = { HomeBottomBarNavigation(navController) },
+        topBar = {
+            HomeTopAppbar(navController, exploreViewModel, exploreHideTopAppBar, myListHideTopAppBar)
+        },
+        bottomBar = {
+            HomeBottomBarNavigation(navController)
+        },
     ) { paddingValues ->
         NavHost(
             navController = navController, startDestination = BottomNavigationScreens.Home.route) {
@@ -135,12 +148,20 @@ fun HomeApp(modifier: Modifier = Modifier,
                 HomeScreen(modifier = modifier, uiState = homeUiState, bottomPadding = paddingValues)
             }
             composable(route = BottomNavigationScreens.Explore.route) {
-                ExploreScreen(modifier = modifier.padding(paddingValues), uiState = exploreUiState, moviesFlow = moviesFlowState)
+                ExploreScreen(
+                    modifier = modifier,
+                    uiState = exploreUiState,
+                    moviesFlow = moviesFlowState,
+                    lazyGridState = exploreScrollState,
+                    bottomPadding = paddingValues)
             }
             composable(route = BottomNavigationScreens.MyList.route) {
-                MyListScreen(modifier = modifier.padding(paddingValues),
+                MyListScreen(
+                    modifier = modifier,
                     uiState = myListUiState,
-                    onFavouriteCalled = myListViewModel::getMovieFavourite)
+                    onFavouriteCalled = myListViewModel::getMovieFavourite,
+                    lazyGridState = myListScrollState,
+                    bottomPadding = paddingValues)
             }
             composable(route = BottomNavigationScreens.Download.route) {
                 DownloadScreen()
@@ -183,7 +204,9 @@ private fun BottomSheet(modifier: Modifier = Modifier, onDismiss: () -> Unit = {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun BottomSheetContent(modifier: Modifier = Modifier, onNegativeClick: () -> Unit = { }, onPositiveClick: () -> Unit = {}) {
-    Column(modifier = modifier.padding(16.dp).systemBarsPadding(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    Column(modifier = modifier
+        .padding(16.dp)
+        .systemBarsPadding(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(text = "Logout",
             style = MaterialTheme.typography.headlineSmall,
             textAlign = TextAlign.Center,
@@ -214,54 +237,72 @@ private fun BottomSheetContent(modifier: Modifier = Modifier, onNegativeClick: (
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun HomeTopAppbar(navController: NavHostController, exploreViewModel: ExploreViewModel = viewModel()) {
+private fun HomeTopAppbar(navController: NavHostController,
+                          exploreViewModel: ExploreViewModel = viewModel(),
+                          exploreHideTopAppBar: Boolean,
+                          mylistHideTopAppBar: Boolean
+                          ) {
 
     val context = LocalContext.current
 
     when (navController.currentBackStackEntryAsState().value?.destination?.route) {
         BottomNavigationScreens.Explore.route -> {
-            TopAppBar(
-                title = {
-                    OutlinedTextField(
-                        value = exploreViewModel.searchInputField,
-                        onValueChange = exploreViewModel::updateSearchField,
-                        label = {  
-                            Text(text = "Search")
-                        },
-                        leadingIcon = {
-                            Icon(imageVector = Icons.Rounded.Search, contentDescription = null)
-                        },
-                        modifier = Modifier
-                            .height(64.dp)
-                            .fillMaxWidth()
-                            .padding(end = 20.dp),
-                        shape = RoundedCornerShape(30)
+            AnimatedVisibility(
+                visible = exploreHideTopAppBar,
+                enter = slideInVertically(animationSpec = tween(durationMillis = 200)),
+                exit = slideOutVertically(animationSpec = tween(durationMillis = 200))) {
+
+                TopAppBar(
+                    title = {
+                        OutlinedTextField(
+                            value = exploreViewModel.searchInputField,
+                            onValueChange = exploreViewModel::updateSearchField,
+                            label = {
+                                Text(text = "Search")
+                            },
+                            leadingIcon = {
+                                Icon(imageVector = Icons.Rounded.Search, contentDescription = null)
+                            },
+                            modifier = Modifier
+                                .height(64.dp)
+                                .fillMaxWidth()
+                                .padding(end = 20.dp),
+                            shape = RoundedCornerShape(30)
                         )
-                        },
-                actions = {
-                    FloatingActionButton(onClick = { Toast.makeText(context, "Clicked!", Toast.LENGTH_LONG).show() }, elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(defaultElevation = 0.dp)) {
-                        Icon(imageVector = Icons.Outlined.Tune, contentDescription = null)
-                    }
-                },
-            )
+                    },
+                    actions = {
+                        FloatingActionButton(onClick = { Toast.makeText(context, "Clicked!", Toast.LENGTH_LONG).show() }, elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(defaultElevation = 0.dp)) {
+                            Icon(imageVector = Icons.Outlined.Tune, contentDescription = null)
+                        }
+                    },
+                )
+            }
         }
         BottomNavigationScreens.MyList.route -> {
-            TopAppBar(
-                title = { Text(text = "My List") },
-                navigationIcon = {
-                    IconButton(onClick = {   }) {
-                        Icon(painter = painterResource(id = R.drawable.ic_movie),
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSecondary)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = {}) {
-                        Icon(imageVector = Icons.Rounded.Search, contentDescription = null)
-                    }
-                },
-                colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent)
-            )
+
+            AnimatedVisibility(
+                visible = mylistHideTopAppBar,
+                enter = slideInVertically(animationSpec = tween(durationMillis = 200)),
+                exit = slideOutVertically(animationSpec = tween(durationMillis = 200))) {
+
+                TopAppBar(
+                    title = { Text(text = "My List") },
+                    navigationIcon = {
+                        IconButton(onClick = {   }) {
+                            Icon(painter = painterResource(id = R.drawable.ic_movie),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSecondary)
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = {}) {
+                            Icon(imageVector = Icons.Rounded.Search, contentDescription = null)
+                        }
+                    },
+                    colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent)
+                )
+
+            }
         }
         BottomNavigationScreens.Download.route -> {
             TopAppBar(
@@ -294,7 +335,7 @@ private fun HomeTopAppbar(navController: NavHostController, exploreViewModel: Ex
                 colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent)
             )
         }
-        else -> {
+        BottomNavigationScreens.Home.route -> {
             TopAppBar(
                 title = {},
                 navigationIcon = {

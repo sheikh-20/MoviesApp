@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -48,19 +50,16 @@ import com.application.moviesapp.ui.utility.toOneDecimal
 @Composable
 fun MyListScreen(modifier: Modifier = Modifier,
                  uiState: Resource<List<MovieFavourite>> = Resource.Loading,
-                 onFavouriteCalled: () -> Unit = {}) {
+                 onFavouriteCalled: () -> Unit = {},
+                 lazyGridState: LazyGridState = LazyGridState(),
+                 bottomPadding: PaddingValues = PaddingValues()
+) {
 
     LaunchedEffect(key1 = null) {
         onFavouriteCalled()
     }
 
-    Column(modifier = modifier
-        .fillMaxSize()
-        .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally) {
-
-        when (uiState) {
+    when (uiState) {
             is Resource.Loading -> {
                 CircularProgressIndicator(modifier = modifier
                     .fillMaxSize()
@@ -103,20 +102,26 @@ fun MyListScreen(modifier: Modifier = Modifier,
                                 .wrapContentWidth(align = Alignment.CenterHorizontally))
                     }
                 } else {
-                    LazyVerticalGrid(
-                        modifier = Modifier.fillMaxSize(),
-                        columns = GridCells.Fixed(2),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Column(modifier = modifier
+                        .fillMaxSize()
+                        .padding(top = bottomPadding.calculateTopPadding(), bottom = bottomPadding.calculateBottomPadding())) {
 
-                        items(uiState.data) {
-                            MovieImageCard(imageUrl = it.posterPath ?: "", rating = it.voteAverage.toString(), movieId = it.id ?: 0)
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            state = lazyGridState,
+                            contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
+
+                            items(uiState.data) {
+                                MovieImageCard(imageUrl = it.posterPath ?: "", rating = it.voteAverage.toString(), movieId = it.id ?: 0)
+                            }
                         }
                     }
                 }
             }
         }
-    }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

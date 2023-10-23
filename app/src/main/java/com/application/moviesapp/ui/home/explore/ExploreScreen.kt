@@ -4,11 +4,14 @@ import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -29,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.PagingConfig
 import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.itemKey
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.application.moviesapp.R
@@ -39,7 +43,12 @@ import com.application.moviesapp.ui.utility.toImageUrl
 import com.application.moviesapp.ui.viewmodel.ExploreUiState
 
 @Composable
-fun ExploreScreen(modifier: Modifier = Modifier, uiState: ExploreUiState = ExploreUiState.Loading, moviesFlow: LazyPagingItems<Movies>) {
+fun ExploreScreen(modifier: Modifier = Modifier,
+                  uiState: ExploreUiState = ExploreUiState.Loading,
+                  moviesFlow: LazyPagingItems<Movies>,
+                  lazyGridState: LazyGridState = LazyGridState(),
+                  bottomPadding: PaddingValues = PaddingValues()
+) {
 
 //    when (uiState) {
 //        is ExploreUiState.Loading -> {
@@ -72,13 +81,17 @@ fun ExploreScreen(modifier: Modifier = Modifier, uiState: ExploreUiState = Explo
 
     Column(modifier = modifier
         .fillMaxSize()
-        .padding(16.dp)) {
+        .padding(top = bottomPadding.calculateTopPadding(), bottom = bottomPadding.calculateBottomPadding())) {
 
-        LazyVerticalGrid(columns = GridCells.Fixed(2),
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            state = lazyGridState,
+            contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp)
+        ) {
 
-            items(moviesFlow.itemCount) { index ->
+            items(count = moviesFlow.itemCount) { index ->
                 MovieImageCard(imageUrl = moviesFlow[index]?.posterPath ?: "", rating = moviesFlow[index]?.voteAverage.toString() ?: "", movieId = moviesFlow[index]?.movieId)
             }
         }

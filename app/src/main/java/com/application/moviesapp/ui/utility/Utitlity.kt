@@ -1,5 +1,6 @@
 package com.application.moviesapp.ui.utility
 
+import androidx.compose.foundation.lazy.LazyListState
 import com.application.moviesapp.BuildConfig
 
 val String.toImageUrl: String
@@ -24,3 +25,6 @@ val Double.toOneDecimal: String
     get() {
         return "%.1f".format(this)
     }
+
+val LazyListState.isScrolled: Boolean
+    get() = firstVisibleItemIndex > 0 || firstVisibleItemScrollOffset > 0

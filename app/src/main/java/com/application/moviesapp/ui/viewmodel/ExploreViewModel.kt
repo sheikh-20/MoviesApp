@@ -63,7 +63,7 @@ class ExploreViewModel @Inject constructor(private val useCase: MoviesSortUseCas
     var searchInputField by mutableStateOf("")
         private set
 
-    val moviesPagingFlow = moviesPopularUseCase.invoke().cachedIn(viewModelScope)
+    val moviesPagingFlow = moviesPopularUseCase().cachedIn(viewModelScope)
 
     fun getTrendingMovies() = viewModelScope.launch(Dispatchers.IO) {
         _exploreUiState.value = ExploreUiState.Loading
