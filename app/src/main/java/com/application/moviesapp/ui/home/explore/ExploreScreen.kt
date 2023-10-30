@@ -40,6 +40,7 @@ import com.application.moviesapp.domain.Movies
 import com.application.moviesapp.ui.detail.DetailActivity
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.utility.toImageUrl
+import com.application.moviesapp.ui.utility.toOneDecimal
 import com.application.moviesapp.ui.viewmodel.ExploreUiState
 
 @Composable
@@ -121,7 +122,7 @@ private fun MovieImageCard(modifier: Modifier = Modifier, imageUrl: String = "",
                 .fillMaxSize()
                 .wrapContentSize(align = Alignment.TopStart)
                 .padding(8.dp), shape = RoundedCornerShape(30), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)) {
-                Text(text = rating, modifier = modifier.padding(horizontal = 10.dp, vertical = 8.dp), style = MaterialTheme.typography.bodySmall)
+                Text(text = rating.toDoubleOrNull()?.toOneDecimal ?: "", modifier = modifier.padding(horizontal = 10.dp, vertical = 8.dp), style = MaterialTheme.typography.bodySmall)
             }
         }
     }

@@ -10,6 +10,7 @@ import com.application.moviesapp.data.api.response.MovieStateDto
 import com.application.moviesapp.data.api.response.MovieTopRatedResponse
 import com.application.moviesapp.data.api.response.MovieTrailerDto
 import com.application.moviesapp.data.api.response.MovieUpdateFavouriteDto
+import com.application.moviesapp.data.api.response.TvSeriesGenreResponse
 import com.application.moviesapp.data.remote.MovieNewReleasesDto
 import com.application.moviesapp.data.remote.MovieUpcomingDto
 import com.application.moviesapp.data.remote.MoviesDto
@@ -27,6 +28,12 @@ interface MoviesApi {
 
     @GET("/3/genre/movie/list")
     suspend fun getMoviesGenreList(): MovieGenreResponse
+
+    @GET("/3/genre/movie/list")
+    suspend fun getMovieGenres(): Response<MovieGenreResponse>
+
+    @GET("/3/genre/tv/list")
+    suspend fun getTVSeriesGenres(): Response<MovieGenreResponse>
 
     @GET("/3/movie/now_playing")
     suspend fun getNewReleasesList(@Query("language") language: String = "en-US", @Query("page") page: Int = 1): MovieNewReleasesDto

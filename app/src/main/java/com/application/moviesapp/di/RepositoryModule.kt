@@ -6,12 +6,15 @@ import com.application.moviesapp.data.repository.FacebookRepositoryImpl
 import com.application.moviesapp.data.repository.GoogleRepositoryImpl
 import com.application.moviesapp.data.repository.MoviesRepository
 import com.application.moviesapp.data.repository.MoviesRepositoryImpl
+import com.application.moviesapp.data.repository.SettingsPreferenceImpl
+import com.application.moviesapp.data.repository.SettingsPreferenceRepository
 import com.application.moviesapp.data.repository.SignInEmailRepositoryImpl
 import com.application.moviesapp.data.repository.SignUpEmailRepositoryImpl
 import com.application.moviesapp.data.repository.UserPreferenceRepoImpl
 import com.application.moviesapp.data.repository.UserPreferenceRepository
 import com.application.moviesapp.data.repository.YoutubeRepository
 import com.application.moviesapp.data.repository.YoutubeRepositoryImpl
+import com.application.moviesapp.domain.model.SettingsPreference
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -54,5 +57,7 @@ abstract class RepositoryModule {
     @Binds
     abstract fun providesYoutubeRepositoryImpl(youtubeRepositoryImpl: YoutubeRepositoryImpl): YoutubeRepository
 
+    @Binds
+    abstract fun providesSettingsRepositoryImpl(settingPreferenceRepoImpl: SettingsPreferenceImpl): SettingsPreferenceRepository
 
 }

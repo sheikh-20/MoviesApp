@@ -13,6 +13,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.application.moviesapp.base.BaseActivity
 import com.application.moviesapp.ui.onboarding.OnboardingActivity
@@ -22,8 +23,11 @@ import com.application.moviesapp.ui.viewmodel.ExploreViewModel
 import com.application.moviesapp.ui.viewmodel.HomeViewModel
 import com.application.moviesapp.ui.viewmodel.MyListViewModel
 import com.application.moviesapp.ui.viewmodel.OnboardingViewModel
+import com.application.moviesapp.ui.viewmodel.ProfileViewModel
 import com.google.android.gms.auth.api.identity.Identity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @AndroidEntryPoint
@@ -32,6 +36,7 @@ class HomeActivity : BaseActivity() {
     private val viewModel: OnboardingViewModel by viewModels()
     private val homeViewModel: HomeViewModel by viewModels()
     private val exploreViewModel: ExploreViewModel by viewModels()
+    private val profileViewModel: ProfileViewModel by viewModels()
 
     companion object {
         fun startActivity(activity: Activity?) {
@@ -53,17 +58,21 @@ class HomeActivity : BaseActivity() {
         homeViewModel.getMoviesWithNewReleases()
         exploreViewModel.getTrendingMovies()
 
-        setContent {
-            MoviesAppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    if (viewModel.getUserInfo() != null) {
-                        HomeApp()
-                    } else {
-                        OnboardingApp()
+        lifecycle.coroutineScope.launch {
+            profileViewModel.isDarkMode.collect {
+                setContent {
+                    MoviesAppTheme(darkTheme = it.data) {
+                        // A surface container using the 'background' color from the theme
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            color = MaterialTheme.colorScheme.background
+                        ) {
+                            if (viewModel.getUserInfo() != null) {
+                                HomeApp()
+                            } else {
+                                OnboardingApp()
+                            }
+                        }
                     }
                 }
             }

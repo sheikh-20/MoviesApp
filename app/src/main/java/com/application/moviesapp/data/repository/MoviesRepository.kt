@@ -15,6 +15,7 @@ import com.application.moviesapp.data.api.response.MovieStateDto
 import com.application.moviesapp.data.api.response.MovieTopRatedResponse
 import com.application.moviesapp.data.api.response.MovieTrailerDto
 import com.application.moviesapp.data.api.response.MovieUpdateFavouriteDto
+import com.application.moviesapp.data.api.response.TvSeriesGenreResponse
 import com.application.moviesapp.data.local.MoviesDatabase
 import com.application.moviesapp.data.local.entity.MovieNewReleaseEntity
 import com.application.moviesapp.data.local.entity.MovieUpcomingEntity
@@ -64,6 +65,10 @@ interface MoviesRepository {
     suspend fun updateMovieFavourite(body: RequestBody): Response<MovieUpdateFavouriteDto>
 
     suspend fun getMovieState(movieId: Int): Response<MovieStateDto>
+
+    suspend fun getMovieGenres(): Response<MovieGenreResponse>
+
+    suspend fun getTvSeriesGenres(): Response<MovieGenreResponse>
 }
 
 @OptIn(ExperimentalPagingApi::class)
@@ -113,4 +118,8 @@ class MoviesRepositoryImpl @Inject constructor(private val movies: MoviesApi, pr
     override suspend fun updateMovieFavourite(body: RequestBody): Response<MovieUpdateFavouriteDto> = movies.updateMovieFavourite(body = body)
 
     override suspend fun getMovieState(movieId: Int): Response<MovieStateDto> = movies.getMovieState(movieId)
+
+    override suspend fun getMovieGenres(): Response<MovieGenreResponse> = movies.getMovieGenres()
+
+    override suspend fun getTvSeriesGenres(): Response<MovieGenreResponse> = movies.getTVSeriesGenres()
 }

@@ -1,5 +1,5 @@
 {
-  "project_info": { 
+  "project_info": {
     "project_number": "408930274923",
     "project_id": "movies-app-7c9b6",
     "storage_bucket": "movies-app-7c9b6.appspot.com"
@@ -27,6 +27,14 @@
           "android_info": {
             "package_name": "com.application.moviesapp",
             "certificate_hash": "a15a10b1726da64138fde0612d37d5562d4aea7d"
+          }
+        },
+        {
+          "client_id": "408930274923-50urdknm47od3e617fjrttvc2udn2dqq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.application.moviesapp",
+            "certificate_hash": "9c283c656aa794186bc83107bc3f8542acd62df7"
           }
         },
         {

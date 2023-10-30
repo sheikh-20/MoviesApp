@@ -17,6 +17,7 @@ import com.application.moviesapp.data.common.Resource
 import com.application.moviesapp.ui.home.HomeActivity
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.viewmodel.OnboardingViewModel
+import com.application.moviesapp.ui.viewmodel.ProfileViewModel
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
@@ -51,6 +52,7 @@ class OnboardingActivity: BaseActivity() {
     }
 
     private val viewModel: OnboardingViewModel by viewModels()
+    private val profileViewModel: ProfileViewModel by viewModels()
 
     private val facebookCallback  = object : FacebookCallback<LoginResult> {
         override fun onCancel() {
@@ -86,13 +88,18 @@ class OnboardingActivity: BaseActivity() {
             }
         }
         setTransparentStatusBar()
-        setContent {
-            MoviesAppTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    OnboardingApp()
+
+        lifecycle.coroutineScope.launch {
+            profileViewModel.isDarkMode.collect {
+                setContent {
+                    MoviesAppTheme(darkTheme = it.data) {
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            color = MaterialTheme.colorScheme.background
+                        ) {
+                            OnboardingApp()
+                        }
+                    }
                 }
             }
         }

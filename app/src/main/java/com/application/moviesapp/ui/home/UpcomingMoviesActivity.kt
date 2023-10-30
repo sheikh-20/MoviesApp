@@ -9,10 +9,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.coroutineScope
 import com.application.moviesapp.base.BaseActivity
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.viewmodel.HomeViewModel
+import com.application.moviesapp.ui.viewmodel.ProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class UpcomingMoviesActivity: BaseActivity() {
@@ -23,18 +26,24 @@ class UpcomingMoviesActivity: BaseActivity() {
         }
     }
 
+    private val profileViewModel: ProfileViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTransparentStatusBar()
 
-        setContent {
-            MoviesAppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    UpcomingMoviesApp()
+        lifecycle.coroutineScope.launch {
+            profileViewModel.isDarkMode.collect {
+                setContent {
+                    MoviesAppTheme(it.data){
+                        // A surface container using the 'background' color from the theme
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            color = MaterialTheme.colorScheme.background
+                        ) {
+                            UpcomingMoviesApp()
+                        }
+                    }
                 }
             }
         }

@@ -184,6 +184,9 @@ dependencies {
     implementation("androidx.datastore:datastore:1.0.0")
     implementation("com.google.protobuf:protobuf-javalite:3.21.9")
     implementation("com.google.protobuf:protobuf-kotlin-lite:3.21.9")
+
+    // Preferences datastore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 }
 
 protobuf {

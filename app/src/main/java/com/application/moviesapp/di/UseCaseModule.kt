@@ -2,6 +2,7 @@ package com.application.moviesapp.di
 
 import com.application.moviesapp.data.repository.AuthRepository
 import com.application.moviesapp.data.repository.MoviesRepository
+import com.application.moviesapp.data.repository.SettingsPreferenceRepository
 import com.application.moviesapp.data.repository.UserPreferenceRepository
 import com.application.moviesapp.data.repository.YoutubeRepository
 import com.application.moviesapp.domain.GetMoviesNewReleaseInteractor
@@ -12,6 +13,7 @@ import com.application.moviesapp.domain.MoviesPopularInteractor
 import com.application.moviesapp.domain.MoviesPopularUseCase
 import com.application.moviesapp.domain.MoviesSortUseCase
 import com.application.moviesapp.domain.MoviesUseCase
+import com.application.moviesapp.domain.model.MovieGenre
 import com.application.moviesapp.domain.usecase.GetMovieDetailInteractor
 import com.application.moviesapp.domain.usecase.GetMovieFavouriteInteractor
 import com.application.moviesapp.domain.usecase.GetAccountSetupInteractor
@@ -22,12 +24,17 @@ import com.application.moviesapp.domain.usecase.GetUserInfoInteractor
 import com.application.moviesapp.domain.usecase.MovieDetailsUseCase
 import com.application.moviesapp.domain.usecase.MovieFavouriteUseCase
 import com.application.moviesapp.domain.usecase.AccountSetupUseCase
+import com.application.moviesapp.domain.usecase.GetMovieGenreInteractor
+import com.application.moviesapp.domain.usecase.GetSettingsInteractor
+import com.application.moviesapp.domain.usecase.GetTvSeriesGenreInteractor
+import com.application.moviesapp.domain.usecase.MovieGenresUseCase
 import com.application.moviesapp.domain.usecase.MovieStateUseCase
 import com.application.moviesapp.domain.usecase.MovieTrailerUseCase
 import com.application.moviesapp.domain.usecase.MovieUpdateFavouriteInteractor
 import com.application.moviesapp.domain.usecase.MovieUpdateFavouriteUseCase
 import com.application.moviesapp.domain.usecase.MoviesUpcomingInterator
 import com.application.moviesapp.domain.usecase.MoviesUpcomingUseCase
+import com.application.moviesapp.domain.usecase.SettingsUseCase
 import com.application.moviesapp.domain.usecase.SignInEmailInteractor
 import com.application.moviesapp.domain.usecase.SignInEmailUseCase
 import com.application.moviesapp.domain.usecase.SignInFacebookUseCase
@@ -37,6 +44,7 @@ import com.application.moviesapp.domain.usecase.SignInGoogleInteractor
 import com.application.moviesapp.domain.usecase.SignInGoogleUseCase
 import com.application.moviesapp.domain.usecase.SignUpEmailInteractor
 import com.application.moviesapp.domain.usecase.SignUpEmailUseCase
+import com.application.moviesapp.domain.usecase.TvSeriesGenreUseCase
 import com.application.moviesapp.domain.usecase.UserInfoUseCase
 import com.application.moviesapp.domain.usecase.YoutubeThumbnailInteractor
 import com.application.moviesapp.domain.usecase.YoutubeThumbnailUseCase
@@ -45,6 +53,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.annotation.Signed
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -155,6 +164,24 @@ class UseCaseModule {
     @Singleton
     fun providesSetAccountSetupUseCase(userPreferenceRepository: UserPreferenceRepository): AccountSetupUseCase {
         return GetAccountSetupInteractor(userPreferenceRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesMovieGenreUseCase(moviesRepository: MoviesRepository): MovieGenresUseCase {
+        return GetMovieGenreInteractor(moviesRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesTvSeriesGenreUseCase(moviesRepository: MoviesRepository): TvSeriesGenreUseCase {
+        return GetTvSeriesGenreInteractor(moviesRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesSettingsUseCase(settingsPreferenceRepository: SettingsPreferenceRepository): SettingsUseCase {
+        return GetSettingsInteractor(settingsPreferenceRepository)
     }
 }
 

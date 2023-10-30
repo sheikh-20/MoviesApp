@@ -90,6 +90,7 @@ fun OnboardingApp(modifier: Modifier = Modifier,
                         onGoogleSignInClick = { activity, intent ->  onboardingViewModel.signInGoogle(activity, intent) },
                         onGithubSignInClick = { onboardingViewModel.signInGithub(context as Activity) },
                         onSocialSignIn = onSocialSignIn,
+                        snackbarHostState = snackbarHostState
                     )
                 }
 

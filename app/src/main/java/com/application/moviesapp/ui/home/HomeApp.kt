@@ -1,21 +1,28 @@
 package com.application.moviesapp.ui.home
 
 import android.app.Activity
-import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
@@ -29,7 +36,10 @@ import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -50,6 +60,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -78,6 +89,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.application.moviesapp.R
+import com.application.moviesapp.data.common.Resource
+import com.application.moviesapp.domain.model.MovieGenre
+import com.application.moviesapp.domain.model.SettingsPreference
 import com.application.moviesapp.ui.home.download.DownloadScreen
 import com.application.moviesapp.ui.home.explore.ExploreScreen
 import com.application.moviesapp.ui.home.mylist.MyListScreen
@@ -88,6 +102,7 @@ import com.application.moviesapp.ui.viewmodel.ExploreViewModel
 import com.application.moviesapp.ui.viewmodel.HomeViewModel
 import com.application.moviesapp.ui.viewmodel.MoviesWithNewReleaseUiState
 import com.application.moviesapp.ui.viewmodel.MyListViewModel
+import com.application.moviesapp.ui.viewmodel.ProfileViewModel
 import kotlinx.coroutines.launch
 
 
@@ -97,28 +112,62 @@ fun HomeApp(modifier: Modifier = Modifier,
             navController: NavHostController = rememberNavController(),
             homeViewModel: HomeViewModel = hiltViewModel(),
             exploreViewModel: ExploreViewModel = hiltViewModel(),
-            myListViewModel: MyListViewModel = hiltViewModel()) {
+            myListViewModel: MyListViewModel = hiltViewModel(),
+            profileViewModel: ProfileViewModel = hiltViewModel()) {
 
     val homeUiState: MoviesWithNewReleaseUiState by homeViewModel.moviesWithNewReleaseUiState.collectAsState()
     val exploreUiState: ExploreUiState by exploreViewModel.exploreUiState.collectAsState()
     val profileUiState by homeViewModel.profileInfoUiState.collectAsState()
     val myListUiState by myListViewModel.movieFavourite.collectAsState()
+    val darkModeUiState by profileViewModel.isDarkMode.collectAsState(initial = SettingsPreference(false))
+
+    val genreUiState by exploreViewModel.genreUiState.collectAsState()
 
     val moviesFlowState = exploreViewModel.moviesPagingFlow.collectAsLazyPagingItems()
 
     val coroutineScope = rememberCoroutineScope()
-    var showBottomSheet by remember { mutableStateOf(false) }
+    var showBottomSheet by remember { mutableStateOf(BottomSheet.Default) }
 
     val context = LocalContext.current
 
-    if (showBottomSheet) { BottomSheet(
-        onDismiss = { showBottomSheet = false },
-        onNegativeClick = { showBottomSheet = false },
-        onPositiveClick = {
-            homeViewModel.signOut()
-            (context as Activity).finish()
-            OnboardingActivity.startActivity(context as Activity)
-        }) }
+    when (showBottomSheet) {
+        BottomSheet.Default -> { }
+        BottomSheet.Filter -> {
+            BottomSheet(
+                onDismiss = { showBottomSheet = BottomSheet.Default },
+                onNegativeClick = { showBottomSheet = BottomSheet.Default },
+                onPositiveClick = { showBottomSheet = BottomSheet.Default },
+                contentSheet = {
+                    onNegativeClick, onPositiveClick ->
+
+                    BottomSheetFilterContent(
+                        onNegativeClick = onNegativeClick,
+                        onPositiveClick = onPositiveClick,
+                        onFilterCalled = { exploreViewModel.getGenre(it) },
+                        uiState = genreUiState,
+                        onCategoryClick = { exploreViewModel.getGenre(it) }
+                    )
+                })
+        }
+        BottomSheet.Logout -> {
+            BottomSheet(
+                onDismiss = { showBottomSheet = BottomSheet.Default },
+                onNegativeClick = { showBottomSheet = BottomSheet.Default },
+                onPositiveClick = {
+                    homeViewModel.signOut()
+                    (context as Activity).finish()
+                    OnboardingActivity.startActivity(context as Activity)
+                },
+                contentSheet = {
+                        onNegativeClick, onPositiveClick ->
+
+                    BottomSheetContent(
+                        onNegativeClick = onNegativeClick,
+                        onPositiveClick = onPositiveClick
+                    )
+                })
+        }
+    }
 
     val exploreScrollState = rememberLazyGridState()
     val exploreHideTopAppBar by remember(exploreScrollState) {
@@ -136,7 +185,7 @@ fun HomeApp(modifier: Modifier = Modifier,
 
     Scaffold(
         topBar = {
-            HomeTopAppbar(navController, exploreViewModel, exploreHideTopAppBar, myListHideTopAppBar)
+            HomeTopAppbar(navController, exploreViewModel, exploreHideTopAppBar, myListHideTopAppBar, onFilterClick = { showBottomSheet = BottomSheet.Filter })
         },
         bottomBar = {
             HomeBottomBarNavigation(navController)
@@ -170,8 +219,10 @@ fun HomeApp(modifier: Modifier = Modifier,
                 ProfileScreen(
                     uiState = profileUiState,
                     onSignOutClick = {
-                        showBottomSheet = true
-                    },)
+                        showBottomSheet = BottomSheet.Logout
+                    },
+                    darkModeUiState = darkModeUiState,
+                    onModeClick = profileViewModel::updateMode)
             }
         }
     }
@@ -179,8 +230,14 @@ fun HomeApp(modifier: Modifier = Modifier,
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun BottomSheet(modifier: Modifier = Modifier, onDismiss: () -> Unit = {}, onNegativeClick: () -> Unit = {}, onPositiveClick: () -> Unit = {}) {
-    val bottomSheet = rememberModalBottomSheetState()
+private fun BottomSheet(modifier: Modifier = Modifier,
+                        onDismiss: () -> Unit = {},
+                        onNegativeClick: () -> Unit = {},
+                        onPositiveClick: () -> Unit = {},
+                        contentSheet: @Composable (onNegativeClick: () -> Unit, onPositiveClick: () -> Unit) -> Unit = { _, _ -> }
+                        ) {
+
+    val bottomSheet = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val coroutineScope = rememberCoroutineScope()
 
     ModalBottomSheet(
@@ -193,11 +250,187 @@ private fun BottomSheet(modifier: Modifier = Modifier, onDismiss: () -> Unit = {
         },
         sheetState = bottomSheet,
         dragHandle = { BottomSheetDefaults.DragHandle() },
+        containerColor = MaterialTheme.colorScheme.background,
+        tonalElevation = 0.dp
     ) {
-        BottomSheetContent(
-            onNegativeClick = onNegativeClick,
-            onPositiveClick = onPositiveClick
-        )
+
+        contentSheet(onNegativeClick, onPositiveClick)
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun BottomSheetFilterContent(modifier: Modifier = Modifier,
+                                     onNegativeClick: () -> Unit = { },
+                                     onPositiveClick: () -> Unit = { },
+                                     onFilterCalled: (Categories) -> Unit = { _ -> },
+                                     uiState: Resource<MovieGenre> = Resource.Loading,
+                                     onCategoryClick: (Categories) -> Unit = { _ -> }) {
+
+    val itemsListCategories = listOf(Categories.Movies, Categories.TV)
+
+    var selectedItemCategories by remember {
+        mutableStateOf(itemsListCategories[0])
+    }
+
+    val itemsListSort = listOf("Popularity", "Latest Release", "Vote Average")
+
+    var selectedItemSort by remember {
+        mutableStateOf(itemsListSort[0])
+    }
+
+    var includeAdult by remember {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(key1 = null) {
+        onFilterCalled(selectedItemCategories)
+    }
+
+    when (uiState) {
+        is Resource.Loading -> {
+            CircularProgressIndicator(
+                modifier = modifier
+                    .fillMaxSize()
+                    .wrapContentSize(align = Alignment.Center)
+            )
+        }
+
+        is Resource.Failure -> {
+            Text(text = "Failed")
+        }
+
+        is Resource.Success -> {
+            Column(modifier = modifier
+                .padding(vertical = 16.dp)
+                .systemBarsPadding(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Text(text = "Sort & Filter",
+                    style = MaterialTheme.typography.headlineSmall,
+                    textAlign = TextAlign.Center,
+                    modifier = modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold)
+
+                Divider()
+
+                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+
+                    Text(text = "Categories",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold,
+                        modifier = modifier.padding(horizontal = 16.dp))
+
+                    Row(modifier = modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)) {
+                        itemsListCategories.forEach { item ->
+                            FilterChip(
+                                modifier = modifier
+                                    .requiredHeight(36.dp)
+                                    .padding(horizontal = 6.dp)
+                                    .weight(1f), // gap between items
+                                selected = (item == selectedItemCategories),
+                                onClick = {
+                                    selectedItemCategories = item
+                                    onCategoryClick(item)
+                                          },
+                                label = { Text(text = item.title, modifier = modifier.fillMaxWidth(), textAlign = TextAlign.Center) },
+                                shape = RoundedCornerShape(50),
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                    selectedLabelColor = Color.White)
+                                )
+                        }
+                    }
+
+                    Text(text = "Genres",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold,
+                        modifier = modifier.padding(horizontal = 16.dp))
+
+                    LazyRow(modifier = modifier.fillMaxWidth(), contentPadding = PaddingValues(horizontal = 16.dp)) {
+                        items(uiState.data.genres ?: return@LazyRow) { item ->
+                            FilterChip(
+                                modifier = modifier
+                                    .requiredHeight(36.dp)
+                                    .padding(horizontal = 6.dp),
+                                selected = false,
+                                onClick = { },
+                                label = { Text(text = item?.name ?: "", modifier = modifier.fillMaxWidth(), textAlign = TextAlign.Center) },
+                                shape = RoundedCornerShape(50),
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                    selectedLabelColor = Color.White)
+                            )
+                        }
+                    }
+
+                    Text(text = "Sort",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold,
+                        modifier = modifier.padding(horizontal = 16.dp))
+
+                    LazyRow(modifier = modifier.fillMaxWidth(), contentPadding = PaddingValues(horizontal = 16.dp)) {
+                        items(itemsListSort) { item ->
+                            FilterChip(
+                                modifier = modifier
+                                    .requiredHeight(36.dp)
+                                    .padding(horizontal = 6.dp),
+                                selected = (item == selectedItemSort),
+                                onClick = { selectedItemSort = item },
+                                label = { Text(text = item, modifier = modifier.fillMaxWidth(), textAlign = TextAlign.Center) },
+                                shape = RoundedCornerShape(50),
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                                    selectedLabelColor = Color.White)
+                                )
+                        }
+                    }
+
+                    Text(text = "Include Adult",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold,
+                        modifier = modifier.padding(horizontal = 16.dp))
+
+                    FilterChip(
+                        modifier = modifier
+                            .requiredHeight(36.dp)
+                            .padding(horizontal = 16.dp),
+                        selected = includeAdult,
+                        onClick = { includeAdult = !includeAdult },
+                        label = { Text(text = "No", modifier = modifier.fillMaxWidth(), textAlign = TextAlign.Center) },
+                        shape = RoundedCornerShape(50),
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primary,
+                            selectedLabelColor = Color.White)
+                    )
+
+                }
+
+                Divider()
+
+                Row(modifier = modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, top = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically) {
+
+                    OutlinedButton(onClick = onNegativeClick, modifier = modifier
+                        .weight(1f)
+                        .requiredHeight(50.dp)) {
+                        Text(text = "Reset")
+                    }
+
+                    Button(onClick = onPositiveClick, modifier = modifier
+                        .weight(1f)
+                        .requiredHeight(50.dp)) {
+                        Text(text = "Apply")
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -210,7 +443,9 @@ private fun BottomSheetContent(modifier: Modifier = Modifier, onNegativeClick: (
         Text(text = "Logout",
             style = MaterialTheme.typography.headlineSmall,
             textAlign = TextAlign.Center,
-            modifier = modifier.fillMaxWidth())
+            modifier = modifier.fillMaxWidth(),
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.Bold)
 
         Divider()
 
@@ -224,11 +459,15 @@ private fun BottomSheetContent(modifier: Modifier = Modifier, onNegativeClick: (
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically) {
 
-            OutlinedButton(onClick = onNegativeClick, modifier = modifier.weight(1f)) {
+            OutlinedButton(onClick = onNegativeClick, modifier = modifier
+                .weight(1f)
+                .requiredHeight(50.dp)) {
                 Text(text = "Cancel")
             }
 
-            Button(onClick = onPositiveClick, modifier = modifier.weight(1f)) {
+            Button(onClick = onPositiveClick, modifier = modifier
+                .weight(1f)
+                .requiredHeight(50.dp)) {
                 Text(text = "Yes, Logout")
             }
         }
@@ -240,7 +479,8 @@ private fun BottomSheetContent(modifier: Modifier = Modifier, onNegativeClick: (
 private fun HomeTopAppbar(navController: NavHostController,
                           exploreViewModel: ExploreViewModel = viewModel(),
                           exploreHideTopAppBar: Boolean,
-                          mylistHideTopAppBar: Boolean
+                          mylistHideTopAppBar: Boolean,
+                          onFilterClick: () -> Unit = {}
                           ) {
 
     val context = LocalContext.current
@@ -271,8 +511,14 @@ private fun HomeTopAppbar(navController: NavHostController,
                         )
                     },
                     actions = {
-                        FloatingActionButton(onClick = { Toast.makeText(context, "Clicked!", Toast.LENGTH_LONG).show() }, elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(defaultElevation = 0.dp)) {
-                            Icon(imageVector = Icons.Outlined.Tune, contentDescription = null)
+                        FloatingActionButton(
+                            modifier = Modifier
+                                .requiredHeight(64.dp)
+                                .padding(top = 8.dp, end = 4.dp),
+                            onClick = onFilterClick,
+                            elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(defaultElevation = 0.dp),
+                            containerColor = MaterialTheme.colorScheme.primaryContainer) {
+                            Icon(imageVector = Icons.Outlined.Tune, contentDescription = null, tint = MaterialTheme.colorScheme.background)
                         }
                     },
                 )
@@ -291,7 +537,7 @@ private fun HomeTopAppbar(navController: NavHostController,
                         IconButton(onClick = {   }) {
                             Icon(painter = painterResource(id = R.drawable.ic_movie),
                                 contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSecondary)
+                                tint = MaterialTheme.colorScheme.primary)
                         }
                     },
                     actions = {
@@ -311,7 +557,7 @@ private fun HomeTopAppbar(navController: NavHostController,
                     IconButton(onClick = {   }) {
                         Icon(painter = painterResource(id = R.drawable.ic_movie),
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSecondary)
+                            tint = MaterialTheme.colorScheme.primary)
                     }
                 },
                 actions = {
@@ -329,7 +575,7 @@ private fun HomeTopAppbar(navController: NavHostController,
                     IconButton(onClick = {   }) {
                         Icon(painter = painterResource(id = R.drawable.ic_movie),
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSecondary)
+                            tint = MaterialTheme.colorScheme.primary)
                     }
                 },
                 colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent)
@@ -342,7 +588,7 @@ private fun HomeTopAppbar(navController: NavHostController,
                     IconButton(onClick = {   }) {
                         Icon(painter = painterResource(id = R.drawable.ic_movie),
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSecondary)
+                            tint = MaterialTheme.colorScheme.primary)
                     }
                 },
                 actions = {
@@ -395,57 +641,13 @@ private fun HomeBottomBarNavigation(navController: NavHostController,
     }
 }
 
-@Composable
-private fun SortFilterContent(modifier: Modifier = Modifier) {
-    Column(modifier = modifier
-        .fillMaxSize()
-        .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalAlignment = Alignment.Start
-        ) {
-
-        Text(text = "Sort & Filter",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center)
-
-        HorizontalDivider()
-
-        Text(text = "Categories",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold)
-
-        Text(text = "Regions",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold)
-        
-        Text(text = "Genre",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold)
-        
-        Text(text = "Time/Periods",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold)
-
-        Text(text = "Sort",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold)
-
-        HorizontalDivider()
-
-        Row(modifier = modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedButton(onClick = { }, modifier = modifier.weight(1f)) {
-                Text(text = "Reset")
-            }
-            Button(onClick = { }, modifier = modifier.weight(1f)) {
-                Text(text = "Apply")
-            }
-        }
-    }
+enum class BottomSheet {
+    Default, Logout, Filter
 }
 
+enum class Categories(val title: String) {
+    Movies("Movies"), TV("TV series")
+}
 
 sealed class BottomNavigationScreens(val route: String, @StringRes val stringResource: Int, val vectorResource: ImageVector) {
     object Home: BottomNavigationScreens(route = "Home", stringResource = R.string.home, vectorResource = Icons.Rounded.Home)

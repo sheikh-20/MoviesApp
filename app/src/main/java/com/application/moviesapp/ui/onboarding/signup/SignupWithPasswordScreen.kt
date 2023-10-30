@@ -47,6 +47,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -66,6 +67,8 @@ import com.application.moviesapp.domain.usecase.SignInGoogleInteractor
 import com.application.moviesapp.ui.accountsetup.AccountSetupActivity
 import com.application.moviesapp.ui.home.HomeActivity
 import com.application.moviesapp.ui.onboarding.OnboardingActivity
+import com.application.moviesapp.ui.onboarding.component.EmailComponent
+import com.application.moviesapp.ui.onboarding.component.PasswordComponent
 import com.application.moviesapp.ui.onboarding.component.SocialLoginComponent
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.google.firebase.auth.AuthResult
@@ -156,44 +159,24 @@ fun SignupWithPasswordScreen(modifier: Modifier = Modifier,
 
         Text(
             text = "Create Your Account",
-            style = MaterialTheme.typography.headlineLarge
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.Medium
         )
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text(text = "Email") },
-                leadingIcon = {
-                    Icon(imageVector = Icons.Rounded.Email, contentDescription = null)
-                },
-                modifier = modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(30),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Next,
-                    keyboardType = KeyboardType.Email),
-                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
+
+            EmailComponent(
+                email = email,
+                onEmailUpdate = { email = it },
+                focusManager = focusManager)
+
+            PasswordComponent(
+                password = password,
+                onPasswordUpdate = { password = it },
+                focusManager = focusManager
             )
 
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text(text = "Password") },
-                leadingIcon = {
-                    Icon(imageVector = Icons.Rounded.Lock, contentDescription = null)
-                },
-                modifier = modifier.fillMaxWidth(),
-                trailingIcon = {
-                    Icon(imageVector = Icons.Outlined.VisibilityOff, contentDescription = null)
-                },
-                shape = RoundedCornerShape(30),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Done,
-                    keyboardType = KeyboardType.Password
-                ),
-                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
-            )
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(checked = false, onCheckedChange = {})
@@ -201,7 +184,14 @@ fun SignupWithPasswordScreen(modifier: Modifier = Modifier,
             }
 
             Button(onClick = { onSignupClick(email, password) },
-                modifier = modifier.fillMaxWidth(),
+                modifier = modifier
+                    .shadow(
+                        elevation = 4.dp,
+                        ambientColor = MaterialTheme.colorScheme.outlineVariant,
+                        spotColor = MaterialTheme.colorScheme.outlineVariant,
+                        shape = RoundedCornerShape(50)
+                    )
+                    .fillMaxWidth(),
                 colors = ButtonDefaults.filledTonalButtonColors(containerColor = Color.Red)) {
 
                 if (isLoading) {

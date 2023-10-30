@@ -1,7 +1,12 @@
 package com.application.moviesapp.ui.home
 
 import android.app.Activity
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Search
@@ -13,7 +18,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -28,30 +35,44 @@ fun UpcomingMoviesApp(modifier: Modifier = Modifier, homeViewModel: HomeViewMode
     val uiState: MovieTopRatedUiState by homeViewModel.movieTopRatedUiState.collectAsState()
     val moviesFlow = homeViewModel.moviesUpcomingPagingFlow().collectAsLazyPagingItems()
 
+    val upcomingScrollState = rememberLazyGridState()
+    val upcomingHideTopAppBar by remember(upcomingScrollState) {
+        derivedStateOf {
+            upcomingScrollState.firstVisibleItemIndex == 0
+        }
+    }
+
     Scaffold(
-        topBar = { TopMoviesTopAppbar() }
+        topBar = { TopMoviesTopAppbar(upcomingHideTopAppBar) }
     ) { paddingValues ->
-        TopMoviesScreen(modifier = modifier.padding(paddingValues), uiState = uiState, moviesFlow = moviesFlow)
+        TopMoviesScreen(modifier = modifier, uiState = uiState, moviesFlow = moviesFlow, lazyGridState = upcomingScrollState, bottomPadding = paddingValues)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TopMoviesTopAppbar() {
+private fun TopMoviesTopAppbar(upcomingHideTopAppBar: Boolean) {
 
     val context = LocalContext.current
 
-    TopAppBar(
-        title = { Text(text = "Upcoming Movies") },
-        navigationIcon = {
-            IconButton(onClick = { (context as Activity).finish() }) {
-                Icon(imageVector = Icons.Rounded.ArrowBack, contentDescription = null)
+    AnimatedVisibility(
+        visible = upcomingHideTopAppBar,
+        enter = slideInVertically(animationSpec = tween(durationMillis = 200)),
+        exit = slideOutVertically(animationSpec = tween(durationMillis = 200))
+    ) {
+
+        TopAppBar(
+            title = { Text(text = "Upcoming Movies") },
+            navigationIcon = {
+                IconButton(onClick = { (context as Activity).finish() }) {
+                    Icon(imageVector = Icons.Rounded.ArrowBack, contentDescription = null)
+                }
+            },
+            actions = {
+                IconButton(onClick = {}) {
+                    Icon(imageVector = Icons.Rounded.Search, contentDescription = null)
+                }
             }
-        },
-        actions = {
-            IconButton(onClick = {}) {
-                Icon(imageVector = Icons.Rounded.Search, contentDescription = null)
-            }
-        }
-    )
+        )
+    }
 }

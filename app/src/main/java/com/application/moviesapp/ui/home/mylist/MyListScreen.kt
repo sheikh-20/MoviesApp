@@ -121,7 +121,6 @@ fun MyListScreen(modifier: Modifier = Modifier,
                 }
             }
         }
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

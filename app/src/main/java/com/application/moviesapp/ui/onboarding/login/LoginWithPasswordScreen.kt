@@ -35,6 +35,7 @@ import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -44,9 +45,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -57,6 +60,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -76,6 +80,8 @@ import com.application.moviesapp.domain.usecase.SignInGoogleInteractor
 import com.application.moviesapp.ui.accountsetup.AccountSetupActivity
 import com.application.moviesapp.ui.home.HomeActivity
 import com.application.moviesapp.ui.onboarding.OnboardingActivity
+import com.application.moviesapp.ui.onboarding.component.EmailComponent
+import com.application.moviesapp.ui.onboarding.component.PasswordComponent
 import com.application.moviesapp.ui.onboarding.component.SocialLoginComponent
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.google.firebase.auth.AuthResult
@@ -165,44 +171,21 @@ fun LoginWithPasswordScreen(modifier: Modifier = Modifier,
 
         Text(
             text = "Login To Your Account",
-            style = MaterialTheme.typography.headlineLarge
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.Medium
         )
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text(text = "Email") },
-                leadingIcon = {
-                    Icon(imageVector = Icons.Rounded.Email, contentDescription = null)
-                },
-                modifier = modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(30),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Next,
-                    keyboardType = KeyboardType.Email
-                ),
-                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
-            )
+            EmailComponent(
+                email = email,
+                onEmailUpdate = { email = it },
+                focusManager = focusManager)
 
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text(text = "Password") },
-                leadingIcon = {
-                    Icon(imageVector = Icons.Rounded.Lock, contentDescription = null)
-                },
-                modifier = modifier.fillMaxWidth(),
-                trailingIcon = {
-                    Icon(imageVector = Icons.Outlined.VisibilityOff, contentDescription = null)
-                },
-                shape = RoundedCornerShape(30),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Done,
-                    keyboardType = KeyboardType.Password
-                ),
-                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
+            PasswordComponent(
+                password = password, 
+                onPasswordUpdate = { password = it },
+                focusManager = focusManager
             )
 
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -211,13 +194,20 @@ fun LoginWithPasswordScreen(modifier: Modifier = Modifier,
             }
 
             Button(onClick = { onSignInClick(email, password) },
-                modifier = modifier.fillMaxWidth(),
+                modifier = modifier
+                    .shadow(
+                        elevation = 4.dp,
+                        ambientColor = MaterialTheme.colorScheme.outlineVariant,
+                        spotColor = MaterialTheme.colorScheme.outlineVariant,
+                        shape = RoundedCornerShape(50)
+                    )
+                    .fillMaxWidth(),
                 colors = ButtonDefaults.filledTonalButtonColors(containerColor = Color.Red)) {
 
                 if (isLoading) {
                     CircularProgressIndicator(modifier = modifier.size(30.dp), strokeWidth = 2.dp, trackColor = Color.White)
                 } else {
-                    Text(text = stringResource(id = R.string.signin_with_password), color = colorResource(id = R.color.white), modifier = modifier.padding(4.dp))
+                    Text(text = stringResource(id = R.string.signin), color = colorResource(id = R.color.white), modifier = modifier.padding(4.dp))
                 }
             }
         }

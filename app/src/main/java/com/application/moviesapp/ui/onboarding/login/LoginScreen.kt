@@ -31,21 +31,30 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedIconButton
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -74,6 +83,7 @@ import com.facebook.FacebookException
 import com.facebook.login.LoginResult
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -86,8 +96,11 @@ fun LoginScreen(modifier: Modifier = Modifier,
                 onSignupClick: () -> Unit = {},
                 onGoogleSignInClick: (Activity?, Intent?) -> Unit = { _, _ ->},
                 onGithubSignInClick: () -> Unit = {},
-                onSocialSignIn: SharedFlow<Resource<AuthResult>>? = null
+                onSocialSignIn: SharedFlow<Resource<AuthResult>>? = null,
+                snackbarHostState: SnackbarHostState = SnackbarHostState()
                 ) {
+
+    var isLoading by remember { mutableStateOf(false) }
 
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -109,14 +122,19 @@ fun LoginScreen(modifier: Modifier = Modifier,
         onSocialSignIn?.collectLatest {
             when(it) {
                 is Resource.Loading -> {
-                    Timber.tag("Login").d("Google Loading")
-                    Toast.makeText(context, "Loading..", Toast.LENGTH_LONG).show()
+                    isLoading = true
                 }
                 is Resource.Failure -> {
-                    Toast.makeText(context, "Failure..", Toast.LENGTH_LONG).show()
-                    Timber.tag("Login").e(it.throwable)
+                    isLoading = false
+                    if (it.throwable is FirebaseAuthInvalidUserException) {
+                        snackbarHostState.showSnackbar(message = "Email does not exists, Try signup!")
+                    } else {
+                        snackbarHostState.showSnackbar(message = "Failure!")
+                        Timber.tag("Login").e(it.throwable)
+                    }
                 }
                 is Resource.Success -> {
+                    isLoading = false
                     Timber.tag("Login").d("Google Success")
 
                     if (it.data.additionalUserInfo?.isNewUser == true) {
@@ -146,7 +164,7 @@ fun LoginScreen(modifier: Modifier = Modifier,
             fontWeight = FontWeight.SemiBold)
 
         Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            verticalArrangement = Arrangement.spacedBy(8.dp)) {
             LoginComponent(
                 icon = R.drawable.ic_facebook,
                 text = R.string.continue_with_facebook,
@@ -180,9 +198,21 @@ fun LoginScreen(modifier: Modifier = Modifier,
         }
 
         Button(onClick = onSignInClick,
-            modifier = modifier.fillMaxWidth()) {
-            Text(text = stringResource(id = R.string.signin_with_password),
-                modifier = modifier.padding(4.dp))
+            modifier = modifier
+                .shadow(
+                    elevation = 4.dp,
+                    ambientColor = MaterialTheme.colorScheme.outlineVariant,
+                    spotColor = MaterialTheme.colorScheme.outlineVariant,
+                    shape = RoundedCornerShape(50)
+                )
+                .fillMaxWidth()) {
+
+            if (isLoading) {
+                CircularProgressIndicator(modifier = modifier.size(30.dp), strokeWidth = 2.dp, trackColor = Color.White)
+            } else {
+                Text(text = stringResource(id = R.string.signin_with_password),
+                    modifier = modifier.padding(4.dp))
+            }
         }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -198,9 +228,11 @@ fun LoginScreen(modifier: Modifier = Modifier,
 
 @Composable
 private fun LoginComponent(modifier: Modifier = Modifier, @DrawableRes icon: Int, @StringRes text: Int, onClick: () -> Unit) {
+
     OutlinedButton(onClick = onClick,
         shape = RoundedCornerShape(30),
         border = BorderStroke(width = .5.dp, color =  Color.LightGray),
+        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface)
       ) {
 
         Row(modifier = modifier
@@ -208,9 +240,11 @@ private fun LoginComponent(modifier: Modifier = Modifier, @DrawableRes icon: Int
             .padding(4.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center) {
+
             Icon(painter = painterResource(id = icon),
                 contentDescription = null,
-                modifier = modifier.size(30.dp))
+                modifier = modifier.size(30.dp),
+                tint = Color.Unspecified)
 
             Spacer(modifier = modifier.padding(horizontal = 8.dp))
 

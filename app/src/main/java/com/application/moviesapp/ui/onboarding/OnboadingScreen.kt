@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +25,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -83,7 +85,13 @@ fun OnboardingScreen(modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
                 )
 
             Button(onClick = onClick,
-                modifier = modifier.fillMaxWidth()) {
+                modifier = modifier
+                    .shadow(
+                        elevation = 4.dp,
+                        ambientColor = MaterialTheme.colorScheme.outlineVariant,
+                        spotColor = MaterialTheme.colorScheme.outlineVariant,
+                        shape = RoundedCornerShape(50))
+                    .fillMaxWidth()) {
                 Text(
                     text = stringResource(id = R.string.get_started),
                     modifier = modifier.padding(4.dp)

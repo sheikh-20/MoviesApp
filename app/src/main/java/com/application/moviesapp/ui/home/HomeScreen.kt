@@ -50,6 +50,7 @@ import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.R
 import com.application.moviesapp.ui.detail.DetailActivity
 import com.application.moviesapp.ui.utility.toImageUrl
+import com.application.moviesapp.ui.utility.toOneDecimal
 import com.application.moviesapp.ui.viewmodel.MoviesWithNewReleaseUiState
 import timber.log.Timber
 
@@ -105,8 +106,8 @@ fun HomeScreen(modifier: Modifier = Modifier,
                         .fillMaxSize()
                         .wrapContentSize(align = Alignment.BottomStart)
                         .padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text(text = titleImage?.title ?: "", style = MaterialTheme.typography.titleLarge)
-                        Text(text = uiState.moviesWithNewReleases.titleGenre, style = MaterialTheme.typography.bodyMedium)
+                        Text(text = titleImage?.title ?: "", style = MaterialTheme.typography.titleLarge, color = Color.White)
+                        Text(text = uiState.moviesWithNewReleases.titleGenre, style = MaterialTheme.typography.bodyMedium, color = Color.White)
 
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Button(onClick = {}) {
@@ -201,7 +202,7 @@ private fun MovieImageCard(modifier: Modifier = Modifier, imageUrl: String = "",
                 .fillMaxSize()
                 .wrapContentSize(align = Alignment.TopStart)
                 .padding(8.dp), shape = RoundedCornerShape(30), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)) {
-                Text(text = rating, modifier = modifier.padding(horizontal = 10.dp, vertical = 8.dp), style = MaterialTheme.typography.bodySmall)
+                Text(text = rating.toDoubleOrNull()?.toOneDecimal ?: "", modifier = modifier.padding(horizontal = 10.dp, vertical = 8.dp), style = MaterialTheme.typography.bodySmall)
             }
         }
     }

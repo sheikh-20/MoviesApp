@@ -13,11 +13,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.coroutineScope
 import com.application.moviesapp.base.BaseActivity
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.viewmodel.DetailsViewModel
 import com.application.moviesapp.ui.viewmodel.MyListViewModel
+import com.application.moviesapp.ui.viewmodel.ProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class DetailActivity : BaseActivity() {
@@ -33,6 +37,8 @@ class DetailActivity : BaseActivity() {
     }
 
     private val viewModel: DetailsViewModel by viewModels()
+    private val profileViewModel: ProfileViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTransparentStatusBar()
@@ -42,14 +48,18 @@ class DetailActivity : BaseActivity() {
         viewModel.getMovieTrailer(movieId)
         viewModel.getMovieState(movieId)
 
-        setContent {
-            MoviesAppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    DetailScreenApp()
+        lifecycle.coroutineScope.launch {
+            profileViewModel.isDarkMode.collect {
+                setContent {
+                    MoviesAppTheme(darkTheme = it.data) {
+                        // A surface container using the 'background' color from the theme
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            color = MaterialTheme.colorScheme.background
+                        ) {
+                            DetailScreenApp()
+                        }
+                    }
                 }
             }
         }

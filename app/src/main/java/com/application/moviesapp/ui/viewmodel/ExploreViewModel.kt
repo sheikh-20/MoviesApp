@@ -10,17 +10,23 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import com.application.moviesapp.data.api.response.MovieSimpleResponse
+import com.application.moviesapp.data.common.Resource
 import com.application.moviesapp.data.local.entity.MoviesEntity
 import com.application.moviesapp.data.mappers.toMovies
 import com.application.moviesapp.data.repository.MoviesRepository
 import com.application.moviesapp.domain.MoviesPopularUseCase
 import com.application.moviesapp.domain.MoviesSortUseCase
 import com.application.moviesapp.domain.MoviesWithSort
+import com.application.moviesapp.domain.model.MovieGenre
+import com.application.moviesapp.domain.usecase.MovieGenresUseCase
+import com.application.moviesapp.domain.usecase.TvSeriesGenreUseCase
+import com.application.moviesapp.ui.home.Categories
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.stateIn
@@ -45,7 +51,9 @@ sealed interface MovieSortUiState {
 class ExploreViewModel @Inject constructor(private val useCase: MoviesSortUseCase,
                                            private val repository: MoviesRepository,
                                            pager: Pager<Int, MoviesEntity>,
-    private val moviesPopularUseCase: MoviesPopularUseCase): ViewModel() {
+    private val moviesPopularUseCase: MoviesPopularUseCase,
+    private val movieGenresUseCase: MovieGenresUseCase,
+    private val tvSeriesGenreUseCase: TvSeriesGenreUseCase): ViewModel() {
 
     private companion object {
         const val TAG = "ExploreViewModel"
@@ -59,6 +67,8 @@ class ExploreViewModel @Inject constructor(private val useCase: MoviesSortUseCas
     private var _exploreUiState = MutableStateFlow<ExploreUiState>(ExploreUiState.Loading)
     val exploreUiState: StateFlow<ExploreUiState> get() = _exploreUiState
 
+    private var _genreUiState = MutableStateFlow<Resource<MovieGenre>>(Resource.Loading)
+    val genreUiState get() = _genreUiState.asStateFlow()
 
     var searchInputField by mutableStateOf("")
         private set
@@ -115,6 +125,17 @@ class ExploreViewModel @Inject constructor(private val useCase: MoviesSortUseCas
         } catch (exception: IOException) {
             _exploreUiState.value = ExploreUiState.Failure
             Timber.tag(TAG).e(exception)
+        }
+    }
+
+    fun getGenre(categories: Categories) = viewModelScope.launch {
+        when (categories) {
+            Categories.Movies -> {
+                _genreUiState.value = movieGenresUseCase()
+            }
+            Categories.TV -> {
+                _genreUiState.value = tvSeriesGenreUseCase()
+            }
         }
     }
 

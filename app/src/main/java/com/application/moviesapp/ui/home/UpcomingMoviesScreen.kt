@@ -5,11 +5,13 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,10 +38,16 @@ import com.application.moviesapp.domain.model.MovieUpcoming
 import com.application.moviesapp.ui.detail.DetailActivity
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.utility.toImageUrl
+import com.application.moviesapp.ui.utility.toOneDecimal
 import com.application.moviesapp.ui.viewmodel.MovieTopRatedUiState
 
 @Composable
-fun TopMoviesScreen(modifier: Modifier = Modifier, uiState: MovieTopRatedUiState = MovieTopRatedUiState.Loading, moviesFlow: LazyPagingItems<MovieUpcoming>) {
+fun TopMoviesScreen(modifier: Modifier = Modifier,
+                    uiState: MovieTopRatedUiState = MovieTopRatedUiState.Loading,
+                    moviesFlow: LazyPagingItems<MovieUpcoming>,
+                    lazyGridState: LazyGridState = LazyGridState(),
+                    bottomPadding: PaddingValues = PaddingValues()
+) {
 //    when (uiState) {
 //        is MovieTopRatedUiState.Loading -> {
 //            Column(modifier = modifier.fillMaxSize()) {
@@ -69,11 +77,14 @@ fun TopMoviesScreen(modifier: Modifier = Modifier, uiState: MovieTopRatedUiState
 
     Column(modifier = modifier
         .fillMaxSize()
-        .padding(16.dp)) {
+        .padding(top = bottomPadding.calculateTopPadding(), bottom = bottomPadding.calculateBottomPadding())) {
 
         LazyVerticalGrid(columns = GridCells.Fixed(2),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            state = lazyGridState,
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
+
             items(moviesFlow.itemCount) { index ->
                 MovieImageCard(imageUrl = moviesFlow[index]?.posterPath ?: "", rating = moviesFlow[index]?.voteAverage.toString() ?: "", movieId = moviesFlow[index]?.movieId ?: 0)
             }
@@ -104,7 +115,7 @@ private fun MovieImageCard(modifier: Modifier = Modifier, imageUrl: String = "",
                 .fillMaxSize()
                 .wrapContentSize(align = Alignment.TopStart)
                 .padding(8.dp), shape = RoundedCornerShape(30), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)) {
-                Text(text = rating, modifier = modifier.padding(horizontal = 10.dp, vertical = 8.dp), style = MaterialTheme.typography.bodySmall)
+                Text(text = rating.toDoubleOrNull()?.toOneDecimal ?: "", modifier = modifier.padding(horizontal = 10.dp, vertical = 8.dp), style = MaterialTheme.typography.bodySmall)
             }
         }
     }

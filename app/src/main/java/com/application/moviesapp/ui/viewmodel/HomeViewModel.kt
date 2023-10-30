@@ -68,7 +68,7 @@ class HomeViewModel @Inject constructor(private val useCase: MoviesUseCase,
 
     private val auth = Firebase.auth
 
-    private var _profileInfoUiState = MutableStateFlow<UserData>(getSignedInUser() ?: UserData(userId = "", userName = "", profilePictureUrl = "", email = ""))
+    private var _profileInfoUiState = MutableStateFlow<UserData>(UserData(userId = "", userName = "", profilePictureUrl = "", email = ""))
     val profileInfoUiState: StateFlow<UserData> = _profileInfoUiState
 
     fun getMoviesWithNewReleases() = viewModelScope.launch(Dispatchers.IO) {
@@ -115,13 +115,15 @@ class HomeViewModel @Inject constructor(private val useCase: MoviesUseCase,
     fun moviesUpcomingPagingFlow() = moviesUpcomingUseCase.invoke().cachedIn(viewModelScope)
 
 
-    private fun getSignedInUser(): UserData? = auth.currentUser?.run {
-        UserData(
-            userId = uid,
-            userName = displayName,
-            profilePictureUrl = photoUrl.toString(),
-            email = email
+    private fun getSignedInUser() {
+        auth.currentUser?.apply {
+            _profileInfoUiState.value = UserData(
+                userId = uid,
+                userName = displayName,
+                profilePictureUrl = photoUrl.toString(),
+                email = email
             )
+        }
     }
 
     fun signOut() = viewModelScope.launch {
@@ -129,5 +131,8 @@ class HomeViewModel @Inject constructor(private val useCase: MoviesUseCase,
     }
 
 
+    init {
+        getSignedInUser()
+    }
 
 }
