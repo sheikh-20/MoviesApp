@@ -5,6 +5,7 @@ Movies App is a TMDb mobile app that list movies and series, shows their details
 * Jetpack Compose
 * MVVM with Clean Architecture
 * Coroutines & Flow
+* Retrofit
 * Hilt for Dependency Injection
 * Navigation Component
 * Firebase Authentication
