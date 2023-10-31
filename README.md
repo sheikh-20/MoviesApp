@@ -24,10 +24,8 @@ Movies App is a TMDb mobile app that list movies and series, shows their details
 ![light_theme_page1](https://github.com/sheikh-20/MoviesApp/assets/121604647/3f358f8a-5d5d-47aa-a4bf-c67181536ad6)
 ![light_theme_page2](https://github.com/sheikh-20/MoviesApp/assets/121604647/3d6cb511-c7b3-4538-a441-03e64c7c8a4c)
 ![light_theme_page3](https://github.com/sheikh-20/MoviesApp/assets/121604647/98eef0fc-2ddf-494a-9104-4d48339b2d51)
-![light_theme_page4](https://github.com/sheikh-20/MoviesApp/assets/121604647/db86d10e-9017-45a1-9b44-18403da8d3a4)
 
 ### :camera: Dark Theme Screenshots
 ![dark_theme_page1](https://github.com/sheikh-20/MoviesApp/assets/121604647/1bca78da-ce9b-4cfc-aef0-155ef2c27d46)
 ![dark_theme_page2](https://github.com/sheikh-20/MoviesApp/assets/121604647/cedfda13-445e-4c26-88b5-23b9e6d844a8)
 ![dark_theme_page3](https://github.com/sheikh-20/MoviesApp/assets/121604647/d016ceae-da2a-4f83-a191-0ae01d751791)
-![dark_theme_page4](https://github.com/sheikh-20/MoviesApp/assets/121604647/435db944-6164-4ba0-9f01-f84008cd7cce)
