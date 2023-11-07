@@ -1,4 +1,7 @@
+import com.android.build.api.dsl.AndroidSourceSet
+import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.google.protobuf.gradle.id
+import org.jetbrains.kotlin.gradle.plugin.extraProperties
 
 plugins {
     id("com.android.application")
@@ -8,6 +11,27 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
     id("com.google.gms.google-services")
     id("com.google.protobuf") version "0.9.1"
+    id("com.chaquo.python")
+}
+
+chaquopy {
+    defaultConfig {
+        buildPython("/usr/local/bin/python3")
+        buildPython("python3")
+        version = "3.8"
+
+        pip{
+            options("--upgrade","--ignore-installed","--force-reinstall")
+            install("yt-dlp")
+            install("git+https://github.com/oncename/pytube")
+            install("ffmpeg")
+        }
+    }
+    sourceSets {
+        getByName("main") {
+            srcDirs("src/main/python")
+        }
+    }
 }
 
 android {
@@ -26,6 +50,10 @@ android {
             useSupportLibrary = true
         }
         compileSdkPreview = "UpsideDownCake"
+
+        ndk {
+            abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86_64")
+        }
     }
     buildFeatures {
         compose = true
@@ -80,13 +108,15 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    flavorDimensions += "pyVersion"
+    productFlavors {
+        create("py310") { dimension = "pyVersion" }
+        create("py311") { dimension = "pyVersion" }
+    }
 }
 
 dependencies {
-    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
-    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
-    androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
-    androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     val lifecycle_version = "2.6.1"
     val timber_version = "5.0.1"
     val lottie_version = "6.1.0"
@@ -94,7 +124,10 @@ dependencies {
     val room_version = "2.5.2"
     val firebase_version = "22.1.1"
 
-
+    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
+    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
+    androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
+    androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation("androidx.activity:activity-compose:1.7.2")
@@ -187,6 +220,18 @@ dependencies {
 
     // Preferences datastore
     implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+    //Work Manager
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
+
+    //Work Manager + Hilt
+    implementation("androidx.hilt:hilt-work:1.0.0")
+    kapt("com.google.dagger:hilt-android-compiler:2.44")
+    kapt("androidx.hilt:hilt-compiler:1.0.0")
+
+
+    //app start up
+    implementation("androidx.startup:startup-runtime:1.1.1")
 }
 
 protobuf {

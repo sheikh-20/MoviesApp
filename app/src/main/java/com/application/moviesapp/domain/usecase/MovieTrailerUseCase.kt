@@ -42,12 +42,13 @@ class GetMovieTrailerInteractor @Inject constructor(private val moviesRepository
 
                     val trailer = youtubeResponse.body()?.items?.get(0)?.run {
                         MovieTrailerWithYoutube(
+                            id = id,
                             title = snippet?.title,
                             duration = contentDetails?.duration,
                             thumbnail = snippet?.thumbnails?.standard?.url)
                     }
 
-                    trailer ?: MovieTrailerWithYoutube(null, null, null)
+                    trailer ?: MovieTrailerWithYoutube(null, null, null, null)
                 }
                 Timber.tag(TAG).d(youtube.toString())
                 Resource.Success(data = youtube!!)

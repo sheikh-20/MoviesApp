@@ -35,6 +35,7 @@ fun DetailScreenApp(modifier: Modifier = Modifier,
     val trailerUiState by viewModel.movieTrailerResponse.collectAsState()
     val moviesFlow = homeViewModel.moviesUpcomingPagingFlow().collectAsLazyPagingItems()
     val bookmarkUiState by viewModel.movieStateResponse.collectAsState()
+    val downloaderUiState by viewModel.downloaderUiState.collectAsState()
 
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -53,7 +54,10 @@ fun DetailScreenApp(modifier: Modifier = Modifier,
 //                viewModel.getMovieState(movieId)
                                 },
             snackbarHostState = snackbarHostState,
-            bookmarkUiState = bookmarkUiState
+            bookmarkUiState = bookmarkUiState,
+            onTrailerClick = viewModel::getVideoInfo,
+            downloaderUiState = downloaderUiState,
+            onTrailerDownloadClick = viewModel::videoDownload
             )
     }
 }

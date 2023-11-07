@@ -1,5 +1,9 @@
 package com.application.moviesapp.di
 
+import com.application.moviesapp.data.python.DownloaderRepository
+import com.application.moviesapp.data.python.DownloaderRepositoryImpl
+import com.application.moviesapp.data.python.WorkManagerRepository
+import com.application.moviesapp.data.python.WorkManagerRepositoryImpl
 import com.application.moviesapp.data.repository.AuthRepository
 import com.application.moviesapp.data.repository.AuthRepositoryImpl
 import com.application.moviesapp.data.repository.FacebookRepositoryImpl
@@ -60,4 +64,9 @@ abstract class RepositoryModule {
     @Binds
     abstract fun providesSettingsRepositoryImpl(settingPreferenceRepoImpl: SettingsPreferenceImpl): SettingsPreferenceRepository
 
+    @Binds
+    abstract fun providesDownloaderRepositoryImpl(downloaderRepositoryImpl: DownloaderRepositoryImpl): DownloaderRepository
+
+    @Binds
+    abstract fun providesWorkManagerRepositoryImpl(workManagerRepositoryImpl: WorkManagerRepositoryImpl): WorkManagerRepository
 }

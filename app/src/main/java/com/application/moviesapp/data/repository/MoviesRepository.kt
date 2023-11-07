@@ -17,6 +17,7 @@ import com.application.moviesapp.data.api.response.MovieTrailerDto
 import com.application.moviesapp.data.api.response.MovieUpdateFavouriteDto
 import com.application.moviesapp.data.api.response.TvSeriesGenreResponse
 import com.application.moviesapp.data.local.MoviesDatabase
+import com.application.moviesapp.data.local.entity.MovieDownloadEntity
 import com.application.moviesapp.data.local.entity.MovieNewReleaseEntity
 import com.application.moviesapp.data.local.entity.MovieUpcomingEntity
 import com.application.moviesapp.data.local.entity.MoviesEntity
@@ -69,6 +70,12 @@ interface MoviesRepository {
     suspend fun getMovieGenres(): Response<MovieGenreResponse>
 
     suspend fun getTvSeriesGenres(): Response<MovieGenreResponse>
+
+    fun readMovieDownload(): Flow<List<MovieDownloadEntity>>
+
+    suspend fun insertMovieDownload(download: MovieDownloadEntity)
+
+    suspend fun deleteMovieDownload(download: MovieDownloadEntity)
 }
 
 @OptIn(ExperimentalPagingApi::class)
@@ -122,4 +129,10 @@ class MoviesRepositoryImpl @Inject constructor(private val movies: MoviesApi, pr
     override suspend fun getMovieGenres(): Response<MovieGenreResponse> = movies.getMovieGenres()
 
     override suspend fun getTvSeriesGenres(): Response<MovieGenreResponse> = movies.getTVSeriesGenres()
+
+    override fun readMovieDownload(): Flow<List<MovieDownloadEntity>> = database.movieDownloadDao.getAllDownloads()
+
+    override suspend fun insertMovieDownload(download: MovieDownloadEntity) =  database.movieDownloadDao.insertDownload(download)
+
+    override suspend fun deleteMovieDownload(download: MovieDownloadEntity) = database.movieDownloadDao.deleteDownload(download)
 }

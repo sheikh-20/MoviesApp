@@ -1,5 +1,6 @@
 package com.application.moviesapp.di
 
+import com.application.moviesapp.data.python.WorkManagerRepository
 import com.application.moviesapp.data.repository.AuthRepository
 import com.application.moviesapp.data.repository.MoviesRepository
 import com.application.moviesapp.data.repository.SettingsPreferenceRepository
@@ -24,9 +25,11 @@ import com.application.moviesapp.domain.usecase.GetUserInfoInteractor
 import com.application.moviesapp.domain.usecase.MovieDetailsUseCase
 import com.application.moviesapp.domain.usecase.MovieFavouriteUseCase
 import com.application.moviesapp.domain.usecase.AccountSetupUseCase
+import com.application.moviesapp.domain.usecase.GetMovieDownloadInteractor
 import com.application.moviesapp.domain.usecase.GetMovieGenreInteractor
 import com.application.moviesapp.domain.usecase.GetSettingsInteractor
 import com.application.moviesapp.domain.usecase.GetTvSeriesGenreInteractor
+import com.application.moviesapp.domain.usecase.MovieDownloadUseCase
 import com.application.moviesapp.domain.usecase.MovieGenresUseCase
 import com.application.moviesapp.domain.usecase.MovieStateUseCase
 import com.application.moviesapp.domain.usecase.MovieTrailerUseCase
@@ -48,6 +51,10 @@ import com.application.moviesapp.domain.usecase.TvSeriesGenreUseCase
 import com.application.moviesapp.domain.usecase.UserInfoUseCase
 import com.application.moviesapp.domain.usecase.YoutubeThumbnailInteractor
 import com.application.moviesapp.domain.usecase.YoutubeThumbnailUseCase
+import com.application.moviesapp.domain.usecase.worker.DownloadUseCase
+import com.application.moviesapp.domain.usecase.worker.GetDownloadInteractor
+import com.application.moviesapp.domain.usecase.worker.VideoInfoInteractors
+import com.application.moviesapp.domain.usecase.worker.VideoInfoUseCase
 import com.google.android.gms.auth.api.identity.SignInClient
 import dagger.Module
 import dagger.Provides
@@ -182,6 +189,24 @@ class UseCaseModule {
     @Singleton
     fun providesSettingsUseCase(settingsPreferenceRepository: SettingsPreferenceRepository): SettingsUseCase {
         return GetSettingsInteractor(settingsPreferenceRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesVideoInfoUseCase(workManagerRepository: WorkManagerRepository): VideoInfoUseCase {
+        return VideoInfoInteractors(workManagerRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesDownloadUseCase(workManagerRepository: WorkManagerRepository): DownloadUseCase {
+        return GetDownloadInteractor(workManagerRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesMovieDownloadUseCase(moviesRepository: MoviesRepository): MovieDownloadUseCase {
+        return GetMovieDownloadInteractor(moviesRepository)
     }
 }
 

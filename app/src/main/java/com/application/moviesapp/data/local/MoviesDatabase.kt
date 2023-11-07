@@ -4,12 +4,14 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.application.moviesapp.data.local.dao.MovieDownloadDao
 import com.application.moviesapp.data.local.dao.MoviesDao
 import com.application.moviesapp.data.local.dao.MoviesNewReleaseDao
 import com.application.moviesapp.data.local.dao.MoviesUpcomingDao
 import com.application.moviesapp.data.local.dao.NewReleaseRemoteKeyDao
 import com.application.moviesapp.data.local.dao.RemoteKeyDao
 import com.application.moviesapp.data.local.dao.UpcomingRemoteKeyDao
+import com.application.moviesapp.data.local.entity.MovieDownloadEntity
 import com.application.moviesapp.data.local.entity.MovieNewReleaseEntity
 import com.application.moviesapp.data.local.entity.MovieNewReleaseRemoteKeyEntity
 import com.application.moviesapp.data.local.entity.MovieRemoteKeyEntity
@@ -24,9 +26,10 @@ import com.application.moviesapp.data.local.entity.MoviesEntity
         MovieNewReleaseEntity::class,
         MovieNewReleaseRemoteKeyEntity::class,
         MovieUpcomingEntity::class,
-        MovieUpcomingRemoteKeyEntity::class
+        MovieUpcomingRemoteKeyEntity::class,
+        MovieDownloadEntity::class
                ],
-    version = 4,
+    version = 7,
     exportSchema = false)
 abstract class MoviesDatabase: RoomDatabase() {
 
@@ -36,6 +39,7 @@ abstract class MoviesDatabase: RoomDatabase() {
     abstract val movieNewReleaseRemoteKeyDao: NewReleaseRemoteKeyDao
     abstract val moviesUpcomingDao: MoviesUpcomingDao
     abstract val moviesUpcomingRemoteKeyEntity: UpcomingRemoteKeyDao
+    abstract val movieDownloadDao: MovieDownloadDao
 
     companion object {
         @Volatile

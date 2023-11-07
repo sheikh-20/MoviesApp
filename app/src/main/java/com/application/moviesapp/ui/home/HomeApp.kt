@@ -8,34 +8,42 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.rounded.Bookmark
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Explore
 import androidx.compose.material.icons.rounded.FileDownload
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.NotificationsNone
 import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.PlayCircle
 import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -73,11 +81,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -88,8 +98,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.compose.collectAsLazyPagingItems
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.application.moviesapp.R
 import com.application.moviesapp.data.common.Resource
+import com.application.moviesapp.data.local.entity.MovieDownloadEntity
 import com.application.moviesapp.domain.model.MovieGenre
 import com.application.moviesapp.domain.model.SettingsPreference
 import com.application.moviesapp.ui.home.download.DownloadScreen
@@ -97,6 +110,7 @@ import com.application.moviesapp.ui.home.explore.ExploreScreen
 import com.application.moviesapp.ui.home.mylist.MyListScreen
 import com.application.moviesapp.ui.home.profile.ProfileScreen
 import com.application.moviesapp.ui.onboarding.OnboardingActivity
+import com.application.moviesapp.ui.viewmodel.DownloadViewModel
 import com.application.moviesapp.ui.viewmodel.ExploreUiState
 import com.application.moviesapp.ui.viewmodel.ExploreViewModel
 import com.application.moviesapp.ui.viewmodel.HomeViewModel
@@ -113,13 +127,15 @@ fun HomeApp(modifier: Modifier = Modifier,
             homeViewModel: HomeViewModel = hiltViewModel(),
             exploreViewModel: ExploreViewModel = hiltViewModel(),
             myListViewModel: MyListViewModel = hiltViewModel(),
-            profileViewModel: ProfileViewModel = hiltViewModel()) {
+            profileViewModel: ProfileViewModel = hiltViewModel(),
+            downloadViewModel: DownloadViewModel = hiltViewModel()) {
 
     val homeUiState: MoviesWithNewReleaseUiState by homeViewModel.moviesWithNewReleaseUiState.collectAsState()
     val exploreUiState: ExploreUiState by exploreViewModel.exploreUiState.collectAsState()
     val profileUiState by homeViewModel.profileInfoUiState.collectAsState()
     val myListUiState by myListViewModel.movieFavourite.collectAsState()
     val darkModeUiState by profileViewModel.isDarkMode.collectAsState(initial = SettingsPreference(false))
+    val downloadUiState by downloadViewModel.readAllDownload().collectAsState()
 
     val genreUiState by exploreViewModel.genreUiState.collectAsState()
 
@@ -127,6 +143,8 @@ fun HomeApp(modifier: Modifier = Modifier,
 
     val coroutineScope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(BottomSheet.Default) }
+
+    var downloadEntity by remember { mutableStateOf(MovieDownloadEntity(backdropPath = "", title = "", runtime = "")) }
 
     val context = LocalContext.current
 
@@ -167,6 +185,25 @@ fun HomeApp(modifier: Modifier = Modifier,
                     )
                 })
         }
+        BottomSheet.DownloadDelete -> {
+            BottomSheet(
+                onDismiss = { showBottomSheet = BottomSheet.Default },
+                onNegativeClick = { showBottomSheet = BottomSheet.Default },
+                onPositiveClick = {
+                    coroutineScope.launch {
+                        downloadViewModel.deleteMovieDownload(downloadEntity)
+                    }
+                    showBottomSheet = BottomSheet.Default
+                },
+                contentSheet = { onNegativeClick, onPositiveClick ->
+                    BottomSheetContentDownloadDelete(
+                        onNegativeClick = onNegativeClick,
+                        onPositiveClick = onPositiveClick,
+                        movieDownloadEntity = downloadEntity
+                    )
+                }
+            )
+        }
     }
 
     val exploreScrollState = rememberLazyGridState()
@@ -183,9 +220,16 @@ fun HomeApp(modifier: Modifier = Modifier,
         }
     }
 
+    val downloadScrollState = rememberLazyListState()
+    val downloadHideTopAppBar by remember(downloadScrollState) {
+        derivedStateOf {
+            downloadScrollState.firstVisibleItemIndex == 0
+        }
+    }
+
     Scaffold(
         topBar = {
-            HomeTopAppbar(navController, exploreViewModel, exploreHideTopAppBar, myListHideTopAppBar, onFilterClick = { showBottomSheet = BottomSheet.Filter })
+            HomeTopAppbar(navController, exploreViewModel, exploreHideTopAppBar, myListHideTopAppBar, downloadHideTopAppBar, onFilterClick = { showBottomSheet = BottomSheet.Filter })
         },
         bottomBar = {
             HomeBottomBarNavigation(navController)
@@ -213,7 +257,16 @@ fun HomeApp(modifier: Modifier = Modifier,
                     bottomPadding = paddingValues)
             }
             composable(route = BottomNavigationScreens.Download.route) {
-                DownloadScreen()
+                DownloadScreen(
+                    modifier = modifier,
+                    downloadUiState = downloadUiState,
+                    lazyListState = downloadScrollState,
+                    bottomPadding = paddingValues,
+                    onDeleteClick = {
+                        showBottomSheet = BottomSheet.DownloadDelete
+                        downloadEntity = it
+                    }
+                )
             }
             composable(route = BottomNavigationScreens.Profile.route) {
                 ProfileScreen(
@@ -474,12 +527,95 @@ private fun BottomSheetContent(modifier: Modifier = Modifier, onNegativeClick: (
     }
 }
 
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun BottomSheetContentDownloadDelete(modifier: Modifier = Modifier, onNegativeClick: () -> Unit = { }, onPositiveClick: () -> Unit = {}, movieDownloadEntity: MovieDownloadEntity? = null) {
+    Column(modifier = modifier
+        .padding(16.dp)
+        .systemBarsPadding(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Text(text = "Delete",
+            style = MaterialTheme.typography.headlineSmall,
+            textAlign = TextAlign.Center,
+            modifier = modifier.fillMaxWidth(),
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.Bold)
+
+        Divider()
+
+        Text(text = "Are you sure you want to delete this downloaded content?",
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            modifier = modifier.fillMaxWidth())
+
+
+        Row(modifier = modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            Card(modifier = modifier.size(height = 100.dp, width = 130.dp),
+                shape = RoundedCornerShape(20)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    AsyncImage(model = ImageRequest.Builder(context = LocalContext.current)
+                        .data(movieDownloadEntity?.backdropPath ?: "")
+                        .crossfade(true)
+                        .build(),
+                        placeholder = painterResource(id = R.drawable.ic_image_placeholder),
+                        contentDescription = null,
+                        modifier = modifier
+                            .fillMaxSize(),
+                        contentScale = ContentScale.Crop)
+                    Icon(imageVector = Icons.Rounded.PlayCircle, contentDescription = null, tint = Color.White)
+                }
+            }
+
+            Column(modifier = modifier.weight(1f),
+                verticalArrangement = Arrangement.SpaceEvenly) {
+                Text(
+                    text = movieDownloadEntity?.title ?: "",
+                    style = MaterialTheme.typography.titleSmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Text(
+                    text = movieDownloadEntity?.runtime.toString() ?: "",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                AssistChip(
+                    onClick = {  },
+                    label = { Text(text = "2.4 GB", style = MaterialTheme.typography.bodySmall) })
+            }
+        }
+
+
+        Row(modifier = modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically) {
+
+            OutlinedButton(onClick = onNegativeClick, modifier = modifier
+                .weight(1f)
+                .requiredHeight(50.dp)) {
+                Text(text = "Cancel")
+            }
+
+            Button(onClick = onPositiveClick, modifier = modifier
+                .weight(1f)
+                .requiredHeight(50.dp)) {
+                Text(text = "Yes, Logout")
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeTopAppbar(navController: NavHostController,
                           exploreViewModel: ExploreViewModel = viewModel(),
                           exploreHideTopAppBar: Boolean,
                           mylistHideTopAppBar: Boolean,
+                          downloadHideTopAppBar: Boolean,
                           onFilterClick: () -> Unit = {}
                           ) {
 
@@ -551,22 +687,29 @@ private fun HomeTopAppbar(navController: NavHostController,
             }
         }
         BottomNavigationScreens.Download.route -> {
-            TopAppBar(
-                title = { Text(text = "Download") },
-                navigationIcon = {
-                    IconButton(onClick = {   }) {
-                        Icon(painter = painterResource(id = R.drawable.ic_movie),
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = {}) {
-                        Icon(imageVector = Icons.Rounded.Search, contentDescription = null)
-                    }
-                },
-                colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent)
-            )
+
+            AnimatedVisibility(
+                visible = mylistHideTopAppBar,
+                enter = slideInVertically(animationSpec = tween(durationMillis = 200)),
+                exit = slideOutVertically(animationSpec = tween(durationMillis = 200))) {
+
+                TopAppBar(
+                    title = { Text(text = "Download") },
+                    navigationIcon = {
+                        IconButton(onClick = {   }) {
+                            Icon(painter = painterResource(id = R.drawable.ic_movie),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary)
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = {}) {
+                            Icon(imageVector = Icons.Rounded.Search, contentDescription = null)
+                        }
+                    },
+                    colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent)
+                )
+            }
         }
         BottomNavigationScreens.Profile.route -> {
             TopAppBar(
@@ -642,8 +785,15 @@ private fun HomeBottomBarNavigation(navController: NavHostController,
 }
 
 enum class BottomSheet {
-    Default, Logout, Filter
+    Default, Logout, Filter, DownloadDelete
 }
+
+//sealed interface BottomSheet {
+//    object Default: BottomSheet
+//    object Logout: BottomSheet
+//    object Filter: BottomSheet
+//    data class DownloadDelete(val movie: MovieDownloadEntity): BottomSheet
+//}
 
 enum class Categories(val title: String) {
     Movies("Movies"), TV("TV series")
