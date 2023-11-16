@@ -6,14 +6,15 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,7 +22,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -32,7 +32,6 @@ import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.rounded.Bookmark
-import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Explore
 import androidx.compose.material.icons.rounded.FileDownload
 import androidx.compose.material.icons.rounded.Home
@@ -50,7 +49,6 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalAbsoluteTonalElevation
@@ -114,7 +112,6 @@ import com.application.moviesapp.ui.viewmodel.DownloadViewModel
 import com.application.moviesapp.ui.viewmodel.ExploreUiState
 import com.application.moviesapp.ui.viewmodel.ExploreViewModel
 import com.application.moviesapp.ui.viewmodel.HomeViewModel
-import com.application.moviesapp.ui.viewmodel.MoviesWithNewReleaseUiState
 import com.application.moviesapp.ui.viewmodel.MyListViewModel
 import com.application.moviesapp.ui.viewmodel.ProfileViewModel
 import kotlinx.coroutines.launch
@@ -130,7 +127,10 @@ fun HomeApp(modifier: Modifier = Modifier,
             profileViewModel: ProfileViewModel = hiltViewModel(),
             downloadViewModel: DownloadViewModel = hiltViewModel()) {
 
-    val homeUiState: MoviesWithNewReleaseUiState by homeViewModel.moviesWithNewReleaseUiState.collectAsState()
+    val searchUiState by exploreViewModel.searchInputUiState.collectAsState()
+
+    val movieWithTvSeriesUiState by homeViewModel.movieWithTvSeriesUiState.collectAsState()
+
     val exploreUiState: ExploreUiState by exploreViewModel.exploreUiState.collectAsState()
     val profileUiState by homeViewModel.profileInfoUiState.collectAsState()
     val myListUiState by myListViewModel.movieFavourite.collectAsState()
@@ -141,10 +141,12 @@ fun HomeApp(modifier: Modifier = Modifier,
 
     val moviesFlowState = exploreViewModel.moviesPagingFlow.collectAsLazyPagingItems()
 
+    val moviesSearchFlowState = exploreViewModel.getMovieBySearch(searchUiState.search).collectAsLazyPagingItems()
+
     val coroutineScope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(BottomSheet.Default) }
 
-    var downloadEntity by remember { mutableStateOf(MovieDownloadEntity(backdropPath = "", title = "", runtime = "")) }
+    var downloadEntity by remember { mutableStateOf(MovieDownloadEntity(backdropPath = "", title = "", runtime = "", filePath = "")) }
 
     val context = LocalContext.current
 
@@ -229,7 +231,7 @@ fun HomeApp(modifier: Modifier = Modifier,
 
     Scaffold(
         topBar = {
-            HomeTopAppbar(navController, exploreViewModel, exploreHideTopAppBar, myListHideTopAppBar, downloadHideTopAppBar, onFilterClick = { showBottomSheet = BottomSheet.Filter })
+            HomeTopAppbar(navController, exploreViewModel, exploreHideTopAppBar, myListHideTopAppBar, downloadHideTopAppBar, onFilterClick = { showBottomSheet = BottomSheet.Filter }, search = searchUiState.search)
         },
         bottomBar = {
             HomeBottomBarNavigation(navController)
@@ -238,15 +240,25 @@ fun HomeApp(modifier: Modifier = Modifier,
         NavHost(
             navController = navController, startDestination = BottomNavigationScreens.Home.route) {
             composable(route = BottomNavigationScreens.Home.route) {
-                HomeScreen(modifier = modifier, uiState = homeUiState, bottomPadding = paddingValues)
+                HomeScreen(
+                    modifier = modifier,
+                    uiState = movieWithTvSeriesUiState,
+                    bottomPadding = paddingValues,
+                    goToDownloadClick = {
+                        navController.popBackStack()
+                        navController.navigate(BottomNavigationScreens.Download.route)
+                    }
+                )
             }
             composable(route = BottomNavigationScreens.Explore.route) {
                 ExploreScreen(
                     modifier = modifier,
                     uiState = exploreUiState,
-                    moviesFlow = moviesFlowState,
+                    moviesPopularFlow = moviesFlowState,
+                    movieSearchFlow = moviesSearchFlowState,
                     lazyGridState = exploreScrollState,
-                    bottomPadding = paddingValues)
+                    bottomPadding = paddingValues,
+                    searchClicked = searchUiState.clicked)
             }
             composable(route = BottomNavigationScreens.MyList.route) {
                 MyListScreen(
@@ -616,13 +628,21 @@ private fun HomeTopAppbar(navController: NavHostController,
                           exploreHideTopAppBar: Boolean,
                           mylistHideTopAppBar: Boolean,
                           downloadHideTopAppBar: Boolean,
-                          onFilterClick: () -> Unit = {}
+                          onFilterClick: () -> Unit = {},
+                          search: String = ""
                           ) {
 
     val context = LocalContext.current
 
     when (navController.currentBackStackEntryAsState().value?.destination?.route) {
         BottomNavigationScreens.Explore.route -> {
+
+            if (search.isNotEmpty()) {
+                exploreViewModel.updateClickInput(true)
+            } else {
+                exploreViewModel.updateClickInput(false)
+            }
+
             AnimatedVisibility(
                 visible = exploreHideTopAppBar,
                 enter = slideInVertically(animationSpec = tween(durationMillis = 200)),
@@ -631,7 +651,7 @@ private fun HomeTopAppbar(navController: NavHostController,
                 TopAppBar(
                     title = {
                         OutlinedTextField(
-                            value = exploreViewModel.searchInputField,
+                            value = search,
                             onValueChange = exploreViewModel::updateSearchField,
                             label = {
                                 Text(text = "Search")
@@ -643,7 +663,7 @@ private fun HomeTopAppbar(navController: NavHostController,
                                 .height(64.dp)
                                 .fillMaxWidth()
                                 .padding(end = 20.dp),
-                            shape = RoundedCornerShape(30)
+                            shape = RoundedCornerShape(30),
                         )
                     },
                     actions = {

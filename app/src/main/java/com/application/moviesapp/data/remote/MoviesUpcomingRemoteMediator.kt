@@ -7,8 +7,6 @@ import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
 import com.application.moviesapp.data.api.MoviesApi
 import com.application.moviesapp.data.local.MoviesDatabase
-import com.application.moviesapp.data.local.entity.MovieNewReleaseEntity
-import com.application.moviesapp.data.local.entity.MovieNewReleaseRemoteKeyEntity
 import com.application.moviesapp.data.local.entity.MovieUpcomingEntity
 import com.application.moviesapp.data.local.entity.MovieUpcomingRemoteKeyEntity
 import com.application.moviesapp.data.mappers.toMoviesEntity

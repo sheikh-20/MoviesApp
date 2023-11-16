@@ -49,11 +49,11 @@ class MergeWorker @AssistedInject constructor(@Assisted ctx: Context,
         return withContext(Dispatchers.IO) {
             return@withContext try {
                 val mp4ParserAudioMuxer = Mp4ParserAudioMuxer(applicationContext)
-                mp4ParserAudioMuxer.startMerging()
+                mp4ParserAudioMuxer.startMerging(gson.filePath ?: "")
                 saveMediaToStorage(
-                    filePath = File(applicationContext.filesDir, "/output/output.mp4").path,
+                    filePath = File(applicationContext.filesDir, "/output/${gson.filePath}").path,
                     isVideo = true,
-                    fileName = "output_${UUID.randomUUID()}.mp4"
+                    fileName = "${gson.filePath}"
                 )
                 makeStatusNotification("Video saved successfully", applicationContext)
 

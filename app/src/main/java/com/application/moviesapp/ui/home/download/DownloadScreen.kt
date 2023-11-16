@@ -1,5 +1,6 @@
 package com.application.moviesapp.ui.home.download
 
+import android.app.Activity
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -22,12 +23,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.PlayCircle
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -50,6 +53,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.application.moviesapp.R
 import com.application.moviesapp.data.local.entity.MovieDownloadEntity
+import com.application.moviesapp.ui.play.PlayActivity
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.utility.toImageUrl
 import com.application.moviesapp.ui.utility.toYoutubeDuration
@@ -115,6 +119,7 @@ fun DownloadScreen(modifier: Modifier = Modifier,
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 private fun DownloadCard(modifier: Modifier = Modifier,
@@ -122,53 +127,62 @@ private fun DownloadCard(modifier: Modifier = Modifier,
                          onDeleteClick: (MovieDownloadEntity) -> Unit = { _ -> }
 ) {
 
-    Row(modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-        Card(modifier = modifier.size(height = 110.dp, width = 140.dp),
-            shape = RoundedCornerShape(20)
-        ) {
-            Box(contentAlignment = Alignment.Center) {
-                AsyncImage(model = ImageRequest.Builder(context = LocalContext.current)
-                    .data(movie?.backdropPath ?: "")
-                    .crossfade(true)
-                    .build(),
-                    placeholder = painterResource(id = R.drawable.ic_image_placeholder),
-                    contentDescription = null,
-                    modifier = modifier
-                        .fillMaxSize(),
-                    contentScale = ContentScale.Crop)
-                Icon(imageVector = Icons.Rounded.PlayCircle, contentDescription = null, tint = Color.White)
+    val context = LocalContext.current
+
+    Card(onClick = { PlayActivity.startActivity(context as Activity, movie?.filePath) },
+        shape = RoundedCornerShape(20),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+    ) {
+        Row(modifier = modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            Card(modifier = modifier.size(height = 110.dp, width = 140.dp),
+                shape = RoundedCornerShape(20)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    AsyncImage(model = ImageRequest.Builder(context = LocalContext.current)
+                        .data(movie?.backdropPath ?: "")
+                        .crossfade(true)
+                        .build(),
+                        placeholder = painterResource(id = R.drawable.ic_image_placeholder),
+                        contentDescription = null,
+                        modifier = modifier
+                            .fillMaxSize(),
+                        contentScale = ContentScale.Crop)
+                    Icon(imageVector = Icons.Rounded.PlayCircle, contentDescription = null, tint = Color.White)
+                }
             }
-        }
 
-        Column(modifier = modifier.weight(1f),
-            verticalArrangement = Arrangement.SpaceEvenly) {
-            Text(
-                text = movie?.title ?: "",
-                style = MaterialTheme.typography.titleSmall,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            Column(modifier = modifier.weight(1f),
+                verticalArrangement = Arrangement.SpaceEvenly) {
+                Text(
+                    text = movie?.title ?: "",
+                    style = MaterialTheme.typography.titleSmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
 
-            Text(
-                text = movie?.runtime.toString() ?: "",
-                style = MaterialTheme.typography.bodyMedium
-            )
+                Text(
+                    text = movie?.runtime.toString() ?: "",
+                    style = MaterialTheme.typography.bodyMedium
+                )
 
-            Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                AssistChip(
-                    onClick = {  }, 
-                    label = { Text(text = "2.4 GB", style = MaterialTheme.typography.bodySmall) })
+                Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    AssistChip(
+                        onClick = {  },
+                        label = { Text(text = "2.4 GB", style = MaterialTheme.typography.bodySmall) })
 
-                Spacer(modifier = modifier.weight(1f))
-                
-                IconButton(onClick = { onDeleteClick(movie ?: return@IconButton) }) {
-                    Icon(imageVector = Icons.Rounded.Delete, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    Spacer(modifier = modifier.weight(1f))
+
+                    IconButton(onClick = { onDeleteClick(movie ?: return@IconButton) }) {
+                        Icon(imageVector = Icons.Outlined.Delete, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    }
                 }
             }
         }
+
     }
+
 }
 
 @Preview(showBackground = true, showSystemUi = true)

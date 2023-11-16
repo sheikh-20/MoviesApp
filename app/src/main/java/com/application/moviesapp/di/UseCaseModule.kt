@@ -6,37 +6,40 @@ import com.application.moviesapp.data.repository.MoviesRepository
 import com.application.moviesapp.data.repository.SettingsPreferenceRepository
 import com.application.moviesapp.data.repository.UserPreferenceRepository
 import com.application.moviesapp.data.repository.YoutubeRepository
-import com.application.moviesapp.domain.GetMoviesNewReleaseInteractor
-import com.application.moviesapp.domain.GetMoviesWithNewReleaseInteractor
+import com.application.moviesapp.domain.GetMoviesNowPlayingInteractor
 import com.application.moviesapp.domain.GetMoviesWithSortInteractor
-import com.application.moviesapp.domain.MoviesNewReleaseUseCase
+import com.application.moviesapp.domain.MoviesNowPlayingUseCase
 import com.application.moviesapp.domain.MoviesPopularInteractor
 import com.application.moviesapp.domain.MoviesPopularUseCase
 import com.application.moviesapp.domain.MoviesSortUseCase
-import com.application.moviesapp.domain.MoviesUseCase
-import com.application.moviesapp.domain.model.MovieGenre
 import com.application.moviesapp.domain.usecase.GetMovieDetailInteractor
 import com.application.moviesapp.domain.usecase.GetMovieFavouriteInteractor
 import com.application.moviesapp.domain.usecase.GetAccountSetupInteractor
 import com.application.moviesapp.domain.usecase.GetMovieStateInteractor
 import com.application.moviesapp.domain.usecase.GetMovieTrailerInteractor
 import com.application.moviesapp.domain.usecase.GetSignInFacebookInteractor
-import com.application.moviesapp.domain.usecase.GetUserInfoInteractor
 import com.application.moviesapp.domain.usecase.MovieDetailsUseCase
 import com.application.moviesapp.domain.usecase.MovieFavouriteUseCase
 import com.application.moviesapp.domain.usecase.AccountSetupUseCase
 import com.application.moviesapp.domain.usecase.GetMovieDownloadInteractor
 import com.application.moviesapp.domain.usecase.GetMovieGenreInteractor
+import com.application.moviesapp.domain.usecase.GetMovieNowPlayingInteractor
+import com.application.moviesapp.domain.usecase.GetMovieSearchInteractor
+import com.application.moviesapp.domain.usecase.GetMovieWithTvSeriesInteractor
 import com.application.moviesapp.domain.usecase.GetSettingsInteractor
+import com.application.moviesapp.domain.usecase.GetTvSeriesDetailsInteractor
 import com.application.moviesapp.domain.usecase.GetTvSeriesGenreInteractor
+import com.application.moviesapp.domain.usecase.GetTvSeriesNowPlayingInteractor
+import com.application.moviesapp.domain.usecase.GetTvSeriesTrailerInteractor
 import com.application.moviesapp.domain.usecase.MovieDownloadUseCase
 import com.application.moviesapp.domain.usecase.MovieGenresUseCase
+import com.application.moviesapp.domain.usecase.MovieNowPlayingUseCase
+import com.application.moviesapp.domain.usecase.MovieSearchUseCase
 import com.application.moviesapp.domain.usecase.MovieStateUseCase
 import com.application.moviesapp.domain.usecase.MovieTrailerUseCase
 import com.application.moviesapp.domain.usecase.MovieUpdateFavouriteInteractor
 import com.application.moviesapp.domain.usecase.MovieUpdateFavouriteUseCase
-import com.application.moviesapp.domain.usecase.MoviesUpcomingInterator
-import com.application.moviesapp.domain.usecase.MoviesUpcomingUseCase
+import com.application.moviesapp.domain.usecase.MovieWithTvSeriesUseCase
 import com.application.moviesapp.domain.usecase.SettingsUseCase
 import com.application.moviesapp.domain.usecase.SignInEmailInteractor
 import com.application.moviesapp.domain.usecase.SignInEmailUseCase
@@ -47,8 +50,10 @@ import com.application.moviesapp.domain.usecase.SignInGoogleInteractor
 import com.application.moviesapp.domain.usecase.SignInGoogleUseCase
 import com.application.moviesapp.domain.usecase.SignUpEmailInteractor
 import com.application.moviesapp.domain.usecase.SignUpEmailUseCase
+import com.application.moviesapp.domain.usecase.TvSeriesDetailsUseCase
 import com.application.moviesapp.domain.usecase.TvSeriesGenreUseCase
-import com.application.moviesapp.domain.usecase.UserInfoUseCase
+import com.application.moviesapp.domain.usecase.TvSeriesNowPlayingUseCase
+import com.application.moviesapp.domain.usecase.TvSeriesTrailerUseCase
 import com.application.moviesapp.domain.usecase.YoutubeThumbnailInteractor
 import com.application.moviesapp.domain.usecase.YoutubeThumbnailUseCase
 import com.application.moviesapp.domain.usecase.worker.DownloadUseCase
@@ -60,7 +65,6 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import javax.annotation.Signed
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -70,8 +74,8 @@ class UseCaseModule {
 
     @Provides
     @Singleton
-    fun providesUseCase(moviesRepository: MoviesRepository): MoviesUseCase {
-        return GetMoviesWithNewReleaseInteractor(moviesRepository)
+    fun providesUseCase(moviesRepository: MoviesRepository): MovieWithTvSeriesUseCase {
+        return GetMovieWithTvSeriesInteractor(moviesRepository)
     }
 
     @Provides
@@ -88,14 +92,8 @@ class UseCaseModule {
 
     @Provides
     @Singleton
-    fun providesMoviesNewReleaseUseCase(moviesRepository: MoviesRepository): MoviesNewReleaseUseCase {
-        return GetMoviesNewReleaseInteractor(moviesRepository)
-    }
-
-    @Provides
-    @Singleton
-    fun providesMoviesUpcomingUseCase(moviesRepository: MoviesRepository): MoviesUpcomingUseCase {
-        return MoviesUpcomingInterator(moviesRepository)
+    fun providesMoviesNewReleaseUseCase(moviesRepository: MoviesRepository): MoviesNowPlayingUseCase {
+        return GetMoviesNowPlayingInteractor(moviesRepository)
     }
 
     @Provides
@@ -134,6 +132,11 @@ class UseCaseModule {
         return GetMovieDetailInteractor(moviesRepository)
     }
 
+    @Provides
+    @Singleton
+    fun providesTvSeriesDetailsUseCase(moviesRepository: MoviesRepository): TvSeriesDetailsUseCase {
+        return GetTvSeriesDetailsInteractor(moviesRepository)
+    }
 
     @Provides
     @Singleton
@@ -147,6 +150,11 @@ class UseCaseModule {
         return GetMovieTrailerInteractor(moviesRepository, youtubeRepository)
     }
 
+    @Provides
+    @Singleton
+    fun providesTvSeriesTrailerUseCase(moviesRepository: MoviesRepository, youtubeRepository: YoutubeRepository): TvSeriesTrailerUseCase {
+        return GetTvSeriesTrailerInteractor(moviesRepository, youtubeRepository)
+    }
 
     @Provides
     @Singleton
@@ -207,6 +215,24 @@ class UseCaseModule {
     @Singleton
     fun providesMovieDownloadUseCase(moviesRepository: MoviesRepository): MovieDownloadUseCase {
         return GetMovieDownloadInteractor(moviesRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesMovieNowPlayingUseCase(moviesRepository: MoviesRepository): MovieNowPlayingUseCase {
+        return GetMovieNowPlayingInteractor(moviesRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesTvSeriesNowPlayingUseCase(moviesRepository: MoviesRepository): TvSeriesNowPlayingUseCase {
+        return GetTvSeriesNowPlayingInteractor(moviesRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesMovieSearchUseCase(moviesRepository: MoviesRepository): MovieSearchUseCase {
+        return GetMovieSearchInteractor(moviesRepository)
     }
 }
 

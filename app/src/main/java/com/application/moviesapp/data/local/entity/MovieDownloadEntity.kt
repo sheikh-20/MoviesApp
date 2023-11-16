@@ -20,6 +20,9 @@ data class MovieDownloadEntity(
     @ColumnInfo(name = "title")
     val title: String?,
 
+    @ColumnInfo(name = "file_path")
+    val filePath: String?,
+
     @ColumnInfo(name = "update_at")
     val updatedAt: Long? = Calendar.getInstance().timeInMillis
 )

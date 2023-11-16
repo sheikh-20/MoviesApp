@@ -1,15 +1,11 @@
-package com.application.moviesapp.domain
+package com.application.moviesapp.domain.model
 
-import androidx.room.ColumnInfo
-
-data class Movies(
+data class MoviesPopular(
     val adult: Boolean?,
 
     val backdropPath: String?,
 
     val id: Int?,
-
-    val movieId: Int?,
 
     val originalLanguage: String?,
 

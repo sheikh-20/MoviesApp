@@ -9,8 +9,10 @@ import com.application.moviesapp.data.api.response.MovieGenreResponse
 import com.application.moviesapp.data.common.Resource
 import com.application.moviesapp.data.repository.AuthRepository
 import com.application.moviesapp.data.repository.MoviesRepository
+import com.application.moviesapp.domain.model.MovieGenre
 import com.application.moviesapp.domain.model.MoviesDetail
 import com.application.moviesapp.domain.usecase.AccountSetupUseCase
+import com.application.moviesapp.domain.usecase.MovieGenresUseCase
 import com.application.moviesapp.domain.usecase.SignInEmailUseCase
 import com.application.moviesapp.domain.usecase.SignInFacebookUseCase
 import com.application.moviesapp.domain.usecase.SignInGithubUseCase
@@ -35,19 +37,14 @@ import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
 
-sealed interface MovieGenreUiState {
-    object Loading: MovieGenreUiState
-    data class Success(val genreResponse: MovieGenreResponse): MovieGenreUiState
-    object Failure: MovieGenreUiState
-}
 @HiltViewModel
-class OnboardingViewModel @Inject constructor(private val moviesRepository: MoviesRepository,
+class OnboardingViewModel @Inject constructor(private val movieGenresUseCase: MovieGenresUseCase,
                                               private val signInGoogleUseCase: SignInGoogleUseCase,
-    private val signInGithubUseCase: SignInGithubUseCase,
-    private val signInFacebookUseCase: SignInFacebookUseCase,
-    private val accountSetupUseCase: AccountSetupUseCase,
-    private val signInEmailUseCase: SignInEmailUseCase,
-    private val signUpEmailUseCase: SignUpEmailUseCase
+                                              private val signInGithubUseCase: SignInGithubUseCase,
+                                              private val signInFacebookUseCase: SignInFacebookUseCase,
+                                              private val accountSetupUseCase: AccountSetupUseCase,
+                                              private val signInEmailUseCase: SignInEmailUseCase,
+                                              private val signUpEmailUseCase: SignUpEmailUseCase
     ): ViewModel() {
 
     private companion object {
@@ -56,8 +53,8 @@ class OnboardingViewModel @Inject constructor(private val moviesRepository: Movi
 
     private val auth = Firebase.auth
 
-    private var _movieGenreUiState = MutableStateFlow<MovieGenreUiState>(MovieGenreUiState.Loading)
-    val movieGenreUiState: StateFlow<MovieGenreUiState> = _movieGenreUiState
+    private var _movieGenreUiState = MutableStateFlow<Resource<MovieGenre>>(Resource.Loading)
+    val movieGenreUiState: StateFlow<Resource<MovieGenre>> = _movieGenreUiState
 
     private var _loading = MutableStateFlow(true)
     val loading: StateFlow<Boolean> = _loading
@@ -68,14 +65,9 @@ class OnboardingViewModel @Inject constructor(private val moviesRepository: Movi
 
 
     fun getMoviesGenreList() = viewModelScope.launch(Dispatchers.IO) {
-        _movieGenreUiState.value = MovieGenreUiState.Loading
-
         try {
-            val result = moviesRepository.getMoviesGenreList()
-            _movieGenreUiState.value = MovieGenreUiState.Success(result)
-            Timber.tag(TAG).d(result.toString())
+            _movieGenreUiState.value = movieGenresUseCase()
         } catch (exception: IOException) {
-            _movieGenreUiState.value = MovieGenreUiState.Failure
             Timber.tag(TAG).e(exception)
         }
     }

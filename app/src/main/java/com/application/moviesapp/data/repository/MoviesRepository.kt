@@ -11,29 +11,31 @@ import com.application.moviesapp.data.api.response.MovieDetailsCastDto
 import com.application.moviesapp.data.api.response.MovieDetailsDto
 import com.application.moviesapp.data.api.response.MovieFavouriteDto
 import com.application.moviesapp.data.api.response.MovieGenreResponse
+import com.application.moviesapp.data.api.response.MovieNowPlayingDto
+import com.application.moviesapp.data.api.response.MovieSearchDto
 import com.application.moviesapp.data.api.response.MovieStateDto
 import com.application.moviesapp.data.api.response.MovieTopRatedResponse
 import com.application.moviesapp.data.api.response.MovieTrailerDto
 import com.application.moviesapp.data.api.response.MovieUpdateFavouriteDto
-import com.application.moviesapp.data.api.response.TvSeriesGenreResponse
+import com.application.moviesapp.data.api.response.TvSeriesDetailsDto
+import com.application.moviesapp.data.api.response.TvSeriesNowPlayingDto
+import com.application.moviesapp.data.api.response.TvSeriesTrailerDto
 import com.application.moviesapp.data.local.MoviesDatabase
 import com.application.moviesapp.data.local.entity.MovieDownloadEntity
-import com.application.moviesapp.data.local.entity.MovieNewReleaseEntity
-import com.application.moviesapp.data.local.entity.MovieUpcomingEntity
-import com.application.moviesapp.data.local.entity.MoviesEntity
 import com.application.moviesapp.data.remote.MovieNewReleasesDto
+import com.application.moviesapp.data.remote.MovieNowPlayingPagingSource
+import com.application.moviesapp.data.remote.MovieSearchPagingSource
 import com.application.moviesapp.data.remote.MovieUpcomingDto
-import com.application.moviesapp.data.remote.MoviesDto
-import com.application.moviesapp.data.remote.MoviesNewReleaseRemoteMediator
-import com.application.moviesapp.data.remote.MoviesRemoteMediator
-import com.application.moviesapp.data.remote.MoviesUpcomingRemoteMediator
+import com.application.moviesapp.data.remote.MoviesPopularDto
+import com.application.moviesapp.data.remote.MoviesPopularPagingSource
+import com.application.moviesapp.data.remote.TvSeriesNowPlayingPagingSource
 import kotlinx.coroutines.flow.Flow
 import okhttp3.RequestBody
 import retrofit2.Response
 import javax.inject.Inject
 
 interface MoviesRepository {
-    suspend fun getPopularMoviesList(): MoviesDto
+    suspend fun getPopularMoviesList(page: Int = 1): Response<MoviesPopularDto>
 
     suspend fun getMoviesGenreList(): MovieGenreResponse
 
@@ -47,19 +49,25 @@ interface MoviesRepository {
 
     suspend fun getSearchResults(query: String): MovieSimpleResponse
 
-    fun getMoviesPagingFlow(): Flow<PagingData<MoviesEntity>>
+    fun getPopularMoviesPagingFlow(): Flow<PagingData<MoviesPopularDto.Result>>
 
-    fun getMoviesNewReleasePagingFlow(): Flow<PagingData<MovieNewReleaseEntity>>
+    fun getMoviesNowPlayingPagingFlow(): Flow<PagingData<MovieNowPlayingDto.Result>>
+
+    fun getMovieBySearchPagingFlow(search: String = ""): Flow<PagingData<MovieSearchDto.Result>>
 
     suspend fun getMoviesUpcoming(): MovieUpcomingDto
 
-    fun getMoviesUpcomingPagingFlow(): Flow<PagingData<MovieUpcomingEntity>>
+    fun getTvSeriesNowPlayingPagingFlow(): Flow<PagingData<TvSeriesNowPlayingDto.Result>>
 
     suspend fun getMoviesDetailById(movieId: Int): Response<MovieDetailsDto>
+
+    suspend fun getTvSeriesDetailById(tvSeriesId: Int): Response<TvSeriesDetailsDto>
 
     suspend fun getMovieDetailsCast(movieId: Int): Response<MovieDetailsCastDto>
 
     suspend fun getMovieTrailer(movieId: Int): Response<MovieTrailerDto>
+
+    suspend fun getTvSeriesTrailer(seriesId: Int): Response<TvSeriesTrailerDto>
 
     suspend fun getMovieFavourite(): Response<MovieFavouriteDto>
 
@@ -76,11 +84,22 @@ interface MoviesRepository {
     suspend fun insertMovieDownload(download: MovieDownloadEntity)
 
     suspend fun deleteMovieDownload(download: MovieDownloadEntity)
+
+    suspend fun getMovieNowPlayingList(page: Int = 1): Response<MovieNowPlayingDto>
+
+    suspend fun getTvSeriesNowPlayingList(): Response<TvSeriesNowPlayingDto>
 }
 
 @OptIn(ExperimentalPagingApi::class)
-class MoviesRepositoryImpl @Inject constructor(private val movies: MoviesApi, private val database: MoviesDatabase): MoviesRepository {
-    override suspend fun getPopularMoviesList(): MoviesDto = movies.getPopularMoviesList()
+class MoviesRepositoryImpl @Inject constructor(private val movies: MoviesApi,
+                                               private val database: MoviesDatabase): MoviesRepository {
+
+    companion object {
+        const val PAGE_SIZE = 20
+    }
+
+
+    override suspend fun getPopularMoviesList(page: Int): Response<MoviesPopularDto> = movies.getPopularMoviesList(page = page)
     override suspend fun getMoviesGenreList(): MovieGenreResponse = movies.getMoviesGenreList()
     override suspend fun getNewReleasesList(): MovieNewReleasesDto= movies.getNewReleasesList()
     override suspend fun getMoviesTopRated(): MovieTopRatedResponse = movies.getMovieTopRated()
@@ -88,37 +107,45 @@ class MoviesRepositoryImpl @Inject constructor(private val movies: MoviesApi, pr
     override suspend fun getCountries(): List<CountryResponse> = movies.getCountries()
     override suspend fun getSearchResults(query: String): MovieSimpleResponse = movies.getSearch(query)
 
-    override fun getMoviesPagingFlow(): Flow<PagingData<MoviesEntity>> = Pager(
+    override fun getPopularMoviesPagingFlow(): Flow<PagingData<MoviesPopularDto.Result>> = Pager(
         config = PagingConfig(pageSize = 20),
-        remoteMediator = MoviesRemoteMediator(movies, database),
         pagingSourceFactory = {
-            database.moviesDao.pagingSource()
+            MoviesPopularPagingSource(movies)
         }
     ).flow
 
-    override fun getMoviesNewReleasePagingFlow(): Flow<PagingData<MovieNewReleaseEntity>> = Pager(
-        config = PagingConfig(pageSize = 20),
-        remoteMediator = MoviesNewReleaseRemoteMediator(movies, database),
+    override fun getMoviesNowPlayingPagingFlow(): Flow<PagingData<MovieNowPlayingDto.Result>> = Pager(
+        config = PagingConfig(pageSize = PAGE_SIZE, prefetchDistance = 10, initialLoadSize = PAGE_SIZE),
         pagingSourceFactory = {
-            database.movieNewReleaseDao.pagingSource()
+            MovieNowPlayingPagingSource(movies)
+        }
+    ).flow
+
+    override fun getMovieBySearchPagingFlow(search: String): Flow<PagingData<MovieSearchDto.Result>> = Pager(
+        config = PagingConfig(pageSize = PAGE_SIZE, prefetchDistance = 10, initialLoadSize = PAGE_SIZE),
+        pagingSourceFactory = {
+            MovieSearchPagingSource(movies, search)
         }
     ).flow
 
     override suspend fun getMoviesUpcoming(): MovieUpcomingDto = movies.getMovieUpcomingList()
 
-    override fun getMoviesUpcomingPagingFlow(): Flow<PagingData<MovieUpcomingEntity>> = Pager(
+    override fun getTvSeriesNowPlayingPagingFlow(): Flow<PagingData<TvSeriesNowPlayingDto.Result>> = Pager(
         config = PagingConfig(pageSize = 20),
-        remoteMediator = MoviesUpcomingRemoteMediator(movies, database),
         pagingSourceFactory = {
-            database.moviesUpcomingDao.pagingSource()
+            TvSeriesNowPlayingPagingSource(movies)
         }
     ).flow
 
     override suspend fun getMoviesDetailById(movieId: Int): Response<MovieDetailsDto> = movies.getMovieDetailsById(movieId)
 
+    override suspend fun getTvSeriesDetailById(tvSeriesId: Int): Response<TvSeriesDetailsDto> = movies.getTvSeriesDetailsId(tvSeriesId)
+
     override suspend fun getMovieDetailsCast(movieId: Int): Response<MovieDetailsCastDto> = movies.getMovieDetailsCast(movieId)
 
     override suspend fun getMovieTrailer(movieId: Int): Response<MovieTrailerDto> = movies.getMovieTrailer(movieId)
+
+    override suspend fun getTvSeriesTrailer(seriesId: Int): Response<TvSeriesTrailerDto> = movies.getTvSeriesTrailer(seriesId)
 
     override suspend fun getMovieFavourite(): Response<MovieFavouriteDto> = movies.getMovieFavourite()
 
@@ -135,4 +162,8 @@ class MoviesRepositoryImpl @Inject constructor(private val movies: MoviesApi, pr
     override suspend fun insertMovieDownload(download: MovieDownloadEntity) =  database.movieDownloadDao.insertDownload(download)
 
     override suspend fun deleteMovieDownload(download: MovieDownloadEntity) = database.movieDownloadDao.deleteDownload(download)
+
+    override suspend fun getMovieNowPlayingList(page: Int): Response<MovieNowPlayingDto> = movies.getNowPlayingMovieList(page = page)
+
+    override suspend fun getTvSeriesNowPlayingList(): Response<TvSeriesNowPlayingDto> = movies.getNowPlayingSeriesList()
 }

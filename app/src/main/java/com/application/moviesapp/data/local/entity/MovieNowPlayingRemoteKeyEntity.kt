@@ -4,15 +4,18 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "movie_new_release_remotekey_entity")
-data class MovieNewReleaseRemoteKeyEntity(
+@Entity(tableName = "movie_now_playing_remotekey_entity")
+data class MovieNowPlayingRemoteKeyEntity(
     @PrimaryKey(autoGenerate = false)
-    @ColumnInfo("id")
-    val id: Int,
+    @ColumnInfo("movie_id")
+    val movieId: Int,
 
     @ColumnInfo("previous_page")
     val previousPage: Int?,
 
     @ColumnInfo("next_page")
-    val nextPage: Int?
+    val nextPage: Int?,
+
+    @ColumnInfo("current_page")
+    val currentPage: Int,
 )

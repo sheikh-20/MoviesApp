@@ -1,7 +1,6 @@
 package com.application.moviesapp.ui.detail
 
 import android.app.Activity
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Cast
@@ -31,9 +30,12 @@ fun DetailScreenApp(modifier: Modifier = Modifier,
                     viewModel: DetailsViewModel = hiltViewModel(),
                     homeViewModel: HomeViewModel = hiltViewModel()) {
 
-    val uiState by viewModel.movieDetailResponse.collectAsState()
-    val trailerUiState by viewModel.movieTrailerResponse.collectAsState()
-    val moviesFlow = homeViewModel.moviesUpcomingPagingFlow().collectAsLazyPagingItems()
+    val moviesDetailsUiState by viewModel.movieDetailResponse.collectAsState()
+    val tvSeriesDetailsUiState by viewModel.tvSeriesDetailResponse.collectAsState()
+
+    val movieTrailerUiState by viewModel.movieTrailerResponse.collectAsState()
+    val tvSeriesTrailerUiState by viewModel.tvSeriesTrailerResponse.collectAsState()
+    val moviesFlow = homeViewModel.nowPlayingMoviesPagingFlow().collectAsLazyPagingItems()
     val bookmarkUiState by viewModel.movieStateResponse.collectAsState()
     val downloaderUiState by viewModel.downloaderUiState.collectAsState()
 
@@ -46,8 +48,10 @@ fun DetailScreenApp(modifier: Modifier = Modifier,
         snackbarHost = { SnackbarHost(snackbarHostState) }
         ) { paddingValues ->
         DetailScreen(modifier = modifier,
-            uiState = uiState,
-            trailerUiState = trailerUiState,
+            movieUIState = moviesDetailsUiState,
+            tvSeriesUIState = tvSeriesDetailsUiState,
+            moviesTrailerUiState = movieTrailerUiState,
+            tvSeriesTrailerUiState = tvSeriesTrailerUiState,
             moviesFlow = moviesFlow,
             onBookmarkClicked = { movieType: String, movieId: Int, isFavorite ->
                 viewModel.updateMovieFavourite(movieType, movieId, isFavorite)

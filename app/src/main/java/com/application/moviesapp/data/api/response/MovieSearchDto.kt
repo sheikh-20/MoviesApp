@@ -1,10 +1,10 @@
-package com.application.moviesapp.data.remote
+package com.application.moviesapp.data.api.response
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MoviesDto(
+data class MovieSearchDto(
     @SerialName("page")
     val page: Int?,
 

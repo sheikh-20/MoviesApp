@@ -36,19 +36,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.application.moviesapp.R
 import com.application.moviesapp.data.api.response.MovieGenreResponse
+import com.application.moviesapp.data.common.Resource
+import com.application.moviesapp.domain.model.MovieGenre
 import com.application.moviesapp.domain.model.MoviesDetail
 import com.application.moviesapp.ui.theme.MoviesAppTheme
-import com.application.moviesapp.ui.viewmodel.MovieGenreUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun ChooseYourInterestScreen(modifier: Modifier = Modifier,
-                             uiState: MovieGenreUiState = MovieGenreUiState.Loading,
+                             uiState: Resource<MovieGenre> = Resource.Loading,
                              onContinueClick: () -> Unit = {},
                              onGenreClick: (MoviesDetail.Genre) -> Unit = { }) {
-
-    var selectedGenre by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -58,19 +57,19 @@ fun ChooseYourInterestScreen(modifier: Modifier = Modifier,
     ) {
 
         when (uiState) {
-            is MovieGenreUiState.Loading -> {
+            is Resource.Loading -> {
                 CircularProgressIndicator(modifier = modifier
                     .fillMaxSize()
                     .wrapContentSize(align = Alignment.Center))
             }
-            is MovieGenreUiState.Failure -> {
+            is Resource.Failure -> {
                 Text(text = "404",
                     style = MaterialTheme.typography.displayLarge,
                     modifier = modifier
                         .fillMaxSize()
                         .wrapContentSize(align = Alignment.Center))
             }
-            is MovieGenreUiState.Success -> {
+            is Resource.Success -> {
                 Text(
                     text = stringResource(R.string.choose_your_interests_description),
                     style = MaterialTheme.typography.bodyLarge
@@ -80,16 +79,9 @@ fun ChooseYourInterestScreen(modifier: Modifier = Modifier,
                     modifier = modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    uiState.genreResponse.genres?.forEachIndexed { index, genre ->
-                        FilterChip(
-                            modifier = modifier.heightIn(min = 40.dp),
-                            onClick = {
-                                onGenreClick(MoviesDetail.Genre(genre?.id, genre?.name))
-                                      },
-                            label = { Text(text = genre?.name ?: "", textAlign = TextAlign.Center) },
-                            selected = selectedGenre,
-                            shape = RoundedCornerShape(50)
-                        )
+
+                    uiState.data.genres?.forEachIndexed { index, genre ->
+                        ChipContent(onGenreClick = onGenreClick, genre = genre)
                     }
                 }
 
@@ -106,6 +98,24 @@ fun ChooseYourInterestScreen(modifier: Modifier = Modifier,
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ChipContent(modifier: Modifier = Modifier, onGenreClick: (MoviesDetail.Genre) -> Unit = { _ ->  }, genre: MovieGenre.Genre? = null) {
+
+    var selected by remember { mutableStateOf(false) }
+
+    FilterChip(
+        modifier = modifier.heightIn(min = 40.dp),
+        onClick = {
+            selected = !selected
+            onGenreClick(MoviesDetail.Genre(genre?.id, genre?.name))
+        },
+        label = { Text(text = genre?.name ?: "", textAlign = TextAlign.Center) },
+        selected = selected,
+        shape = RoundedCornerShape(50)
+    )
 }
 
 @Preview

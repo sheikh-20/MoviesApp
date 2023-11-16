@@ -1,4 +1,4 @@
-package com.application.moviesapp.ui.home
+package com.application.moviesapp.ui.home.tvseriesnowplaying
 
 import android.app.Activity
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
@@ -13,11 +13,9 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,19 +31,20 @@ import androidx.paging.compose.LazyPagingItems
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.application.moviesapp.R
-import com.application.moviesapp.domain.model.MovieNewRelease
+import com.application.moviesapp.domain.model.MovieNowPlaying
+import com.application.moviesapp.domain.model.TvSeriesNowPlaying
 import com.application.moviesapp.ui.detail.DetailActivity
+import com.application.moviesapp.ui.detail.IS_TYPE
 import com.application.moviesapp.ui.utility.toImageUrl
 import com.application.moviesapp.ui.utility.toOneDecimal
 import com.application.moviesapp.ui.viewmodel.MovieNewReleaseUiState
-import com.application.moviesapp.ui.viewmodel.MoviesWithNewReleaseUiState
 
 @Composable
-fun NewReleasesScreen(modifier: Modifier = Modifier,
-                      uiState: MovieNewReleaseUiState = MovieNewReleaseUiState.Loading,
-                      moviesFlow: LazyPagingItems<MovieNewRelease>,
-                      lazyGridState: LazyGridState = LazyGridState(),
-                      bottomPadding: PaddingValues = PaddingValues()
+fun NowPlayingSeriesScreen(modifier: Modifier = Modifier,
+                           uiState: MovieNewReleaseUiState = MovieNewReleaseUiState.Loading,
+                           moviesFlow: LazyPagingItems<TvSeriesNowPlaying>,
+                           lazyGridState: LazyGridState = LazyGridState(),
+                           bottomPadding: PaddingValues = PaddingValues()
                       ) {
 
 //    when (uiState) {
@@ -86,7 +85,7 @@ fun NewReleasesScreen(modifier: Modifier = Modifier,
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
 
             items(moviesFlow.itemCount) { index ->
-                MovieImageCard(imageUrl = moviesFlow[index]?.posterPath ?: "", rating = moviesFlow[index]?.voteAverage.toString() ?: "", movieId = moviesFlow[index]?.movieId ?: 0)
+                TvSeriesImageCard(imageUrl = moviesFlow[index]?.posterPath ?: "", rating = moviesFlow[index]?.voteAverage.toString() ?: "", tvSeriesId =  moviesFlow[index]?.id ?: 0)
             }
         }
     }
@@ -94,11 +93,11 @@ fun NewReleasesScreen(modifier: Modifier = Modifier,
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun MovieImageCard(modifier: Modifier = Modifier, imageUrl: String = "", rating: String = "", movieId: Int = 0) {
+private fun TvSeriesImageCard(modifier: Modifier = Modifier, imageUrl: String = "", rating: String = "", tvSeriesId: Int = 0) {
 
     val context = LocalContext.current
 
-    Card(shape = RoundedCornerShape(10), onClick = { DetailActivity.startActivity(context as Activity, movieId) }) {
+    Card(shape = RoundedCornerShape(10), onClick = { DetailActivity.startActivity(context as Activity, IS_TYPE.TvSeries, tvSeriesId) }) {
         Box {
             AsyncImage(
                 model = ImageRequest.Builder(context = LocalContext.current)
@@ -123,12 +122,12 @@ private fun MovieImageCard(modifier: Modifier = Modifier, imageUrl: String = "",
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun NewReleasesScreenLightThemePreview() {
+private fun NowPlayingSeriesLightThemePreview() {
 //    NewReleasesScreen()
 }
 
 @Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
-private fun NewReleasesScreenDarkThemePreview() {
+private fun NowPlayingSeriesDarkThemePreview() {
 //    NewReleasesScreen()
 }

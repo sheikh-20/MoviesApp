@@ -10,9 +10,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.coroutineScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.application.moviesapp.base.BaseActivity
 import com.application.moviesapp.ui.detail.DetailActivity
 import com.application.moviesapp.ui.theme.MoviesAppTheme
+import com.application.moviesapp.ui.viewmodel.PlayerViewModel
 import com.application.moviesapp.ui.viewmodel.ProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -22,17 +24,23 @@ import kotlinx.coroutines.launch
 class PlayActivity: BaseActivity() {
 
     companion object {
-        fun startActivity(activity: Activity?) {
+        const val FILE_PATH = "file_path"
+
+        fun startActivity(activity: Activity?, filePath: String?) {
             val intent = Intent(activity, PlayActivity::class.java)
+            intent.putExtra(FILE_PATH, filePath)
             activity?.startActivity(intent)
         }
     }
 
     private val profileViewModel: ProfileViewModel by viewModels()
+    private val playerViewModel: PlayerViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTransparentStatusBar()
+
+        playerViewModel.playVideo(this, intent.getStringExtra(FILE_PATH) ?: return)
 
         lifecycle.coroutineScope.launch {
             profileViewModel.isDarkMode.collect {
@@ -42,7 +50,7 @@ class PlayActivity: BaseActivity() {
                             modifier = Modifier.fillMaxSize(),
                             color = MaterialTheme.colorScheme.background
                         ) {
-                            PlayScreenApp()
+                            PlayScreenApp(player = playerViewModel.player)
                         }
                     }
                 }

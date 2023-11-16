@@ -3,7 +3,6 @@ package com.application.moviesapp.data.local.dao
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
-import com.application.moviesapp.data.local.entity.MovieNewReleaseRemoteKeyEntity
 import com.application.moviesapp.data.local.entity.MovieUpcomingRemoteKeyEntity
 
 @Dao

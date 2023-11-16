@@ -27,6 +27,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -34,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -43,6 +45,7 @@ import com.application.moviesapp.R
 import com.application.moviesapp.data.common.Resource
 import com.application.moviesapp.domain.model.MovieFavourite
 import com.application.moviesapp.ui.detail.DetailActivity
+import com.application.moviesapp.ui.detail.IS_TYPE
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.utility.toImageUrl
 import com.application.moviesapp.ui.utility.toOneDecimal
@@ -61,13 +64,31 @@ fun MyListScreen(modifier: Modifier = Modifier,
 
     when (uiState) {
             is Resource.Loading -> {
-                CircularProgressIndicator(modifier = modifier
-                    .fillMaxSize()
-                    .wrapContentSize(align = Alignment.Center))
+                Column(modifier = modifier.fillMaxSize()) {
+                    CircularProgressIndicator(modifier = modifier
+                        .fillMaxSize()
+                        .wrapContentSize(align = Alignment.Center))
+                }
             }
 
             is Resource.Failure -> {
-                Text(text = "Failed")
+                Column(modifier = modifier
+                    .fillMaxSize()
+                    .wrapContentSize(align = Alignment.Center),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)) {
+
+                    Text(text = "Not found",
+                        style = MaterialTheme.typography.displayMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center)
+
+                    Text(text = "Check you internet connection",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center)
+                }
             }
 
             is Resource.Success -> {
@@ -104,7 +125,10 @@ fun MyListScreen(modifier: Modifier = Modifier,
                 } else {
                     Column(modifier = modifier
                         .fillMaxSize()
-                        .padding(top = bottomPadding.calculateTopPadding(), bottom = bottomPadding.calculateBottomPadding())) {
+                        .padding(
+                            top = bottomPadding.calculateTopPadding(),
+                            bottom = bottomPadding.calculateBottomPadding()
+                        )) {
 
                         LazyVerticalGrid(
                             columns = GridCells.Fixed(2),
@@ -129,7 +153,7 @@ private fun MovieImageCard(modifier: Modifier = Modifier, imageUrl: String = "",
 
     val context = LocalContext.current
 
-    Card(shape = RoundedCornerShape(10), onClick = { DetailActivity.startActivity(context as Activity, movieId) }) {
+    Card(shape = RoundedCornerShape(10), onClick = { DetailActivity.startActivity(context as Activity, IS_TYPE.Movie, movieId) }) {
         Box {
             AsyncImage(
                 model = ImageRequest.Builder(context = LocalContext.current)

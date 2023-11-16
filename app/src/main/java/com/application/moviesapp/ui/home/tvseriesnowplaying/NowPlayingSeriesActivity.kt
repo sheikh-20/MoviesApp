@@ -1,4 +1,4 @@
-package com.application.moviesapp.ui.home
+package com.application.moviesapp.ui.home.tvseriesnowplaying
 
 import android.app.Activity
 import android.content.Intent
@@ -18,14 +18,15 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class UpcomingMoviesActivity: BaseActivity() {
+class NowPlayingSeriesActivity: BaseActivity() {
     companion object {
         fun startActivity(activity: Activity?) {
-            val intent = Intent(activity, UpcomingMoviesActivity::class.java)
+            val intent = Intent(activity, NowPlayingSeriesActivity::class.java)
             activity?.startActivity(intent)
         }
     }
 
+    private val viewModel: HomeViewModel by viewModels()
     private val profileViewModel: ProfileViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,13 +36,13 @@ class UpcomingMoviesActivity: BaseActivity() {
         lifecycle.coroutineScope.launch {
             profileViewModel.isDarkMode.collect {
                 setContent {
-                    MoviesAppTheme(it.data){
+                    MoviesAppTheme(darkTheme = it.data) {
                         // A surface container using the 'background' color from the theme
                         Surface(
                             modifier = Modifier.fillMaxSize(),
                             color = MaterialTheme.colorScheme.background
                         ) {
-                            UpcomingMoviesApp()
+                            NowPlayingSeriesApp()
                         }
                     }
                 }

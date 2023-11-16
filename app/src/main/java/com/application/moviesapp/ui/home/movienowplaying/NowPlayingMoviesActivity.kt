@@ -1,4 +1,4 @@
-package com.application.moviesapp.ui.home
+package com.application.moviesapp.ui.home.movienowplaying
 
 import android.app.Activity
 import android.content.Intent
@@ -12,39 +12,35 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.coroutineScope
 import com.application.moviesapp.base.BaseActivity
 import com.application.moviesapp.ui.theme.MoviesAppTheme
-import com.application.moviesapp.ui.viewmodel.HomeViewModel
 import com.application.moviesapp.ui.viewmodel.ProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class NewReleasesActivity: BaseActivity() {
+class NowPlayingMoviesActivity: BaseActivity() {
     companion object {
         fun startActivity(activity: Activity?) {
-            val intent = Intent(activity, NewReleasesActivity::class.java)
+            val intent = Intent(activity, NowPlayingMoviesActivity::class.java)
             activity?.startActivity(intent)
         }
     }
 
-    private val viewModel: HomeViewModel by viewModels()
     private val profileViewModel: ProfileViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTransparentStatusBar()
 
-        viewModel.getMovieNewReleases()
-
         lifecycle.coroutineScope.launch {
             profileViewModel.isDarkMode.collect {
                 setContent {
-                    MoviesAppTheme(darkTheme = it.data) {
+                    MoviesAppTheme(it.data){
                         // A surface container using the 'background' color from the theme
                         Surface(
                             modifier = Modifier.fillMaxSize(),
                             color = MaterialTheme.colorScheme.background
                         ) {
-                            NewReleasesApp()
+                            NowPlayingMoviesApp()
                         }
                     }
                 }

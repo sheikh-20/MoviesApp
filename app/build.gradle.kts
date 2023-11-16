@@ -120,7 +120,7 @@ dependencies {
     val lifecycle_version = "2.6.1"
     val timber_version = "5.0.1"
     val lottie_version = "6.1.0"
-    val paging_version = "3.2.0"
+    val paging_version = "3.2.1"
     val room_version = "2.5.2"
     val firebase_version = "22.1.1"
 
@@ -232,6 +232,10 @@ dependencies {
 
     //app start up
     implementation("androidx.startup:startup-runtime:1.1.1")
+
+    //Media3 Exoplayer
+    implementation("androidx.media3:media3-exoplayer:1.2.0-rc01")
+    implementation("androidx.media3:media3-ui:1.2.0-rc01")
 }
 
 protobuf {

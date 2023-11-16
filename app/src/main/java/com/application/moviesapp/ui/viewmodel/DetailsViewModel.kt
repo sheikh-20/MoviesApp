@@ -1,23 +1,22 @@
 package com.application.moviesapp.ui.viewmodel
 
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkInfo
-import com.application.moviesapp.data.api.response.MovieDetailsDto
 import com.application.moviesapp.data.common.Resource
 import com.application.moviesapp.data.local.entity.MovieDownloadEntity
-import com.application.moviesapp.data.repository.MoviesRepository
 import com.application.moviesapp.domain.model.MovieState
 import com.application.moviesapp.domain.model.MovieTrailerWithYoutube
 import com.application.moviesapp.domain.model.MoviesDetail
 import com.application.moviesapp.domain.model.Stream
-import com.application.moviesapp.domain.usecase.GetMovieStateInteractor
+import com.application.moviesapp.domain.model.TvSeriesDetail
+import com.application.moviesapp.domain.model.TvSeriesTrailerWithYoutube
 import com.application.moviesapp.domain.usecase.MovieDetailsUseCase
 import com.application.moviesapp.domain.usecase.MovieStateUseCase
 import com.application.moviesapp.domain.usecase.MovieTrailerUseCase
 import com.application.moviesapp.domain.usecase.MovieUpdateFavouriteInteractor
-import com.application.moviesapp.domain.usecase.YoutubeThumbnailUseCase
+import com.application.moviesapp.domain.usecase.TvSeriesDetailsUseCase
+import com.application.moviesapp.domain.usecase.TvSeriesTrailerUseCase
 import com.application.moviesapp.domain.usecase.worker.DownloadUseCase
 import com.application.moviesapp.domain.usecase.worker.VideoInfoUseCase
 import com.application.moviesapp.ui.utility.getStream
@@ -34,9 +33,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONException
 import org.json.JSONObject
-import retrofit2.Response
 import timber.log.Timber
-import java.io.IOException
 import javax.inject.Inject
 
 sealed interface DownloadUiState {
@@ -50,7 +47,9 @@ sealed interface DownloadUiState {
 }
 @HiltViewModel
 class DetailsViewModel @Inject constructor(private val useCase: MovieDetailsUseCase,
-                                           private val trailerUseCase: MovieTrailerUseCase,
+                                           private val tvSerialDetailsUseCase: TvSeriesDetailsUseCase,
+                                           private val moviesTrailerUseCase: MovieTrailerUseCase,
+                                           private val tvSeriesTrailerUseCase: TvSeriesTrailerUseCase,
                                            private val updateMovieFavouriteUseCase: MovieUpdateFavouriteInteractor,
                                            private val getMovieStateUseCase: MovieStateUseCase,
                                            private val videoInfoUseCase: VideoInfoUseCase,
@@ -63,9 +62,15 @@ class DetailsViewModel @Inject constructor(private val useCase: MovieDetailsUseC
     private var _movieDetailResponse = MutableStateFlow<Resource<MoviesDetail>>(Resource.Loading)
     val movieDetailResponse  get() = _movieDetailResponse.asStateFlow()
 
+    private var _tvSeriesDetailResponse = MutableStateFlow<Resource<TvSeriesDetail>>(Resource.Loading)
+    val tvSeriesDetailResponse get() = _tvSeriesDetailResponse.asStateFlow()
+
 
     private var _movieTrailerResponse = MutableStateFlow<Resource<List<MovieTrailerWithYoutube>>>(Resource.Loading)
     val movieTrailerResponse get() = _movieTrailerResponse.asStateFlow()
+
+    private var _tvSeriesTrailerResponse = MutableStateFlow<Resource<List<TvSeriesTrailerWithYoutube>>>(Resource.Loading)
+    val tvSeriesTrailerResponse get() = _tvSeriesTrailerResponse.asStateFlow()
 
 
     private var _movieStateResponse = MutableStateFlow<Resource<MovieState>>(Resource.Loading)
@@ -76,9 +81,18 @@ class DetailsViewModel @Inject constructor(private val useCase: MovieDetailsUseC
         Timber.tag(TAG).d(movieDetailResponse.value.toString())
     }
 
+    fun getTvSeriesDetail(tvSeriesId: Int) = viewModelScope.launch {
+        _tvSeriesDetailResponse.value = tvSerialDetailsUseCase(tvSeriesId)
+    }
+
     fun getMovieTrailer(movieId: Int) = viewModelScope.launch {
-        _movieTrailerResponse.value = trailerUseCase(movieId)
+        _movieTrailerResponse.value = moviesTrailerUseCase(movieId)
         Timber.tag(TAG).d(movieTrailerResponse.value.toString())
+    }
+
+    fun getTvSeriesTrailer(seriesId: Int) = viewModelScope.launch {
+        _tvSeriesTrailerResponse.value = tvSeriesTrailerUseCase(seriesId)
+        Timber.tag(TAG).d(tvSeriesTrailerResponse.value.toString())
     }
 
     fun updateMovieFavourite(mediaType: String, mediaId: Int, isFavorite: Boolean) = viewModelScope.launch {

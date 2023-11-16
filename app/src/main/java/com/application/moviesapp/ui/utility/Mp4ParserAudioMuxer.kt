@@ -14,13 +14,13 @@ class Mp4ParserAudioMuxer(private val context: Context) {
         private const val TAG = "Mp4ParserAudioMuxer"
     }
 
-    fun startMerging() {
+    fun startMerging(fileName: String) {
         try {
             val videoExtractor = MediaExtractor()
             videoExtractor.setDataSource("${context.filesDir.path}/video/video.mp4" )
             val audioExtractor = MediaExtractor()
             audioExtractor.setDataSource("${context.filesDir.path}/audio/audio.m4a")
-            val muxer = MediaMuxer("${context.filesDir.path}/output/output.mp4", MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4)
+            val muxer = MediaMuxer("${context.filesDir.path}/output/$fileName", MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4)
             videoExtractor.selectTrack(0)
             val videoFormat = videoExtractor.getTrackFormat(0)
             val videoTrack: Int = muxer.addTrack(videoFormat)

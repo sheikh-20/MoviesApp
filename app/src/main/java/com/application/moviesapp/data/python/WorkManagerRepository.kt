@@ -50,7 +50,8 @@ class WorkManagerRepositoryImpl @Inject constructor(private val workManager: Wor
         val downloadBuilder = OneTimeWorkRequestBuilder<DownloadWorker>()
 
         downloadBuilder.setInputData(
-            Data.Builder().putString(DownloadWorker.VIDEO_URL, videoUrl)
+            Data.Builder()
+                .putString(DownloadWorker.VIDEO_URL, videoUrl)
                 .putInt(DownloadWorker.VIDEO_ITAG, formattedResultVideo.toInt())
                 .putInt(DownloadWorker.AUDIO_ITAG, formattedResultAudio.toInt())
                 .build())

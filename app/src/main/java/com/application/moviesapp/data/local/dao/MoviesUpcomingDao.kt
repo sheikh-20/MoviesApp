@@ -4,7 +4,6 @@ import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
-import com.application.moviesapp.data.local.entity.MovieNewReleaseEntity
 import com.application.moviesapp.data.local.entity.MovieUpcomingEntity
 
 @Dao

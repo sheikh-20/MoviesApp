@@ -2,15 +2,6 @@ package com.application.moviesapp.ui.detail
 
 import android.app.Activity
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import androidx.compose.animation.core.AnimationSpec
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,7 +25,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Chip
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.icons.Icons
@@ -52,13 +42,11 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -73,6 +61,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -84,25 +73,23 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.paging.compose.LazyPagingItems
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.application.moviesapp.R
 import com.application.moviesapp.data.common.Resource
 import com.application.moviesapp.data.local.entity.MovieDownloadEntity
-import com.application.moviesapp.domain.Movies
+import com.application.moviesapp.domain.model.MovieNowPlaying
 import com.application.moviesapp.domain.model.MovieState
 import com.application.moviesapp.domain.model.MovieTrailerWithYoutube
-import com.application.moviesapp.domain.model.MovieUpcoming
 import com.application.moviesapp.domain.model.MoviesDetail
 import com.application.moviesapp.domain.model.Stream
-import com.application.moviesapp.ui.play.PlayActivity
+import com.application.moviesapp.domain.model.TvSeriesDetail
+import com.application.moviesapp.domain.model.TvSeriesTrailerWithYoutube
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.utility.toImageUrl
 import com.application.moviesapp.ui.utility.toOneDecimal
@@ -113,15 +100,16 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import kotlin.math.roundToInt
 
 private const val TAG = "DetailScreen"
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun DetailScreen(modifier: Modifier = Modifier,
-                 uiState: Resource<MoviesDetail> = Resource.Loading,
-                 trailerUiState: Resource<List<MovieTrailerWithYoutube>> = Resource.Loading,
-                 moviesFlow: LazyPagingItems<MovieUpcoming>,
+                 movieUIState: Resource<MoviesDetail> = Resource.Loading,
+                 tvSeriesUIState: Resource<TvSeriesDetail> = Resource.Loading,
+                 moviesTrailerUiState: Resource<List<MovieTrailerWithYoutube>> = Resource.Loading,
+                 tvSeriesTrailerUiState: Resource<List<TvSeriesTrailerWithYoutube>> = Resource.Loading,
+                 moviesFlow: LazyPagingItems<MovieNowPlaying>,
                  onBookmarkClicked: (String, Int, Boolean) -> Unit = { _, _, _ -> },
                  snackbarHostState: SnackbarHostState = SnackbarHostState(),
                  bookmarkUiState: Resource<MovieState> = Resource.Loading,
@@ -149,290 +137,607 @@ fun DetailScreen(modifier: Modifier = Modifier,
     var isFavorite by remember { mutableStateOf(true) }
     var isViewMore by remember { mutableStateOf(true) }
 
-    when (uiState) {
-        is Resource.Loading -> {
-            CircularProgressIndicator(modifier = modifier
-                .fillMaxSize()
-                .wrapContentSize(align = Alignment.Center))
-        }
-        is Resource.Success -> {
-
-            Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                AsyncImage(model = ImageRequest.Builder(context = LocalContext.current)
-                    .data(uiState.data.backdropPath?.toImageUrl ?: "")
-                    .crossfade(true)
-                    .build(),
-                    placeholder = painterResource(id = R.drawable.ic_image_placeholder),
-                    contentDescription = null,
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .height(250.dp),
-                    contentScale = ContentScale.Crop)
-
-                Row(modifier = modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Text(text = uiState.data.originalTitle ?: "",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = modifier.weight(1f),
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1)
-
-                    when (bookmarkUiState) {
-                        is Resource.Loading -> {  }
-                        is Resource.Success -> {
-
-                            isFavorite = bookmarkUiState.data.favorite == true
-
-                            IconButton(onClick = {
-                                isFavorite = bookmarkUiState.data.favorite != true
-
-                                onBookmarkClicked("movie", uiState.data.id ?: 0, bookmarkUiState.data.favorite != true)
-                                coroutineScope.launch {
-                                    snackbarHostState.showSnackbar(message = "Bookmark updated")
-                                }
-                            }
-                        ) {
-
-                                if (isFavorite) {
-                                    Icon(imageVector = Icons.Rounded.Bookmark, contentDescription = null)
-                                } else {
-                                    Icon(imageVector = Icons.Rounded.BookmarkBorder, contentDescription = null)
-                                }
-
-                        } }
-
-
-                        is Resource.Failure -> {}
-                    }
-
-                    Icon(imageVector = Icons.Rounded.Share, contentDescription = null)
+    when ((context as Activity).intent.getStringExtra(DetailActivity.TYPE)) {
+        IS_TYPE.Movie.name -> {
+            when (movieUIState) {
+                is Resource.Loading -> {
+                    CircularProgressIndicator(modifier = modifier
+                        .fillMaxSize()
+                        .wrapContentSize(align = Alignment.Center))
                 }
+                is Resource.Success -> {
 
-                Row(modifier = modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Icon(imageVector = Icons.Rounded.StarHalf, contentDescription = null)
-
-                    Text(text = uiState.data.voteAverage?.toOneDecimal ?: "", style = MaterialTheme.typography.bodyMedium)
-
-                    IconButton(modifier = modifier.then(Modifier.size(20.dp)), onClick = { /*TODO*/ }) {
-                        Icon(imageVector = Icons.Rounded.ArrowForwardIos, contentDescription = null)
-                    }
-
-                    Row(modifier = modifier.horizontalScroll(rememberScrollState()),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text(text = uiState.data.releaseDate?.split("-")?.get(0) ?: "", style = MaterialTheme.typography.bodyMedium)
-
-                        AssistChip(
-                            onClick = { },
-                            label = {
-                                Text(text = "13+", style = MaterialTheme.typography.bodySmall)
-                            },
-                            modifier = modifier.requiredHeight(30.dp)
-                        )
-
-                        AssistChip(
-                            onClick = { /*TODO*/ },
-                            label = {
-                                Text(text = "United States",  style = MaterialTheme.typography.bodySmall)
-                            },
-                            modifier = modifier.requiredHeight(30.dp))
-
-                        AssistChip(
-                            onClick = { /*TODO*/ },
-                            label = {
-                                Text(text = "Subtitle",  style = MaterialTheme.typography.bodySmall)
-                            },
-                            modifier = modifier.requiredHeight(30.dp))
-                    }
-                }
-
-                Row(modifier = modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-
-                    Button(onClick = { PlayActivity.startActivity(context as Activity) }, modifier = modifier.weight(1f)) {
-                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Icon(imageVector = Icons.Rounded.PlayCircle, contentDescription = null)
-                            Text(text = "Play")
-                        }
-                    }
-
-                    OutlinedButton(onClick = { /*TODO*/ }, modifier = modifier.weight(1f)) {
-                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Icon(imageVector = Icons.Outlined.FileDownload, contentDescription = null)
-                            Text(text = "Download")
-                        }
-                    }
-                }
-
-                Text(text = "Genre: ${uiState.data.genres}",
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),)
-
-                if ((uiState.data.overview?.length ?: 0) >= 200) {
-                    if (isViewMore) {
-                        ClickableText(
-                            text = buildAnnotatedString {
-                                append(uiState.data.overview?.take(200) ?: "")
-                                append("...")
-                                append("\t")
-                                withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)) {
-                                    append("View More")
-                                }
-                            },
-                            style = TextStyle.Default.copy(
-                                fontStyle = MaterialTheme.typography.bodySmall.fontStyle,
-                                color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current),
-                                lineHeightStyle = MaterialTheme.typography.bodySmall.lineHeightStyle,
-                                drawStyle = MaterialTheme.typography.bodySmall.drawStyle,
-                                platformStyle = MaterialTheme.typography.bodySmall.platformStyle,
-                                letterSpacing = MaterialTheme.typography.bodySmall.letterSpacing,
-                                lineHeight = MaterialTheme.typography.bodyMedium.lineHeight),
+                    Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        AsyncImage(model = ImageRequest.Builder(context = LocalContext.current)
+                            .data(movieUIState.data.backdropPath?.toImageUrl ?: "")
+                            .crossfade(true)
+                            .build(),
+                            placeholder = painterResource(id = R.drawable.ic_image_placeholder),
+                            contentDescription = null,
                             modifier = modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            onClick = {
-                                isViewMore = !isViewMore
-                                if (!isViewMore) {
-                                    coroutineScope.launch {
-                                        scrollState.animateScrollTo(value = uiState.data.overview?.length ?: 0)
-                                    }
-                                }
-                            },
-                        )
-                    } else {
-                        Column(modifier = modifier
-                            .height(100.dp)
-                            .verticalScroll(state = scrollState)) {
-
-                            ClickableText(
-                                text = buildAnnotatedString {
-                                    append(uiState.data.overview ?: "")
-                                    append("\t")
-                                    withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)) {
-                                        append("View Less")
+                                .height(250.dp)
+                                .drawWithCache {
+                                    val gradient = Brush.radialGradient(
+                                        colors = listOf(Color.Transparent, Color.Black),
+                                        center = Offset(200f, 200f),
+                                        radius = 1000f
+                                    )
+                                    onDrawWithContent {
+                                        drawContent()
+                                        drawRect(gradient, blendMode = BlendMode.Multiply)
                                     }
                                 },
-                                style = TextStyle.Default.copy(
-                                    fontStyle = MaterialTheme.typography.bodySmall.fontStyle,
-                                    color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current),
-                                    lineHeightStyle = MaterialTheme.typography.bodySmall.lineHeightStyle,
-                                    drawStyle = MaterialTheme.typography.bodySmall.drawStyle,
-                                    platformStyle = MaterialTheme.typography.bodySmall.platformStyle,
-                                    letterSpacing = MaterialTheme.typography.bodySmall.letterSpacing,
-                                    lineHeight = MaterialTheme.typography.bodyMedium.lineHeight),
-                                modifier = modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp),
-                                onClick = { isViewMore = !isViewMore },
-                            )
-                        }
-                    }
-                } else {
-                    Text(text = uiState.data.overview.toString(),
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = modifier
+                            contentScale = ContentScale.Crop)
+
+                        Row(modifier = modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp),)
-                }
+                            .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                            Text(text = movieUIState.data.originalTitle ?: "",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = modifier.weight(1f),
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 1)
 
-                LazyRow(modifier = modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                            when (bookmarkUiState) {
+                                is Resource.Loading -> {  }
+                                is Resource.Success -> {
 
-                    items(count = uiState.data.cast?.size ?: 0) { index ->
+                                    isFavorite = bookmarkUiState.data.favorite == true
 
-                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            AsyncImage(model = ImageRequest.Builder(context = LocalContext.current)
-                                .data(uiState.data.cast?.get(index)?.profilePath?.toImageUrl ?: "")
-                                .crossfade(true)
-                                .build(),
-                                placeholder = painterResource(id = R.drawable.ic_image_placeholder),
-                                contentDescription = null,
-                                modifier = modifier
-                                    .size(50.dp)
-                                    .clip(RoundedCornerShape(50)),
-                                contentScale = ContentScale.Crop)
+                                    IconButton(onClick = {
+                                        isFavorite = bookmarkUiState.data.favorite != true
 
-                            Column {
-                                Text(text = uiState.data.cast?.get(index)?.name ?: "", style = MaterialTheme.typography.bodySmall)
-                                Text(text = uiState.data.cast?.get(index)?.character ?: "", style = MaterialTheme.typography.bodySmall)
+                                        onBookmarkClicked("movie", movieUIState.data.id ?: 0, bookmarkUiState.data.favorite != true)
+                                        coroutineScope.launch {
+                                            snackbarHostState.showSnackbar(message = "Bookmark updated")
+                                        }
+                                    }
+                                    ) {
+
+                                        if (isFavorite) {
+                                            Icon(imageVector = Icons.Rounded.Bookmark, contentDescription = null)
+                                        } else {
+                                            Icon(imageVector = Icons.Rounded.BookmarkBorder, contentDescription = null)
+                                        }
+
+                                    } }
+
+
+                                is Resource.Failure -> {}
+                            }
+
+                            Icon(imageVector = Icons.Rounded.Share, contentDescription = null)
+                        }
+
+                        Row(modifier = modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Icon(imageVector = Icons.Rounded.StarHalf, contentDescription = null)
+
+                            Text(text = movieUIState.data.voteAverage?.toOneDecimal ?: "", style = MaterialTheme.typography.bodyMedium)
+
+                            IconButton(modifier = modifier.then(Modifier.size(20.dp)), onClick = { /*TODO*/ }) {
+                                Icon(imageVector = Icons.Rounded.ArrowForwardIos, contentDescription = null)
+                            }
+
+                            Row(modifier = modifier.horizontalScroll(rememberScrollState()),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Text(text = movieUIState.data.releaseDate?.split("-")?.get(0) ?: "", style = MaterialTheme.typography.bodyMedium)
+
+                                AssistChip(
+                                    onClick = { },
+                                    label = {
+                                        Text(text = "13+", style = MaterialTheme.typography.bodySmall)
+                                    },
+                                    modifier = modifier.requiredHeight(30.dp)
+                                )
+
+                                AssistChip(
+                                    onClick = { /*TODO*/ },
+                                    label = {
+                                        Text(text = "United States",  style = MaterialTheme.typography.bodySmall)
+                                    },
+                                    modifier = modifier.requiredHeight(30.dp))
+
+                                AssistChip(
+                                    onClick = { /*TODO*/ },
+                                    label = {
+                                        Text(text = "Subtitle",  style = MaterialTheme.typography.bodySmall)
+                                    },
+                                    modifier = modifier.requiredHeight(30.dp))
                             }
                         }
-                    }
-                }
 
-                TabRow(selectedTabIndex = pager.currentPage) {
-                    items.forEachIndexed { index, horizontalPagerContent ->
-                        Tab(selected = pager.currentPage == index,
-                            onClick = { /*TODO*/ },
-                            text = {
-                                Text(text = items[index].title)
-                            })
-                    }
-                }
+                        Row(modifier = modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)) {
 
-                HorizontalPager(count = items.size, state = pager, modifier = modifier
-                    .fillMaxWidth()
-                    .weight(1f)) { index ->
-                    when (index) {
-                        0 -> { 
-                            when(trailerUiState) {
-                                is Resource.Loading -> { CircularProgressIndicator() }
-                                is Resource.Failure -> { Text(text = "Failed!") }
-                                is Resource.Success -> {
-                                    LazyColumn(
-                                        modifier = modifier.fillMaxSize(),
-                                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                                        contentPadding = PaddingValues(horizontal = 16.dp)
-                                    ) {
-                                        items(trailerUiState.data) { trailer ->
-                                            TrailerCard(
-                                                movieTrailerWithYoutube = trailer,
-                                                onTrailerClick = onTrailerClick,
-                                                downloaderUiState = downloaderUiState,
-                                                onTrailerDownloadClick = onTrailerDownloadClick,
-                                                movieDetail = uiState.data)
+                            Button(onClick = {  }, modifier = modifier.weight(1f)) {
+                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    Icon(imageVector = Icons.Rounded.PlayCircle, contentDescription = null)
+                                    Text(text = "Play")
+                                }
+                            }
+
+                            OutlinedButton(onClick = { /*TODO*/ }, modifier = modifier.weight(1f)) {
+                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    Icon(imageVector = Icons.Outlined.FileDownload, contentDescription = null)
+                                    Text(text = "Download")
+                                }
+                            }
+                        }
+
+                        Text(text = "Genre: ${movieUIState.data.genres}",
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),)
+
+                        if ((movieUIState.data.overview?.length ?: 0) >= 200) {
+                            if (isViewMore) {
+                                ClickableText(
+                                    text = buildAnnotatedString {
+                                        append(movieUIState.data.overview?.take(200) ?: "")
+                                        append("...")
+                                        append("\t")
+                                        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)) {
+                                            append("View More")
+                                        }
+                                    },
+                                    style = TextStyle.Default.copy(
+                                        fontStyle = MaterialTheme.typography.bodySmall.fontStyle,
+                                        color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current),
+                                        lineHeightStyle = MaterialTheme.typography.bodySmall.lineHeightStyle,
+                                        drawStyle = MaterialTheme.typography.bodySmall.drawStyle,
+                                        platformStyle = MaterialTheme.typography.bodySmall.platformStyle,
+                                        letterSpacing = MaterialTheme.typography.bodySmall.letterSpacing,
+                                        lineHeight = MaterialTheme.typography.bodyMedium.lineHeight),
+                                    modifier = modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp),
+                                    onClick = {
+                                        isViewMore = !isViewMore
+                                        if (!isViewMore) {
+                                            coroutineScope.launch {
+                                                scrollState.animateScrollTo(value = movieUIState.data.overview?.length ?: 0)
+                                            }
+                                        }
+                                    },
+                                )
+                            } else {
+                                Column(modifier = modifier
+                                    .height(100.dp)
+                                    .verticalScroll(state = scrollState)) {
+
+                                    ClickableText(
+                                        text = buildAnnotatedString {
+                                            append(movieUIState.data.overview ?: "")
+                                            append("\t")
+                                            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)) {
+                                                append("View Less")
+                                            }
+                                        },
+                                        style = TextStyle.Default.copy(
+                                            fontStyle = MaterialTheme.typography.bodySmall.fontStyle,
+                                            color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current),
+                                            lineHeightStyle = MaterialTheme.typography.bodySmall.lineHeightStyle,
+                                            drawStyle = MaterialTheme.typography.bodySmall.drawStyle,
+                                            platformStyle = MaterialTheme.typography.bodySmall.platformStyle,
+                                            letterSpacing = MaterialTheme.typography.bodySmall.letterSpacing,
+                                            lineHeight = MaterialTheme.typography.bodyMedium.lineHeight),
+                                        modifier = modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp),
+                                        onClick = { isViewMore = !isViewMore },
+                                    )
+                                }
+                            }
+                        } else {
+                            Text(text = movieUIState.data.overview.toString(),
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp),)
+                        }
+
+                        LazyRow(modifier = modifier.fillMaxWidth(),
+                            contentPadding = PaddingValues(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+
+                            items(count = movieUIState.data.cast?.size ?: 0) { index ->
+
+                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    AsyncImage(model = ImageRequest.Builder(context = LocalContext.current)
+                                        .data(movieUIState.data.cast?.get(index)?.profilePath?.toImageUrl ?: "")
+                                        .crossfade(true)
+                                        .build(),
+                                        placeholder = painterResource(id = R.drawable.ic_image_placeholder),
+                                        contentDescription = null,
+                                        modifier = modifier
+                                            .size(50.dp)
+                                            .clip(RoundedCornerShape(50)),
+                                        contentScale = ContentScale.Crop)
+
+                                    Column {
+                                        Text(text = movieUIState.data.cast?.get(index)?.name ?: "", style = MaterialTheme.typography.bodySmall)
+                                        Text(text = movieUIState.data.cast?.get(index)?.character ?: "", style = MaterialTheme.typography.bodySmall)
+                                    }
+                                }
+                            }
+                        }
+
+                        TabRow(selectedTabIndex = pager.currentPage) {
+                            items.forEachIndexed { index, horizontalPagerContent ->
+                                Tab(selected = pager.currentPage == index,
+                                    onClick = { /*TODO*/ },
+                                    text = {
+                                        Text(text = items[index].title)
+                                    })
+                            }
+                        }
+
+                        HorizontalPager(count = items.size, state = pager, modifier = modifier
+                            .fillMaxWidth()
+                            .weight(1f)) { index ->
+                            when (index) {
+                                0 -> {
+                                    when(moviesTrailerUiState) {
+                                        is Resource.Loading -> { CircularProgressIndicator() }
+                                        is Resource.Failure -> { Text(text = "Failed!") }
+                                        is Resource.Success -> {
+                                            LazyColumn(
+                                                modifier = modifier.fillMaxSize(),
+                                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                                                contentPadding = PaddingValues(horizontal = 16.dp)
+                                            ) {
+                                                items(moviesTrailerUiState.data) { trailer ->
+                                                    MovieTrailerCard(
+                                                        movieTrailerWithYoutube = trailer,
+                                                        onTrailerClick = onTrailerClick,
+                                                        downloaderUiState = downloaderUiState,
+                                                        onTrailerDownloadClick = onTrailerDownloadClick,
+                                                        movieDetail = movieUIState.data)
+                                                }
+                                            }
                                         }
                                     }
                                 }
-                            }
-                        }
-                        1 -> {
-                            LazyVerticalGrid(columns = GridCells.Fixed(2),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalArrangement = Arrangement.spacedBy(8.dp),
-                                contentPadding = PaddingValues(horizontal = 16.dp),
-                            ) {
+                                1 -> {
+                                    LazyVerticalGrid(columns = GridCells.Fixed(2),
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                                        contentPadding = PaddingValues(horizontal = 16.dp),
+                                    ) {
 
-                                items(moviesFlow.itemCount) { index ->
-                                    MovieImageCard(imageUrl = moviesFlow[index]?.posterPath ?: "", rating = moviesFlow[index]?.voteAverage.toString() ?: "", movieId = moviesFlow[index]?.movieId ?: 0)
+                                        items(moviesFlow.itemCount) { index ->
+                                            MovieImageCard(imageUrl = moviesFlow[index]?.posterPath ?: "", rating = moviesFlow[index]?.voteAverage.toString() ?: "", movieId = moviesFlow[index]?.id ?: 0)
+                                        }
+                                    }
+                                }
+                                2 -> {
+                                    Text(text = "Comments")
                                 }
                             }
                         }
-                        2 -> {
-                            Text(text = "Comments")
-                        }
+                    }
+                }
+                is Resource.Failure -> {
+                    Column(modifier = modifier
+                        .fillMaxSize()
+                        .wrapContentSize(align = Alignment.Center)) {
+                        Text(text = "Failure")
                     }
                 }
             }
         }
-        is Resource.Failure -> {
-            Column(modifier = modifier
-                .fillMaxSize()
-                .wrapContentSize(align = Alignment.Center)) {
-                Text(text = "Failure")
+        IS_TYPE.TvSeries.name -> {
+            when (tvSeriesUIState) {
+                is Resource.Loading -> {
+                    CircularProgressIndicator(modifier = modifier
+                        .fillMaxSize()
+                        .wrapContentSize(align = Alignment.Center))
+                }
+                is Resource.Success -> {
+
+                    Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        AsyncImage(model = ImageRequest.Builder(context = LocalContext.current)
+                            .data(tvSeriesUIState.data.backdropPath?.toImageUrl ?: "")
+                            .crossfade(true)
+                            .build(),
+                            placeholder = painterResource(id = R.drawable.ic_image_placeholder),
+                            contentDescription = null,
+                            modifier = modifier
+                                .fillMaxWidth()
+                                .height(250.dp)
+                                .drawWithCache {
+                                    val gradient = Brush.radialGradient(
+                                        colors = listOf(Color.Transparent, Color.Black),
+                                        center = Offset(200f, 200f),
+                                        radius = 1000f
+                                    )
+                                    onDrawWithContent {
+                                        drawContent()
+                                        drawRect(gradient, blendMode = BlendMode.Multiply)
+                                    }
+                                },
+                            contentScale = ContentScale.Crop)
+
+                        Row(modifier = modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                            Text(text = tvSeriesUIState.data.name ?: "",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = modifier.weight(1f),
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 1)
+
+                            when (bookmarkUiState) {
+                                is Resource.Loading -> {  }
+                                is Resource.Success -> {
+
+                                    isFavorite = bookmarkUiState.data.favorite == true
+
+                                    IconButton(onClick = {
+                                        isFavorite = bookmarkUiState.data.favorite != true
+
+                                        onBookmarkClicked("movie", tvSeriesUIState.data.id ?: 0, bookmarkUiState.data.favorite != true)
+                                        coroutineScope.launch {
+                                            snackbarHostState.showSnackbar(message = "Bookmark updated")
+                                        }
+                                    }
+                                    ) {
+
+                                        if (isFavorite) {
+                                            Icon(imageVector = Icons.Rounded.Bookmark, contentDescription = null)
+                                        } else {
+                                            Icon(imageVector = Icons.Rounded.BookmarkBorder, contentDescription = null)
+                                        }
+
+                                    } }
+
+
+                                is Resource.Failure -> {}
+                            }
+
+                            Icon(imageVector = Icons.Rounded.Share, contentDescription = null)
+                        }
+
+                        Row(modifier = modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Icon(imageVector = Icons.Rounded.StarHalf, contentDescription = null)
+
+                            Text(text = tvSeriesUIState.data.voteAverage?.toOneDecimal ?: "", style = MaterialTheme.typography.bodyMedium)
+
+                            IconButton(modifier = modifier.then(Modifier.size(20.dp)), onClick = { /*TODO*/ }) {
+                                Icon(imageVector = Icons.Rounded.ArrowForwardIos, contentDescription = null)
+                            }
+
+                            Row(modifier = modifier.horizontalScroll(rememberScrollState()),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+//                                Text(text = tvSeriesUIState.data.?.split("-")?.get(0) ?: "", style = MaterialTheme.typography.bodyMedium)
+
+                                AssistChip(
+                                    onClick = { },
+                                    label = {
+                                        Text(text = "13+", style = MaterialTheme.typography.bodySmall)
+                                    },
+                                    modifier = modifier.requiredHeight(30.dp)
+                                )
+
+                                AssistChip(
+                                    onClick = { /*TODO*/ },
+                                    label = {
+                                        Text(text = "United States",  style = MaterialTheme.typography.bodySmall)
+                                    },
+                                    modifier = modifier.requiredHeight(30.dp))
+
+                                AssistChip(
+                                    onClick = { /*TODO*/ },
+                                    label = {
+                                        Text(text = "Subtitle",  style = MaterialTheme.typography.bodySmall)
+                                    },
+                                    modifier = modifier.requiredHeight(30.dp))
+                            }
+                        }
+
+                        Row(modifier = modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+
+                            Button(onClick = {  }, modifier = modifier.weight(1f)) {
+                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    Icon(imageVector = Icons.Rounded.PlayCircle, contentDescription = null)
+                                    Text(text = "Play")
+                                }
+                            }
+
+                            OutlinedButton(onClick = { /*TODO*/ }, modifier = modifier.weight(1f)) {
+                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    Icon(imageVector = Icons.Outlined.FileDownload, contentDescription = null)
+                                    Text(text = "Download")
+                                }
+                            }
+                        }
+
+                        Text(text = "Genre: ${tvSeriesUIState.data.genres}",
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),)
+
+                        if ((tvSeriesUIState.data.overview?.length ?: 0) >= 200) {
+                            if (isViewMore) {
+                                ClickableText(
+                                    text = buildAnnotatedString {
+                                        append(tvSeriesUIState.data.overview?.take(200) ?: "")
+                                        append("...")
+                                        append("\t")
+                                        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)) {
+                                            append("View More")
+                                        }
+                                    },
+                                    style = TextStyle.Default.copy(
+                                        fontStyle = MaterialTheme.typography.bodySmall.fontStyle,
+                                        color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current),
+                                        lineHeightStyle = MaterialTheme.typography.bodySmall.lineHeightStyle,
+                                        drawStyle = MaterialTheme.typography.bodySmall.drawStyle,
+                                        platformStyle = MaterialTheme.typography.bodySmall.platformStyle,
+                                        letterSpacing = MaterialTheme.typography.bodySmall.letterSpacing,
+                                        lineHeight = MaterialTheme.typography.bodyMedium.lineHeight),
+                                    modifier = modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp),
+                                    onClick = {
+                                        isViewMore = !isViewMore
+                                        if (!isViewMore) {
+                                            coroutineScope.launch {
+                                                scrollState.animateScrollTo(value = tvSeriesUIState.data.overview?.length ?: 0)
+                                            }
+                                        }
+                                    },
+                                )
+                            } else {
+                                Column(modifier = modifier
+                                    .height(100.dp)
+                                    .verticalScroll(state = scrollState)) {
+
+                                    ClickableText(
+                                        text = buildAnnotatedString {
+                                            append(tvSeriesUIState.data.overview ?: "")
+                                            append("\t")
+                                            withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)) {
+                                                append("View Less")
+                                            }
+                                        },
+                                        style = TextStyle.Default.copy(
+                                            fontStyle = MaterialTheme.typography.bodySmall.fontStyle,
+                                            color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current),
+                                            lineHeightStyle = MaterialTheme.typography.bodySmall.lineHeightStyle,
+                                            drawStyle = MaterialTheme.typography.bodySmall.drawStyle,
+                                            platformStyle = MaterialTheme.typography.bodySmall.platformStyle,
+                                            letterSpacing = MaterialTheme.typography.bodySmall.letterSpacing,
+                                            lineHeight = MaterialTheme.typography.bodyMedium.lineHeight),
+                                        modifier = modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp),
+                                        onClick = { isViewMore = !isViewMore },
+                                    )
+                                }
+                            }
+                        } else {
+                            Text(text = tvSeriesUIState.data.overview.toString(),
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp),)
+                        }
+
+                        LazyRow(modifier = modifier.fillMaxWidth(),
+                            contentPadding = PaddingValues(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+
+                            tvSeriesUIState.data
+
+                            items(count = tvSeriesUIState.data.createdBy?.size ?: 0) { index ->
+
+                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    AsyncImage(model = ImageRequest.Builder(context = LocalContext.current)
+                                        .data(tvSeriesUIState.data.createdBy?.get(index)?.profilePath?.toImageUrl ?: "")
+                                        .crossfade(true)
+                                        .build(),
+                                        placeholder = painterResource(id = R.drawable.ic_image_placeholder),
+                                        contentDescription = null,
+                                        modifier = modifier
+                                            .size(50.dp)
+                                            .clip(RoundedCornerShape(50)),
+                                        contentScale = ContentScale.Crop)
+
+                                    Column {
+                                        Text(text = tvSeriesUIState.data.createdBy?.get(index)?.name ?: "", style = MaterialTheme.typography.bodySmall)
+                                        Text(text = tvSeriesUIState.data.createdBy?.get(index)?.gender.toString() ?: "", style = MaterialTheme.typography.bodySmall)
+                                    }
+                                }
+                            }
+                        }
+
+                        TabRow(selectedTabIndex = pager.currentPage) {
+                            items.forEachIndexed { index, horizontalPagerContent ->
+                                Tab(selected = pager.currentPage == index,
+                                    onClick = { /*TODO*/ },
+                                    text = {
+                                        Text(text = items[index].title)
+                                    })
+                            }
+                        }
+
+                        HorizontalPager(count = items.size, state = pager, modifier = modifier
+                            .fillMaxWidth()
+                            .weight(1f)) { index ->
+                            when (index) {
+                                0 -> {
+                                    when(tvSeriesTrailerUiState) {
+                                        is Resource.Loading -> { CircularProgressIndicator() }
+                                        is Resource.Failure -> { Text(text = "Failed!") }
+                                        is Resource.Success -> {
+                                            LazyColumn(
+                                                modifier = modifier.fillMaxSize(),
+                                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                                                contentPadding = PaddingValues(horizontal = 16.dp)
+                                            ) {
+                                                items(tvSeriesTrailerUiState.data) { trailer ->
+                                                    TvSeriesTrailerCard(
+                                                        tvSeriesTrailerWithYoutube = trailer,
+                                                        onTrailerClick = onTrailerClick,
+                                                        downloaderUiState = downloaderUiState,
+                                                        onTrailerDownloadClick = onTrailerDownloadClick,
+                                                        tvSeriesDetail = tvSeriesUIState.data)
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                1 -> {
+                                    LazyVerticalGrid(columns = GridCells.Fixed(2),
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                                        contentPadding = PaddingValues(horizontal = 16.dp),
+                                    ) {
+
+                                        items(moviesFlow.itemCount) { index ->
+                                            MovieImageCard(imageUrl = moviesFlow[index]?.posterPath ?: "", rating = moviesFlow[index]?.voteAverage.toString() ?: "", movieId = moviesFlow[index]?.id ?: 0)
+                                        }
+                                    }
+                                }
+                                2 -> {
+                                    Text(text = "Comments")
+                                }
+                            }
+                        }
+                    }
+                }
+                is Resource.Failure -> {
+                    Column(modifier = modifier
+                        .fillMaxSize()
+                        .wrapContentSize(align = Alignment.Center)) {
+                        Text(text = "Failure")
+                    }
+                }
             }
         }
     }
@@ -446,7 +751,7 @@ private fun MovieImageCard(modifier: Modifier = Modifier, imageUrl: String = "",
 
     Timber.tag("Card").d(movieId.toString())
 
-    Card(shape = RoundedCornerShape(10), onClick = { DetailActivity.startActivity(context as Activity, movieId) }) {
+    Card(shape = RoundedCornerShape(10), onClick = { DetailActivity.startActivity(context as Activity, type = IS_TYPE.Movie, id = movieId) }) {
         Box {
             AsyncImage(
                 model = ImageRequest.Builder(context = LocalContext.current)
@@ -474,87 +779,190 @@ private fun MovieImageCard(modifier: Modifier = Modifier, imageUrl: String = "",
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Preview(showBackground = true)
 @Composable
-private fun TrailerCard(modifier: Modifier = Modifier,
-                        movieTrailerWithYoutube: MovieTrailerWithYoutube = MovieTrailerWithYoutube("", "Iron man", "", "1 min 20sec"),
-                        onTrailerClick: (String) -> Unit = { _ -> },
-                        downloaderUiState: DownloadUiState = DownloadUiState.Default,
-                        movieDetail: MoviesDetail? = null,
-                        onTrailerDownloadClick: (String, Stream, Stream, MovieDownloadEntity) -> Unit = { _, _, _, _ -> },
+private fun MovieTrailerCard(modifier: Modifier = Modifier,
+                             movieTrailerWithYoutube: MovieTrailerWithYoutube = MovieTrailerWithYoutube("", "Iron man", "", "1 min 20sec"),
+                             onTrailerClick: (String) -> Unit = { _ -> },
+                             downloaderUiState: DownloadUiState = DownloadUiState.Default,
+                             movieDetail: MoviesDetail? = null,
+                             onTrailerDownloadClick: (String, Stream, Stream, MovieDownloadEntity) -> Unit = { _, _, _, _ -> },
                         ) {
 
     val context = LocalContext.current
 
-    Row(modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-        Card(modifier = modifier.size(height = 100.dp, width = 130.dp),
-            shape = RoundedCornerShape(20)) {
-            Box(contentAlignment = Alignment.Center) {
-                AsyncImage(model = ImageRequest.Builder(context = LocalContext.current)
-                    .data(movieTrailerWithYoutube.thumbnail ?: "")
-                    .crossfade(true)
-                    .build(),
-                    placeholder = painterResource(id = R.drawable.ic_image_placeholder),
-                    contentDescription = null,
-                    modifier = modifier
-                        .fillMaxSize(),
-                    contentScale = ContentScale.Crop)
-                Icon(imageVector = Icons.Rounded.PlayCircle, contentDescription = null, tint = Color.White)
+    Card(onClick = { },
+        shape = RoundedCornerShape(20),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+    ) {
+        Row(modifier = modifier
+            .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            Card(modifier = modifier.size(height = 100.dp, width = 130.dp),
+                shape = RoundedCornerShape(20)) {
+                Box(contentAlignment = Alignment.Center) {
+                    AsyncImage(model = ImageRequest.Builder(context = LocalContext.current)
+                        .data(movieTrailerWithYoutube.thumbnail ?: "")
+                        .crossfade(true)
+                        .build(),
+                        placeholder = painterResource(id = R.drawable.ic_image_placeholder),
+                        contentDescription = null,
+                        modifier = modifier
+                            .fillMaxSize(),
+                        contentScale = ContentScale.Crop)
+                    Icon(imageVector = Icons.Rounded.PlayCircle, contentDescription = null, tint = Color.White)
+                }
             }
-        }
 
-        Column(modifier = modifier.weight(1f), verticalArrangement = Arrangement.SpaceEvenly) {
-            Text(
-                text = movieTrailerWithYoutube.title ?: "",
-                style = MaterialTheme.typography.titleSmall,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(modifier = modifier.weight(1f), verticalArrangement = Arrangement.SpaceEvenly) {
                 Text(
-                    text = movieTrailerWithYoutube.duration?.toYoutubeDuration ?: "",
-                    style = MaterialTheme.typography.bodyLarge
+                    text = movieTrailerWithYoutube.title ?: "",
+                    style = MaterialTheme.typography.titleSmall,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
 
-                Spacer(modifier = modifier.weight(1f))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = movieTrailerWithYoutube.duration?.toYoutubeDuration ?: "",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
 
-                when (downloaderUiState) {
-                    is DownloadUiState.Default -> {
-                        Timber.tag(TAG).d("Video Downloader")
-                    }
-                    is DownloadUiState.Loading -> {
-                        Timber.tag(TAG).d("Downloader Loading")
-                        CircularProgressIndicator(modifier = modifier.size(28.dp), strokeWidth = 4.dp, strokeCap = StrokeCap.Round)
-                    }
-                    is DownloadUiState.Complete -> {
-                        Timber.tag(TAG).d(downloaderUiState.toString())
+                    Spacer(modifier = modifier.weight(1f))
 
-                        AssistChip(
-                            onClick = {
-                                onTrailerDownloadClick(movieTrailerWithYoutube.id ?: return@AssistChip,
-                                    downloaderUiState.videoStreams.first(),
-                                    downloaderUiState.audioStreams ?: return@AssistChip,
-                                    MovieDownloadEntity(
-                                        backdropPath = movieTrailerWithYoutube.thumbnail,
-                                        runtime = movieTrailerWithYoutube.duration?.toYoutubeDuration ?: "",
-                                        title = movieTrailerWithYoutube.title
-                                    ))
-                            },
-                            label = {
-                                Text(text = downloaderUiState.videoStreams.first().resolution.removeSurrounding("\""), color = MaterialTheme.colorScheme.primary)
-                            },
-                            shape = RoundedCornerShape(50)
-                        )
-                    }
-                }
+                    when (downloaderUiState) {
+                        is DownloadUiState.Default -> {
+                            Timber.tag(TAG).d("Video Downloader")
+                        }
+                        is DownloadUiState.Loading -> {
+                            Timber.tag(TAG).d("Downloader Loading")
+                            CircularProgressIndicator(modifier = modifier.size(28.dp), strokeWidth = 4.dp, strokeCap = StrokeCap.Round)
+                        }
+                        is DownloadUiState.Complete -> {
+                            Timber.tag(TAG).d(downloaderUiState.toString())
 
-                IconButton(onClick = { onTrailerClick(movieTrailerWithYoutube.id ?: return@IconButton) }) {
-                    Icon(imageVector = Icons.Rounded.Settings, contentDescription = null)
+                            AssistChip(
+                                onClick = {
+                                    onTrailerDownloadClick(movieTrailerWithYoutube.id ?: return@AssistChip,
+                                        downloaderUiState.videoStreams.first(),
+                                        downloaderUiState.audioStreams ?: return@AssistChip,
+                                        MovieDownloadEntity(
+                                            backdropPath = movieTrailerWithYoutube.thumbnail,
+                                            runtime = movieTrailerWithYoutube.duration?.toYoutubeDuration ?: "",
+                                            title = movieTrailerWithYoutube.title,
+                                            filePath = movieTrailerWithYoutube.title?.replace(":", "_") + ".mp4"
+                                        ))
+                                },
+                                label = {
+                                    Text(text = downloaderUiState.videoStreams.first().resolution.removeSurrounding("\""), color = MaterialTheme.colorScheme.primary)
+                                },
+                                shape = RoundedCornerShape(50)
+                            )
+                        }
+                    }
+
+                    IconButton(onClick = { onTrailerClick(movieTrailerWithYoutube.id ?: return@IconButton) }) {
+                        Icon(imageVector = Icons.Rounded.Settings, contentDescription = null)
+                    }
                 }
             }
         }
     }
+
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@Preview(showBackground = true)
+@Composable
+private fun TvSeriesTrailerCard(modifier: Modifier = Modifier,
+                             tvSeriesTrailerWithYoutube: TvSeriesTrailerWithYoutube = TvSeriesTrailerWithYoutube("", "Iron man", "", "1 min 20sec"),
+                             onTrailerClick: (String) -> Unit = { _ -> },
+                             downloaderUiState: DownloadUiState = DownloadUiState.Default,
+                             tvSeriesDetail: TvSeriesDetail? = null,
+                             onTrailerDownloadClick: (String, Stream, Stream, MovieDownloadEntity) -> Unit = { _, _, _, _ -> },
+) {
+
+    val context = LocalContext.current
+
+    Card(onClick = { },
+        shape = RoundedCornerShape(20),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+    ) {
+        Row(modifier = modifier
+            .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            Card(modifier = modifier.size(height = 100.dp, width = 130.dp),
+                shape = RoundedCornerShape(20)) {
+                Box(contentAlignment = Alignment.Center) {
+                    AsyncImage(model = ImageRequest.Builder(context = LocalContext.current)
+                        .data(tvSeriesTrailerWithYoutube.thumbnail ?: "")
+                        .crossfade(true)
+                        .build(),
+                        placeholder = painterResource(id = R.drawable.ic_image_placeholder),
+                        contentDescription = null,
+                        modifier = modifier
+                            .fillMaxSize(),
+                        contentScale = ContentScale.Crop)
+                    Icon(imageVector = Icons.Rounded.PlayCircle, contentDescription = null, tint = Color.White)
+                }
+            }
+
+            Column(modifier = modifier.weight(1f), verticalArrangement = Arrangement.SpaceEvenly) {
+                Text(
+                    text = tvSeriesTrailerWithYoutube.title ?: "",
+                    style = MaterialTheme.typography.titleSmall,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = tvSeriesTrailerWithYoutube.duration?.toYoutubeDuration ?: "",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+
+                    Spacer(modifier = modifier.weight(1f))
+
+                    when (downloaderUiState) {
+                        is DownloadUiState.Default -> {
+                            Timber.tag(TAG).d("Video Downloader")
+                        }
+                        is DownloadUiState.Loading -> {
+                            Timber.tag(TAG).d("Downloader Loading")
+                            CircularProgressIndicator(modifier = modifier.size(28.dp), strokeWidth = 4.dp, strokeCap = StrokeCap.Round)
+                        }
+                        is DownloadUiState.Complete -> {
+                            Timber.tag(TAG).d(downloaderUiState.toString())
+
+                            AssistChip(
+                                onClick = {
+                                    onTrailerDownloadClick(tvSeriesTrailerWithYoutube.id ?: return@AssistChip,
+                                        downloaderUiState.videoStreams.first(),
+                                        downloaderUiState.audioStreams ?: return@AssistChip,
+                                        MovieDownloadEntity(
+                                            backdropPath = tvSeriesTrailerWithYoutube.thumbnail,
+                                            runtime = tvSeriesTrailerWithYoutube.duration?.toYoutubeDuration ?: "",
+                                            title = tvSeriesTrailerWithYoutube.title,
+                                            filePath = tvSeriesTrailerWithYoutube.title?.replace(":", "_") + ".mp4"
+                                        ))
+                                },
+                                label = {
+                                    Text(text = downloaderUiState.videoStreams.first().resolution.removeSurrounding("\""), color = MaterialTheme.colorScheme.primary)
+                                },
+                                shape = RoundedCornerShape(50)
+                            )
+                        }
+                    }
+
+                    IconButton(onClick = { onTrailerClick(tvSeriesTrailerWithYoutube.id ?: return@IconButton) }) {
+                        Icon(imageVector = Icons.Rounded.Settings, contentDescription = null)
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 @Composable
