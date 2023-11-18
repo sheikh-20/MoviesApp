@@ -17,4 +17,5 @@
     <string name="mylist">MyList</string>
     <string name="download">Download</string>
     <string name="profile">Profile</string>
+    <string name="signin">Sign In</string>
 </resources>

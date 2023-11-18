@@ -21,7 +21,7 @@ import com.application.moviesapp.ui.home.HomeActivity
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 
 @Composable
-fun SetYourFingerprintScreen(modifier: Modifier = Modifier) {
+fun SetYourFingerprintScreen(modifier: Modifier = Modifier, onContinueClick: () -> Unit = {}) {
 
     val context = LocalContext.current
 
@@ -37,7 +37,7 @@ fun SetYourFingerprintScreen(modifier: Modifier = Modifier) {
             OutlinedButton(onClick = { /*TODO*/ }, modifier = modifier.weight(1f)) {
                 Text(text = "Skip")
             }
-            Button(onClick = { HomeActivity.startActivity(context as Activity) }, modifier = modifier.weight(1f)) {
+            Button(onClick = onContinueClick, modifier = modifier.weight(1f)) {
                 Text(text = "Continue")
             }
         }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -21,6 +22,7 @@ import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Language
+import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Person
@@ -37,15 +39,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.application.moviesapp.R
+import com.application.moviesapp.domain.model.SettingsPreference
+import com.application.moviesapp.ui.signin.UserData
 import com.application.moviesapp.ui.theme.MoviesAppTheme
+import com.application.moviesapp.ui.utility.toImageUrl
 
 @Composable
-fun ProfileScreen(modifier: Modifier = Modifier) {
+fun ProfileScreen(modifier: Modifier = Modifier,
+                  uiState: UserData? = null,
+                  onSignOutClick: () -> Unit = {},
+                  darkModeUiState: SettingsPreference = SettingsPreference(false),
+                  onModeClick: (Boolean) -> Unit = {}) {
     Column(modifier = modifier
         .fillMaxSize()
         .wrapContentSize(align = Alignment.Center)
@@ -58,18 +70,25 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
                 .wrapContentWidth(align = Alignment.CenterHorizontally),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally) {
-            Image(painter = painterResource(id = R.drawable.profile_photo),
+
+            AsyncImage(
+                model = ImageRequest.Builder(context = LocalContext.current)
+                    .data(uiState?.profilePictureUrl)
+                    .crossfade(true)
+                    .build(),
+                error = painterResource(id = R.drawable.ic_broken_image),
+                placeholder = painterResource(id = R.drawable.ic_image_placeholder),
                 contentDescription = null,
+                contentScale = ContentScale.Crop,
                 modifier = modifier
-                    .size(150.dp)
-                    .clip(RoundedCornerShape(50)),
-                contentScale = ContentScale.Crop)
+                    .size(100.dp)
+                    .clip(RoundedCornerShape(50)))
             
-            Text(text = "Sheikh Mohideen",
+            Text(text = uiState?.userName ?: "",
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold)
             
-            Text(text = "sheikhzs1032@gmail.com", style = MaterialTheme.typography.bodyLarge)
+            Text(text = uiState?.email ?: "", style = MaterialTheme.typography.bodyLarge)
         }
 
         Column(modifier = modifier.verticalScroll(rememberScrollState())) {
@@ -136,13 +155,13 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
 
 
             Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Icon(imageVector = Icons.Outlined.DarkMode, contentDescription = null)
+                Icon(imageVector = if (darkModeUiState.data) Icons.Outlined.DarkMode else Icons.Outlined.LightMode, contentDescription = null)
 
                 Spacer(modifier = modifier.width(10.dp))
 
-                Text(text = "Dark Mode", modifier = modifier.weight(1f))
+                Text(text = if (darkModeUiState.data) "Dark Mode" else "Light Mode", modifier = modifier.weight(1f))
 
-                Switch(checked = false, onCheckedChange = {})
+                Switch(checked = darkModeUiState.data, onCheckedChange = onModeClick)
             }
 
             Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -177,7 +196,7 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
 
                 Text(text = "Logout", modifier = modifier.weight(1f))
 
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = onSignOutClick) {
                     Icon(imageVector = Icons.Rounded.ArrowForwardIos, contentDescription = null)
                 }
             }

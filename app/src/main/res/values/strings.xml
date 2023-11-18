@@ -6,7 +6,7 @@
     <string name="continue_with_facebook">Continue With Facebook</string>
     <string name="continue_with_google">Continue With Google</string>
     <string name="continue_with_github">Continue With Github</string>
-    <string name="signin_with_password">Sign in with password</string>
+    <string name="signin_with_password">Sign In with password</string>
     <string name="let_s_you_in">Let\'s you in</string>
     <string name="or">or</string>
     <string name="don_t_have_an_account">Don\'t have an account?</string>
@@ -19,4 +19,13 @@
     <string name="mylist">MyList</string>
     <string name="download">Download</string>
     <string name="profile">Profile</string>
+
+    <!--    Google-->
+    <string name="web_client_id" translatable="false">408930274923-k579km7q6h0orfj9eggapr81jjlnleve.apps.googleusercontent.com</string>
+
+    <!--Facebook-->
+    <string name="facebook_client_token" translatable="false">b548bf56904c90aba2acb9fc859053a5</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb5bf07f71c1ca9d88a0b302</string>
+    <string name="title_activity_account_setup">AccountSetupActivity</string>
+    <string name="signin">Sign In</string>
 </resources>

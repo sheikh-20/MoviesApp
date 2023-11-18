@@ -1,29 +1,31 @@
 package com.application.moviesapp.ui.viewmodel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import androidx.paging.map
+import com.application.moviesapp.UserPreferences
+import com.application.moviesapp.data.SORT_BY
 import com.application.moviesapp.data.api.response.MovieSimpleResponse
-import com.application.moviesapp.data.local.entity.MoviesEntity
-import com.application.moviesapp.data.mappers.toMovies
+import com.application.moviesapp.data.common.Resource
 import com.application.moviesapp.data.repository.MoviesRepository
-import com.application.moviesapp.domain.MoviesPopularUseCase
+import com.application.moviesapp.domain.MoviesDiscoverUseCase
 import com.application.moviesapp.domain.MoviesSortUseCase
 import com.application.moviesapp.domain.MoviesWithSort
+import com.application.moviesapp.domain.model.MovieGenre
+import com.application.moviesapp.domain.model.MoviesDetail
+import com.application.moviesapp.domain.usecase.AccountSetupUseCase
+import com.application.moviesapp.domain.usecase.MovieGenresUseCase
+import com.application.moviesapp.domain.usecase.MovieSearchUseCase
+import com.application.moviesapp.domain.usecase.TvSeriesGenreUseCase
+import com.application.moviesapp.ui.home.Categories
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.single
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.IOException
@@ -35,90 +37,103 @@ sealed interface ExploreUiState {
     object Failure: ExploreUiState
 }
 
-sealed interface MovieSortUiState {
-    object Loading: MovieSortUiState
-    data class Success(val moviesWithSort: MoviesWithSort): MovieSortUiState
-    object Failure: MovieSortUiState
-}
+data class SearchUiState(val search: String = "", val clicked: Boolean = false)
+
+data class SortAndFilterUiState(val genre: String = "",
+                                val sortBy: String = SORT_BY.POPULARITY.title,
+                                val includeAdult: Boolean = false)
 
 @HiltViewModel
 class ExploreViewModel @Inject constructor(private val useCase: MoviesSortUseCase,
                                            private val repository: MoviesRepository,
-                                           pager: Pager<Int, MoviesEntity>,
-    private val moviesPopularUseCase: MoviesPopularUseCase): ViewModel() {
+                                           private val moviesDiscoverUseCase: MoviesDiscoverUseCase,
+                                           private val movieGenresUseCase: MovieGenresUseCase,
+                                           private val tvSeriesGenreUseCase: TvSeriesGenreUseCase,
+                                           private val movieSearchUseCase: MovieSearchUseCase,
+                                           private val accountSetupUseCase: AccountSetupUseCase): ViewModel() {
 
     private companion object {
         const val TAG = "ExploreViewModel"
     }
 
-
-    private var _movieSortUiState = MutableStateFlow<MovieSortUiState>(MovieSortUiState.Loading)
-    val movieSortUiState: StateFlow<MovieSortUiState> get() = _movieSortUiState
+    val readUserPreference = accountSetupUseCase.readUserPreference.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000L),
+        initialValue = UserPreferences.getDefaultInstance())
 
 
     private var _exploreUiState = MutableStateFlow<ExploreUiState>(ExploreUiState.Loading)
     val exploreUiState: StateFlow<ExploreUiState> get() = _exploreUiState
 
+    private var _genreUiState = MutableStateFlow<Resource<MovieGenre>>(Resource.Loading)
+    val genreUiState get() = _genreUiState.asStateFlow()
 
-    var searchInputField by mutableStateOf("")
-        private set
+    private var _searchInputUiState = MutableStateFlow(SearchUiState())
+    val searchInputUiState get() = _searchInputUiState.asStateFlow()
 
-    val moviesPagingFlow = moviesPopularUseCase.invoke().cachedIn(viewModelScope)
+    private var _sortAndFilterUiState = MutableStateFlow(SortAndFilterUiState())
+    val sortAndFilterUiState get() = _sortAndFilterUiState.asStateFlow()
 
-    fun getTrendingMovies() = viewModelScope.launch(Dispatchers.IO) {
-        _exploreUiState.value = ExploreUiState.Loading
 
-        try {
-            val result = repository.getMovieTrending()
-            _exploreUiState.value = ExploreUiState.Success(result)
-            Timber.tag(TAG).d(result.toString())
-        } catch (exception: IOException) {
-            _exploreUiState.value = ExploreUiState.Failure
-            Timber.tag(TAG).e(exception)
-        }
-    }
+    fun moviesPagingFlow(genres: String = "",
+                         sortBy: String = SORT_BY.POPULARITY.title,
+                         includeAdult: Boolean = false) =
+        moviesDiscoverUseCase(
+            genre = genres,
+            sortBy = sortBy,
+            includeAdult = includeAdult).cachedIn(viewModelScope)
 
-    fun getMovieSortFilter() = viewModelScope.launch(Dispatchers.IO) {
-        _movieSortUiState.value = MovieSortUiState.Loading
+    fun getMovieBySearch(search: String = "") = movieSearchUseCase(search).cachedIn(viewModelScope)
 
-        try {
-            val result = useCase.invoke()
-            _movieSortUiState.value = MovieSortUiState.Success(result)
-            Timber.tag(TAG).d(result.toString())
-        } catch (exception: IOException) {
-            _movieSortUiState.value = MovieSortUiState.Failure
-            Timber.tag(TAG).e(exception)
+    fun updateClickInput(clicked: Boolean) {
+        _searchInputUiState.update {
+            it.copy(clicked = clicked)
         }
     }
 
     fun updateSearchField(value: String) {
-        searchInputField = value
-
-        if (searchInputField.isNotEmpty()) {
-            getSearchResults()
+        _searchInputUiState.update {
+            it.copy(search = value)
         }
     }
 
-    fun getSearchResults() = viewModelScope.launch(Dispatchers.IO) {
-        _exploreUiState.value = ExploreUiState.Loading
-
-        try {
-            val result = repository.getSearchResults(searchInputField)
-
-            if (result.results?.isEmpty() == true) {
-                throw IOException()
+    fun getGenre(categories: Categories) = viewModelScope.launch {
+        when (categories) {
+            Categories.Movies -> {
+                _genreUiState.value = movieGenresUseCase()
             }
-
-            _exploreUiState.value = ExploreUiState.Success(result)
-
-            Timber.tag(TAG).d(result.toString())
-        } catch (exception: IOException) {
-            _exploreUiState.value = ExploreUiState.Failure
-            Timber.tag(TAG).e(exception)
+            Categories.TV -> {
+                _genreUiState.value = tvSeriesGenreUseCase()
+            }
         }
     }
 
-    init {
-        getMovieSortFilter()
+    fun updateGenre(genre: MovieGenre.Genre) = viewModelScope.launch {
+        val genreList = mutableListOf<MovieGenre.Genre>().apply {
+            addAll(readUserPreference.value.genreList.map { MovieGenre.Genre(it.id, it.name) })
+        }
+
+        if (genreList.contains(genre)) {
+            genreList.remove(genre)
+            accountSetupUseCase.updateGenre(genre = genreList.map { MoviesDetail.Genre(it.id, it.name) }.toSet())
+
+            Timber.tag(TAG).d(genreList.toString())
+        } else {
+            genreList.add(genre)
+            accountSetupUseCase.updateGenre(genre = genreList.map { MoviesDetail.Genre(it.id, it.name) }.toSet())
+            Timber.tag(TAG).d(genreList.toString())
+        }
+    }
+
+    fun setSortAndFilter(genre: List<MovieGenre.Genre> = emptyList(),
+                         sortBy: SORT_BY = SORT_BY.POPULARITY,
+                         includeAdult: Boolean = false) {
+        _sortAndFilterUiState.update {
+            it.copy(
+                genre = genre.map { genre ->  genre.id }.joinToString(" | "),
+                sortBy = sortBy.title,
+                includeAdult = includeAdult
+            )
+        }
     }
 }
