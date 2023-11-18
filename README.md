@@ -18,6 +18,8 @@ Movies App is a TMDb mobile app that list movies and series, shows their details
 * Proto Datastore
 * Preference Datastore
 * Kotlin DSL
+* Media3 API
+* WorkManager
 
 ### :camera: Light Theme Screenshots
 
