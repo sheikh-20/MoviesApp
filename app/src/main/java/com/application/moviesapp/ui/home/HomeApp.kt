@@ -6,10 +6,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.foundation.interaction.collectIsHoveredAsState
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -70,6 +66,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -99,6 +96,8 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.application.moviesapp.R
+import com.application.moviesapp.UserPreferences
+import com.application.moviesapp.data.SORT_BY
 import com.application.moviesapp.data.common.Resource
 import com.application.moviesapp.data.local.entity.MovieDownloadEntity
 import com.application.moviesapp.domain.model.MovieGenre
@@ -128,6 +127,7 @@ fun HomeApp(modifier: Modifier = Modifier,
             downloadViewModel: DownloadViewModel = hiltViewModel()) {
 
     val searchUiState by exploreViewModel.searchInputUiState.collectAsState()
+    val sortAndFilterUiState by exploreViewModel.sortAndFilterUiState.collectAsState()
 
     val movieWithTvSeriesUiState by homeViewModel.movieWithTvSeriesUiState.collectAsState()
 
@@ -138,8 +138,13 @@ fun HomeApp(modifier: Modifier = Modifier,
     val downloadUiState by downloadViewModel.readAllDownload().collectAsState()
 
     val genreUiState by exploreViewModel.genreUiState.collectAsState()
+    val accountSetupUiCase by exploreViewModel.readUserPreference.collectAsState()
 
-    val moviesFlowState = exploreViewModel.moviesPagingFlow.collectAsLazyPagingItems()
+    val moviesFlowState = exploreViewModel.moviesPagingFlow(
+        genres = sortAndFilterUiState.genre,
+        sortBy = sortAndFilterUiState.sortBy,
+        includeAdult = sortAndFilterUiState.includeAdult
+    ).collectAsLazyPagingItems()
 
     val moviesSearchFlowState = exploreViewModel.getMovieBySearch(searchUiState.search).collectAsLazyPagingItems()
 
@@ -162,10 +167,16 @@ fun HomeApp(modifier: Modifier = Modifier,
 
                     BottomSheetFilterContent(
                         onNegativeClick = onNegativeClick,
-                        onPositiveClick = onPositiveClick,
+                        onPositiveClick = {
+                                genres, sortBy, includeAdult ->
+                            exploreViewModel.setSortAndFilter(genre = genres, sortBy = sortBy, includeAdult = includeAdult)
+                            onPositiveClick()
+                                          },
                         onFilterCalled = { exploreViewModel.getGenre(it) },
                         uiState = genreUiState,
-                        onCategoryClick = { exploreViewModel.getGenre(it) }
+                        readUserPreferences = accountSetupUiCase,
+                        onCategoryClick = { exploreViewModel.getGenre(it) },
+                        onGenreUpdate = { exploreViewModel.updateGenre(it ?: return@BottomSheetFilterContent) }
                     )
                 })
         }
@@ -254,7 +265,7 @@ fun HomeApp(modifier: Modifier = Modifier,
                 ExploreScreen(
                     modifier = modifier,
                     uiState = exploreUiState,
-                    moviesPopularFlow = moviesFlowState,
+                    moviesDiscoverFlow = moviesFlowState,
                     movieSearchFlow = moviesSearchFlowState,
                     lazyGridState = exploreScrollState,
                     bottomPadding = paddingValues,
@@ -329,10 +340,12 @@ private fun BottomSheet(modifier: Modifier = Modifier,
 @Composable
 private fun BottomSheetFilterContent(modifier: Modifier = Modifier,
                                      onNegativeClick: () -> Unit = { },
-                                     onPositiveClick: () -> Unit = { },
+                                     onPositiveClick: (genres: List<MovieGenre.Genre>, sortBy: SORT_BY, includeAdult: Boolean) -> Unit = { _, _, _ ->  },
                                      onFilterCalled: (Categories) -> Unit = { _ -> },
                                      uiState: Resource<MovieGenre> = Resource.Loading,
-                                     onCategoryClick: (Categories) -> Unit = { _ -> }) {
+                                     readUserPreferences: UserPreferences? = null,
+                                     onCategoryClick: (Categories) -> Unit = { _ -> },
+                                     onGenreUpdate: (MovieGenre.Genre?) -> Unit = {  _ -> }) {
 
     val itemsListCategories = listOf(Categories.Movies, Categories.TV)
 
@@ -340,7 +353,11 @@ private fun BottomSheetFilterContent(modifier: Modifier = Modifier,
         mutableStateOf(itemsListCategories[0])
     }
 
-    val itemsListSort = listOf("Popularity", "Latest Release", "Vote Average")
+    val itemsListSort = listOf(
+        Pair("Popularity", SORT_BY.POPULARITY),
+        Pair("Latest Release", SORT_BY.LATEST_RELEASE),
+        Pair("Vote Average", SORT_BY.VOTE_AVERAGE)
+    )
 
     var selectedItemSort by remember {
         mutableStateOf(itemsListSort[0])
@@ -415,14 +432,18 @@ private fun BottomSheetFilterContent(modifier: Modifier = Modifier,
                         fontWeight = FontWeight.Bold,
                         modifier = modifier.padding(horizontal = 16.dp))
 
+
                     LazyRow(modifier = modifier.fillMaxWidth(), contentPadding = PaddingValues(horizontal = 16.dp)) {
+
                         items(uiState.data.genres ?: return@LazyRow) { item ->
                             FilterChip(
                                 modifier = modifier
                                     .requiredHeight(36.dp)
                                     .padding(horizontal = 6.dp),
-                                selected = false,
-                                onClick = { },
+                                selected = readUserPreferences?.genreList?.any { it.id == item?.id } ?: false,
+                                onClick = {
+                                    onGenreUpdate(item)
+                                          },
                                 label = { Text(text = item?.name ?: "", modifier = modifier.fillMaxWidth(), textAlign = TextAlign.Center) },
                                 shape = RoundedCornerShape(50),
                                 colors = FilterChipDefaults.filterChipColors(
@@ -445,7 +466,7 @@ private fun BottomSheetFilterContent(modifier: Modifier = Modifier,
                                     .padding(horizontal = 6.dp),
                                 selected = (item == selectedItemSort),
                                 onClick = { selectedItemSort = item },
-                                label = { Text(text = item, modifier = modifier.fillMaxWidth(), textAlign = TextAlign.Center) },
+                                label = { Text(text = item.first, modifier = modifier.fillMaxWidth(), textAlign = TextAlign.Center) },
                                 shape = RoundedCornerShape(50),
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = MaterialTheme.colorScheme.primary,
@@ -488,7 +509,7 @@ private fun BottomSheetFilterContent(modifier: Modifier = Modifier,
                         Text(text = "Reset")
                     }
 
-                    Button(onClick = onPositiveClick, modifier = modifier
+                    Button(onClick = { onPositiveClick(readUserPreferences?.genreList?.map { MovieGenre.Genre(id = it.id, name = it.name) } ?: return@Button, selectedItemSort.second, includeAdult) }, modifier = modifier
                         .weight(1f)
                         .requiredHeight(50.dp)) {
                         Text(text = "Apply")

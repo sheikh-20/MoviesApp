@@ -8,15 +8,15 @@ import com.application.moviesapp.data.local.entity.MovieUpcomingEntity
 import com.application.moviesapp.data.local.entity.MoviesEntity
 import com.application.moviesapp.data.remote.MovieNewReleasesDto
 import com.application.moviesapp.data.remote.MovieUpcomingDto
-import com.application.moviesapp.data.remote.MoviesPopularDto
-import com.application.moviesapp.domain.model.MoviesPopular
+import com.application.moviesapp.data.remote.MoviesDiscoverDto
+import com.application.moviesapp.domain.model.MoviesDiscover
 import com.application.moviesapp.domain.model.MovieFavourite
 import com.application.moviesapp.domain.model.MovieNowPlaying
 import com.application.moviesapp.domain.model.MovieState
 import com.application.moviesapp.domain.model.MovieTrailer
 import com.application.moviesapp.domain.model.MovieUpcoming
 
-fun MoviesPopularDto.Result.toMoviesEntity(): MoviesEntity {
+fun MoviesDiscoverDto.Result.toMoviesEntity(): MoviesEntity {
     return MoviesEntity(
         adult = adult,
         backdropPath = backdropPath,
@@ -33,8 +33,8 @@ fun MoviesPopularDto.Result.toMoviesEntity(): MoviesEntity {
         voteCount = voteCount)
 }
 
-fun MoviesPopularDto.Result.toMovies(): MoviesPopular {
-    return MoviesPopular(
+fun MoviesDiscoverDto.Result.toMovies(): MoviesDiscover {
+    return MoviesDiscover(
         adult = adult,
         backdropPath = backdropPath,
         id = id,
@@ -50,8 +50,8 @@ fun MoviesPopularDto.Result.toMovies(): MoviesPopular {
         voteCount = voteCount)
 }
 
-fun MoviesEntity.toMovies(): MoviesPopular {
-    return MoviesPopular(
+fun MoviesEntity.toMovies(): MoviesDiscover {
+    return MoviesDiscover(
         adult = adult,
         backdropPath = backdropPath,
         id = id,

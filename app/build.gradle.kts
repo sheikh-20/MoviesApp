@@ -12,6 +12,7 @@ plugins {
     id("com.google.gms.google-services")
     id("com.google.protobuf") version "0.9.1"
     id("com.chaquo.python")
+    id("com.google.firebase.crashlytics")
 }
 
 chaquopy {
@@ -117,6 +118,8 @@ android {
 }
 
 dependencies {
+    implementation("com.google.firebase:firebase-crashlytics:18.6.0")
+    implementation("com.google.firebase:firebase-analytics:21.5.0")
     val lifecycle_version = "2.6.1"
     val timber_version = "5.0.1"
     val lottie_version = "6.1.0"

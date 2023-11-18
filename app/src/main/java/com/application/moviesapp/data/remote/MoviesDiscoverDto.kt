@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MoviesPopularDto(
+data class MoviesDiscoverDto(
     @SerialName("page")
     val page: Int?,
 

@@ -6,39 +6,32 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.application.moviesapp.R
 import com.application.moviesapp.domain.model.MovieSearch
-import com.application.moviesapp.domain.model.MoviesPopular
+import com.application.moviesapp.domain.model.MoviesDiscover
 import com.application.moviesapp.ui.detail.DetailActivity
 import com.application.moviesapp.ui.detail.IS_TYPE
 import com.application.moviesapp.ui.theme.MoviesAppTheme
@@ -49,7 +42,7 @@ import com.application.moviesapp.ui.viewmodel.ExploreUiState
 @Composable
 fun ExploreScreen(modifier: Modifier = Modifier,
                   uiState: ExploreUiState = ExploreUiState.Loading,
-                  moviesPopularFlow: LazyPagingItems<MoviesPopular>,
+                  moviesDiscoverFlow: LazyPagingItems<MoviesDiscover>,
                   movieSearchFlow: LazyPagingItems<MovieSearch>,
                   searchClicked: Boolean = false,
                   lazyGridState: LazyGridState = LazyGridState(),
@@ -115,11 +108,11 @@ fun ExploreScreen(modifier: Modifier = Modifier,
                         contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp)
                     ) {
 
-                        items(count = moviesPopularFlow.itemCount) { index ->
+                        items(count = moviesDiscoverFlow.itemCount) { index ->
                             MovieImageCard(
-                                imageUrl = moviesPopularFlow[index]?.posterPath ?: "",
-                                rating = moviesPopularFlow[index]?.voteAverage.toString() ?: "",
-                                movieId = moviesPopularFlow[index]?.id
+                                imageUrl = moviesDiscoverFlow[index]?.posterPath ?: "",
+                                rating = moviesDiscoverFlow[index]?.voteAverage.toString() ?: "",
+                                movieId = moviesDiscoverFlow[index]?.id
                             )
                         }
                     }

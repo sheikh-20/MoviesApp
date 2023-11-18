@@ -9,8 +9,8 @@ import com.application.moviesapp.data.repository.YoutubeRepository
 import com.application.moviesapp.domain.GetMoviesNowPlayingInteractor
 import com.application.moviesapp.domain.GetMoviesWithSortInteractor
 import com.application.moviesapp.domain.MoviesNowPlayingUseCase
-import com.application.moviesapp.domain.MoviesPopularInteractor
-import com.application.moviesapp.domain.MoviesPopularUseCase
+import com.application.moviesapp.domain.MoviesDiscoverInteractor
+import com.application.moviesapp.domain.MoviesDiscoverUseCase
 import com.application.moviesapp.domain.MoviesSortUseCase
 import com.application.moviesapp.domain.usecase.GetMovieDetailInteractor
 import com.application.moviesapp.domain.usecase.GetMovieFavouriteInteractor
@@ -86,8 +86,8 @@ class UseCaseModule {
 
     @Provides
     @Singleton
-    fun providesMoviesPopularUseCase(moviesRepository: MoviesRepository): MoviesPopularUseCase {
-        return MoviesPopularInteractor(moviesRepository)
+    fun providesMoviesPopularUseCase(moviesRepository: MoviesRepository): MoviesDiscoverUseCase {
+        return MoviesDiscoverInteractor(moviesRepository)
     }
 
     @Provides

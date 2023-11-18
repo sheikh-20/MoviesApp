@@ -1,5 +1,6 @@
 package com.application.moviesapp.data.api
 
+import com.application.moviesapp.data.SORT_BY
 import com.application.moviesapp.data.api.response.CountryResponse
 import com.application.moviesapp.data.api.response.MovieDetailsCastDto
 import com.application.moviesapp.data.api.response.MovieDetailsDto
@@ -17,7 +18,7 @@ import com.application.moviesapp.data.api.response.TvSeriesNowPlayingDto
 import com.application.moviesapp.data.api.response.TvSeriesTrailerDto
 import com.application.moviesapp.data.remote.MovieNewReleasesDto
 import com.application.moviesapp.data.remote.MovieUpcomingDto
-import com.application.moviesapp.data.remote.MoviesPopularDto
+import com.application.moviesapp.data.remote.MoviesDiscoverDto
 import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -27,8 +28,8 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface MoviesApi {
-    @GET("/3/movie/popular")
-    suspend fun getPopularMoviesList(@Query("language") language: String = "en-US", @Query("page") page: Int = 1): Response<MoviesPopularDto>
+    @GET("/3/discover/movie")
+    suspend fun getDiscoverMoviesList(@Query("language") language: String = "en-US", @Query("page") page: Int = 1, @Query("with_genres") genres: String = "", @Query("sort_by") sortBy: String = SORT_BY.POPULARITY.title, @Query("include_adult") includeAdult: Boolean = false): Response<MoviesDiscoverDto>
 
     @GET("/3/genre/movie/list")
     suspend fun getMoviesGenreList(): MovieGenreResponse

@@ -26,8 +26,8 @@ import com.application.moviesapp.data.remote.MovieNewReleasesDto
 import com.application.moviesapp.data.remote.MovieNowPlayingPagingSource
 import com.application.moviesapp.data.remote.MovieSearchPagingSource
 import com.application.moviesapp.data.remote.MovieUpcomingDto
-import com.application.moviesapp.data.remote.MoviesPopularDto
-import com.application.moviesapp.data.remote.MoviesPopularPagingSource
+import com.application.moviesapp.data.remote.MoviesDiscoverDto
+import com.application.moviesapp.data.remote.MoviesDiscoverPagingSource
 import com.application.moviesapp.data.remote.TvSeriesNowPlayingPagingSource
 import kotlinx.coroutines.flow.Flow
 import okhttp3.RequestBody
@@ -35,7 +35,7 @@ import retrofit2.Response
 import javax.inject.Inject
 
 interface MoviesRepository {
-    suspend fun getPopularMoviesList(page: Int = 1): Response<MoviesPopularDto>
+    suspend fun getDiscoverMoviesList(page: Int = 1): Response<MoviesDiscoverDto>
 
     suspend fun getMoviesGenreList(): MovieGenreResponse
 
@@ -49,7 +49,7 @@ interface MoviesRepository {
 
     suspend fun getSearchResults(query: String): MovieSimpleResponse
 
-    fun getPopularMoviesPagingFlow(): Flow<PagingData<MoviesPopularDto.Result>>
+    fun getDiscoverMoviesPagingFlow(genre: String = "", sortBy: String = "", includeAdult: Boolean = false): Flow<PagingData<MoviesDiscoverDto.Result>>
 
     fun getMoviesNowPlayingPagingFlow(): Flow<PagingData<MovieNowPlayingDto.Result>>
 
@@ -99,7 +99,7 @@ class MoviesRepositoryImpl @Inject constructor(private val movies: MoviesApi,
     }
 
 
-    override suspend fun getPopularMoviesList(page: Int): Response<MoviesPopularDto> = movies.getPopularMoviesList(page = page)
+    override suspend fun getDiscoverMoviesList(page: Int): Response<MoviesDiscoverDto> = movies.getDiscoverMoviesList(page = page)
     override suspend fun getMoviesGenreList(): MovieGenreResponse = movies.getMoviesGenreList()
     override suspend fun getNewReleasesList(): MovieNewReleasesDto= movies.getNewReleasesList()
     override suspend fun getMoviesTopRated(): MovieTopRatedResponse = movies.getMovieTopRated()
@@ -107,10 +107,10 @@ class MoviesRepositoryImpl @Inject constructor(private val movies: MoviesApi,
     override suspend fun getCountries(): List<CountryResponse> = movies.getCountries()
     override suspend fun getSearchResults(query: String): MovieSimpleResponse = movies.getSearch(query)
 
-    override fun getPopularMoviesPagingFlow(): Flow<PagingData<MoviesPopularDto.Result>> = Pager(
+    override fun getDiscoverMoviesPagingFlow(genre: String, sortBy: String, includeAdult: Boolean): Flow<PagingData<MoviesDiscoverDto.Result>> = Pager(
         config = PagingConfig(pageSize = 20),
         pagingSourceFactory = {
-            MoviesPopularPagingSource(movies)
+            MoviesDiscoverPagingSource(moviesApi = movies, genre = genre, sortBy = sortBy, includeAdult = includeAdult)
         }
     ).flow
 

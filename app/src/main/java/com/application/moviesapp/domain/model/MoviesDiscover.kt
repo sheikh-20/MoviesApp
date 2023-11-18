@@ -1,6 +1,6 @@
 package com.application.moviesapp.domain.model
 
-data class MoviesPopular(
+data class MoviesDiscover(
     val adult: Boolean?,
 
     val backdropPath: String?,
