@@ -34,7 +34,7 @@ Movies App is a TMDb mobile app that list movies and series, shows their details
 ![dark_theme_page3](https://github.com/sheikh-20/MoviesApp/assets/121604647/d016ceae-da2a-4f83-a191-0ae01d751791)
 
 
-# License
+### :page_facing_up: License
 ```xml
 MIT License
 
