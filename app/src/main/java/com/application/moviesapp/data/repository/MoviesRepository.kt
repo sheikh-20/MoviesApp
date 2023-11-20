@@ -9,7 +9,7 @@ import com.application.moviesapp.data.api.MoviesApi
 import com.application.moviesapp.data.api.response.CountryResponse
 import com.application.moviesapp.data.api.response.MovieDetailsCastDto
 import com.application.moviesapp.data.api.response.MovieDetailsDto
-import com.application.moviesapp.data.api.response.MovieFavouriteDto
+import com.application.moviesapp.data.remote.MovieFavouriteDto
 import com.application.moviesapp.data.api.response.MovieGenreResponse
 import com.application.moviesapp.data.api.response.MovieNowPlayingDto
 import com.application.moviesapp.data.api.response.MovieSearchDto
@@ -22,6 +22,7 @@ import com.application.moviesapp.data.api.response.TvSeriesNowPlayingDto
 import com.application.moviesapp.data.api.response.TvSeriesTrailerDto
 import com.application.moviesapp.data.local.MoviesDatabase
 import com.application.moviesapp.data.local.entity.MovieDownloadEntity
+import com.application.moviesapp.data.remote.MovieFavouritePagingSource
 import com.application.moviesapp.data.remote.MovieNewReleasesDto
 import com.application.moviesapp.data.remote.MovieNowPlayingPagingSource
 import com.application.moviesapp.data.remote.MovieSearchPagingSource
@@ -55,6 +56,8 @@ interface MoviesRepository {
 
     fun getMovieBySearchPagingFlow(search: String = ""): Flow<PagingData<MovieSearchDto.Result>>
 
+    fun getFavouriteMoviesPagingFlow(): Flow<PagingData<MovieFavouriteDto.Result>>
+
     suspend fun getMoviesUpcoming(): MovieUpcomingDto
 
     fun getTvSeriesNowPlayingPagingFlow(): Flow<PagingData<TvSeriesNowPlayingDto.Result>>
@@ -68,8 +71,6 @@ interface MoviesRepository {
     suspend fun getMovieTrailer(movieId: Int): Response<MovieTrailerDto>
 
     suspend fun getTvSeriesTrailer(seriesId: Int): Response<TvSeriesTrailerDto>
-
-    suspend fun getMovieFavourite(): Response<MovieFavouriteDto>
 
     suspend fun updateMovieFavourite(body: RequestBody): Response<MovieUpdateFavouriteDto>
 
@@ -137,6 +138,13 @@ class MoviesRepositoryImpl @Inject constructor(private val movies: MoviesApi,
         }
     ).flow
 
+    override fun getFavouriteMoviesPagingFlow(): Flow<PagingData<MovieFavouriteDto.Result>> = Pager(
+        config = PagingConfig(pageSize = 20),
+        pagingSourceFactory = {
+            MovieFavouritePagingSource(movies)
+        }
+    ).flow
+
     override suspend fun getMoviesDetailById(movieId: Int): Response<MovieDetailsDto> = movies.getMovieDetailsById(movieId)
 
     override suspend fun getTvSeriesDetailById(tvSeriesId: Int): Response<TvSeriesDetailsDto> = movies.getTvSeriesDetailsId(tvSeriesId)
@@ -146,8 +154,6 @@ class MoviesRepositoryImpl @Inject constructor(private val movies: MoviesApi,
     override suspend fun getMovieTrailer(movieId: Int): Response<MovieTrailerDto> = movies.getMovieTrailer(movieId)
 
     override suspend fun getTvSeriesTrailer(seriesId: Int): Response<TvSeriesTrailerDto> = movies.getTvSeriesTrailer(seriesId)
-
-    override suspend fun getMovieFavourite(): Response<MovieFavouriteDto> = movies.getMovieFavourite()
 
     override suspend fun updateMovieFavourite(body: RequestBody): Response<MovieUpdateFavouriteDto> = movies.updateMovieFavourite(body = body)
 

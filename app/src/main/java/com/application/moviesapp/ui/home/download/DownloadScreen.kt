@@ -22,6 +22,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.OutlinedButton
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.FileDownload
@@ -29,6 +31,7 @@ import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.PlayCircle
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -55,11 +58,13 @@ import com.application.moviesapp.R
 import com.application.moviesapp.data.local.entity.MovieDownloadEntity
 import com.application.moviesapp.ui.play.PlayActivity
 import com.application.moviesapp.ui.theme.MoviesAppTheme
+import com.application.moviesapp.ui.utility.getFileSize
 import com.application.moviesapp.ui.utility.toImageUrl
 import com.application.moviesapp.ui.utility.toYoutubeDuration
 import com.application.moviesapp.ui.viewmodel.DownloadUiState
 import com.application.moviesapp.ui.viewmodel.DownloadsUiState
 import timber.log.Timber
+import java.io.File
 
 @Composable
 fun DownloadScreen(modifier: Modifier = Modifier,
@@ -129,7 +134,7 @@ private fun DownloadCard(modifier: Modifier = Modifier,
 
     val context = LocalContext.current
 
-    Card(onClick = { PlayActivity.startActivity(context as Activity, movie?.filePath) },
+    Card(onClick = { PlayActivity.startActivity(context as Activity, movie?.title, movie?.filePath) },
         shape = RoundedCornerShape(20),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
     ) {
@@ -168,9 +173,13 @@ private fun DownloadCard(modifier: Modifier = Modifier,
                 )
 
                 Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    AssistChip(
-                        onClick = {  },
-                        label = { Text(text = "2.4 GB", style = MaterialTheme.typography.bodySmall) })
+
+                    Card {
+                        Text(text = "${movie?.filePath?.getFileSize(context)} MB",
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = modifier.padding(8.dp),
+                            color = MaterialTheme.colorScheme.onSecondary)
+                    }
 
                     Spacer(modifier = modifier.weight(1f))
 

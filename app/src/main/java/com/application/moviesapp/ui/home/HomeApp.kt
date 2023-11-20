@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,6 +25,8 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Tune
@@ -78,9 +81,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -107,6 +113,7 @@ import com.application.moviesapp.ui.home.explore.ExploreScreen
 import com.application.moviesapp.ui.home.mylist.MyListScreen
 import com.application.moviesapp.ui.home.profile.ProfileScreen
 import com.application.moviesapp.ui.onboarding.OnboardingActivity
+import com.application.moviesapp.ui.utility.getFileSize
 import com.application.moviesapp.ui.viewmodel.DownloadViewModel
 import com.application.moviesapp.ui.viewmodel.ExploreUiState
 import com.application.moviesapp.ui.viewmodel.ExploreViewModel
@@ -114,6 +121,7 @@ import com.application.moviesapp.ui.viewmodel.HomeViewModel
 import com.application.moviesapp.ui.viewmodel.MyListViewModel
 import com.application.moviesapp.ui.viewmodel.ProfileViewModel
 import kotlinx.coroutines.launch
+import java.io.File
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -133,7 +141,6 @@ fun HomeApp(modifier: Modifier = Modifier,
 
     val exploreUiState: ExploreUiState by exploreViewModel.exploreUiState.collectAsState()
     val profileUiState by homeViewModel.profileInfoUiState.collectAsState()
-    val myListUiState by myListViewModel.movieFavourite.collectAsState()
     val darkModeUiState by profileViewModel.isDarkMode.collectAsState(initial = SettingsPreference(false))
     val downloadUiState by downloadViewModel.readAllDownload().collectAsState()
 
@@ -147,6 +154,8 @@ fun HomeApp(modifier: Modifier = Modifier,
     ).collectAsLazyPagingItems()
 
     val moviesSearchFlowState = exploreViewModel.getMovieBySearch(searchUiState.search).collectAsLazyPagingItems()
+
+    val myListFlowState = myListViewModel.getMovieFavouritePagingFlow.collectAsLazyPagingItems()
 
     val coroutineScope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(BottomSheet.Default) }
@@ -242,7 +251,7 @@ fun HomeApp(modifier: Modifier = Modifier,
 
     Scaffold(
         topBar = {
-            HomeTopAppbar(navController, exploreViewModel, exploreHideTopAppBar, myListHideTopAppBar, downloadHideTopAppBar, onFilterClick = { showBottomSheet = BottomSheet.Filter }, search = searchUiState.search)
+            HomeTopAppbar(navController = navController, exploreViewModel = exploreViewModel, exploreHideTopAppBar = exploreHideTopAppBar, mylistHideTopAppBar = myListHideTopAppBar, downloadHideTopAppBar = downloadHideTopAppBar, onFilterClick = { showBottomSheet = BottomSheet.Filter }, search = searchUiState.search)
         },
         bottomBar = {
             HomeBottomBarNavigation(navController)
@@ -274,8 +283,7 @@ fun HomeApp(modifier: Modifier = Modifier,
             composable(route = BottomNavigationScreens.MyList.route) {
                 MyListScreen(
                     modifier = modifier,
-                    uiState = myListUiState,
-                    onFavouriteCalled = myListViewModel::getMovieFavourite,
+                    moviesFavouriteFlow = myListFlowState,
                     lazyGridState = myListScrollState,
                     bottomPadding = paddingValues)
             }
@@ -563,6 +571,9 @@ private fun BottomSheetContent(modifier: Modifier = Modifier, onNegativeClick: (
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun BottomSheetContentDownloadDelete(modifier: Modifier = Modifier, onNegativeClick: () -> Unit = { }, onPositiveClick: () -> Unit = {}, movieDownloadEntity: MovieDownloadEntity? = null) {
+
+    val context = LocalContext.current
+
     Column(modifier = modifier
         .padding(16.dp)
         .systemBarsPadding(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -602,8 +613,8 @@ private fun BottomSheetContentDownloadDelete(modifier: Modifier = Modifier, onNe
                 }
             }
 
-            Column(modifier = modifier.weight(1f),
-                verticalArrangement = Arrangement.SpaceEvenly) {
+            Column(modifier = modifier.weight(1f).requiredHeight(100.dp).padding(vertical = 8.dp),
+                verticalArrangement = Arrangement.SpaceBetween) {
                 Text(
                     text = movieDownloadEntity?.title ?: "",
                     style = MaterialTheme.typography.titleSmall,
@@ -616,9 +627,14 @@ private fun BottomSheetContentDownloadDelete(modifier: Modifier = Modifier, onNe
                     style = MaterialTheme.typography.bodyMedium
                 )
 
-                AssistChip(
-                    onClick = {  },
-                    label = { Text(text = "2.4 GB", style = MaterialTheme.typography.bodySmall) })
+                Spacer(modifier = modifier.weight(1f))
+
+                Card {
+                    Text(text = "${movieDownloadEntity?.filePath?.getFileSize(context)} MB",
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = modifier.padding(8.dp),
+                        color = MaterialTheme.colorScheme.onSecondary)
+                }
             }
         }
 
@@ -633,10 +649,13 @@ private fun BottomSheetContentDownloadDelete(modifier: Modifier = Modifier, onNe
                 Text(text = "Cancel")
             }
 
-            Button(onClick = onPositiveClick, modifier = modifier
+            Button(onClick = {
+                File(context.filesDir, "/output/${movieDownloadEntity?.filePath}").delete()
+                onPositiveClick()
+            }, modifier = modifier
                 .weight(1f)
                 .requiredHeight(50.dp)) {
-                Text(text = "Yes, Logout")
+                Text(text = "Yes, Delete")
             }
         }
     }
@@ -657,6 +676,8 @@ private fun HomeTopAppbar(navController: NavHostController,
 
     when (navController.currentBackStackEntryAsState().value?.destination?.route) {
         BottomNavigationScreens.Explore.route -> {
+
+            val focusManager = LocalFocusManager.current
 
             if (search.isNotEmpty()) {
                 exploreViewModel.updateClickInput(true)
@@ -685,6 +706,9 @@ private fun HomeTopAppbar(navController: NavHostController,
                                 .fillMaxWidth()
                                 .padding(end = 20.dp),
                             shape = RoundedCornerShape(30),
+                            textStyle = TextStyle(fontSize = MaterialTheme.typography.bodyLarge.fontSize, lineHeight = MaterialTheme.typography.bodyLarge.lineHeight),
+                            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                            keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
                         )
                     },
                     actions = {
@@ -730,7 +754,7 @@ private fun HomeTopAppbar(navController: NavHostController,
         BottomNavigationScreens.Download.route -> {
 
             AnimatedVisibility(
-                visible = mylistHideTopAppBar,
+                visible = downloadHideTopAppBar,
                 enter = slideInVertically(animationSpec = tween(durationMillis = 200)),
                 exit = slideOutVertically(animationSpec = tween(durationMillis = 200))) {
 

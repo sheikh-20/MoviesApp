@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.application.moviesapp.base.BaseActivity
@@ -25,22 +26,21 @@ class PlayActivity: BaseActivity() {
 
     companion object {
         const val FILE_PATH = "file_path"
+        const val VIDEO_TITLE = "video_title"
 
-        fun startActivity(activity: Activity?, filePath: String?) {
+        fun startActivity(activity: Activity?, videoTitle: String?, filePath: String?) {
             val intent = Intent(activity, PlayActivity::class.java)
+            intent.putExtra(VIDEO_TITLE, videoTitle)
             intent.putExtra(FILE_PATH, filePath)
             activity?.startActivity(intent)
         }
     }
 
     private val profileViewModel: ProfileViewModel by viewModels()
-    private val playerViewModel: PlayerViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTransparentStatusBar()
-
-        playerViewModel.playVideo(this, intent.getStringExtra(FILE_PATH) ?: return)
 
         lifecycle.coroutineScope.launch {
             profileViewModel.isDarkMode.collect {
@@ -48,9 +48,9 @@ class PlayActivity: BaseActivity() {
                     MoviesAppTheme(darkTheme = it.data) {
                         Surface(
                             modifier = Modifier.fillMaxSize(),
-                            color = MaterialTheme.colorScheme.background
+                            color = MaterialTheme.colorScheme.scrim
                         ) {
-                            PlayScreenApp(player = playerViewModel.player)
+                            PlayScreenApp()
                         }
                     }
                 }

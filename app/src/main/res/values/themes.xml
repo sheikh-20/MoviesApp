@@ -2,6 +2,13 @@
 <resources>
 
     <style name="Theme.MoviesApp" parent="android:Theme.Material.Light.NoActionBar" />
-
     <style name="Theme.CustomSplashScreenTheme" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.PlayerTheme" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+    </style>
 </resources>

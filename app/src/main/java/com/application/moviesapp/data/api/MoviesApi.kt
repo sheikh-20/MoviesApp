@@ -4,7 +4,7 @@ import com.application.moviesapp.data.SORT_BY
 import com.application.moviesapp.data.api.response.CountryResponse
 import com.application.moviesapp.data.api.response.MovieDetailsCastDto
 import com.application.moviesapp.data.api.response.MovieDetailsDto
-import com.application.moviesapp.data.api.response.MovieFavouriteDto
+import com.application.moviesapp.data.remote.MovieFavouriteDto
 import com.application.moviesapp.data.api.response.MovieGenreResponse
 import com.application.moviesapp.data.api.response.MovieNowPlayingDto
 import com.application.moviesapp.data.api.response.MovieSearchDto
@@ -80,7 +80,7 @@ interface MoviesApi {
     suspend fun getTvSeriesTrailer(@Path("series_id") seriesId: Int): Response<TvSeriesTrailerDto>
 
     @GET("/3/account/{account_id}/favorite/movies")
-    suspend fun getMovieFavourite(@Path("account_id") accountId: Int = 20210857): Response<MovieFavouriteDto>
+    suspend fun getMovieFavourite(@Path("account_id") accountId: Int = 20210857, @Query("language") language: String = "en-US", @Query("page") page: Int = 1): Response<MovieFavouriteDto>
 
     @POST("/3/account/{account_id}/favorite")
     suspend fun updateMovieFavourite(@Path("account_id") accountId: Int = 20210857, @Body body: RequestBody): Response<MovieUpdateFavouriteDto>

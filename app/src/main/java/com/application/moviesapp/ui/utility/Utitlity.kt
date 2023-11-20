@@ -10,6 +10,9 @@ import androidx.core.app.NotificationManagerCompat
 import com.application.moviesapp.BuildConfig
 import com.application.moviesapp.R
 import com.application.moviesapp.domain.model.Stream
+import java.io.File
+import java.util.concurrent.TimeUnit
+import kotlin.math.floor
 
 val String.toImageUrl: String
     get() {
@@ -96,4 +99,24 @@ fun makeStatusNotification(message: String, context: Context) {
 
     // Show the notification
     NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, builder.build())
+}
+
+fun String.getFileSize(context: Context): String {
+    val file = File(context.filesDir, "/output/${this}")
+    return "${floor(file.length().toDouble() / 1024 / 1024).toInt()}"
+}
+
+fun Long.formatMinSec(): String {
+    return if (this == 0L) {
+        "..."
+    } else {
+        String.format(
+            "%02d:%02d",
+            TimeUnit.MILLISECONDS.toMinutes(this),
+            TimeUnit.MILLISECONDS.toSeconds(this) -
+                    TimeUnit.MINUTES.toSeconds(
+                        TimeUnit.MILLISECONDS.toMinutes(this)
+                    )
+        )
+    }
 }
