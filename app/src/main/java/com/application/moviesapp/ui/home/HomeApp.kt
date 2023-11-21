@@ -267,6 +267,8 @@ fun HomeApp(modifier: Modifier = Modifier,
                     goToDownloadClick = {
                         navController.popBackStack()
                         navController.navigate(BottomNavigationScreens.Download.route)
+                    },
+                    goToMyListClick = {
                     }
                 )
             }
