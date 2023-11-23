@@ -1,4 +1,4 @@
-package com.application.moviesapp.data.api.response
+package com.application.moviesapp.data.remote
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

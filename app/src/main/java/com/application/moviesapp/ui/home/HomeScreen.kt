@@ -2,6 +2,9 @@ package com.application.moviesapp.ui.home
 
 import android.app.Activity
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +19,8 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -33,6 +38,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
@@ -58,13 +64,16 @@ import com.application.moviesapp.ui.home.movienowplaying.NowPlayingMoviesActivit
 import com.application.moviesapp.ui.home.tvseriesnowplaying.NowPlayingSeriesActivity
 import com.application.moviesapp.ui.utility.toImageUrl
 import com.application.moviesapp.ui.utility.toOneDecimal
+import kotlinx.coroutines.delay
 import timber.log.Timber
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier,
                uiState: Resource<MovieWithTvSeries> = Resource.Loading,
                bottomPadding: PaddingValues = PaddingValues(),
-               goToDownloadClick: () -> Unit = {  }
+               goToDownloadClick: () -> Unit = {  }, 
+               goToMyListClick: () -> Unit = {   }
 ) {
 
     val context = LocalContext.current
@@ -107,49 +116,80 @@ fun HomeScreen(modifier: Modifier = Modifier,
         }
         is Resource.Success -> {
 
-            val titleImage = uiState.data.movies?.first()
+            val pagerState = rememberPagerState { uiState.data.movies?.size ?: 0 }
+
+            LaunchedEffect(pagerState) {
+                while(true) {
+                    delay(5_000L)
+                    pagerState.animateScrollToPage(page = pagerState.currentPage.inc() % pagerState.pageCount, animationSpec = tween(2000))
+                }
+            }
 
             Column(modifier = modifier
                 .fillMaxSize()
                 .padding(bottom = bottomPadding.calculateBottomPadding())) {
-                Box(modifier = modifier.height(350.dp)) {
+                HorizontalPager(state = pagerState) { index ->
 
-                    AsyncImage(model = ImageRequest.Builder(context = LocalContext.current)
-                        .data(titleImage?.backdropPath?.toImageUrl ?: "")
-                        .crossfade(true)
-                        .build(),
-                        placeholder = painterResource(id = R.drawable.doctor_strange),
-                        contentDescription = null,
-                        modifier = modifier
-                            .fillMaxSize()
-                            .drawWithCache {
-                                val gradient = Brush.verticalGradient(
-                                    colors = listOf(Color.Transparent, Color.Black),
-                                    startY = size.height / 3,
-                                    endY = size.height
-                                )
-                                onDrawWithContent {
-                                    drawContent()
-                                    drawRect(gradient, blendMode = BlendMode.Multiply)
+                    Box(modifier = modifier.height(350.dp)) {
+
+                        val titleImage = uiState.data.movies?.get(index)
+
+                        AsyncImage(
+                            model = ImageRequest.Builder(context = LocalContext.current)
+                                .data(titleImage?.backdropPath?.toImageUrl ?: "")
+                                .crossfade(true)
+                                .build(),
+                            placeholder = painterResource(id = R.drawable.ic_image_placeholder),
+                            contentDescription = null,
+                            modifier = modifier
+                                .fillMaxSize()
+                                .drawWithCache {
+                                    val gradient = Brush.verticalGradient(
+                                        colors = listOf(Color.Transparent, Color.Black),
+                                        startY = size.height / 3,
+                                        endY = size.height
+                                    )
+                                    onDrawWithContent {
+                                        drawContent()
+                                        drawRect(gradient, blendMode = BlendMode.Multiply)
+                                    }
+                                },
+                            contentScale = ContentScale.FillHeight
+                        )
+
+
+                        Column(
+                            modifier = modifier
+                                .fillMaxSize()
+                                .wrapContentSize(align = Alignment.BottomStart)
+                                .padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = titleImage?.title ?: "",
+                                style = MaterialTheme.typography.titleLarge,
+                                color = Color.White
+                            )
+                            Text(
+                                text = uiState.data.titleGenre,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.White
+                            )
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Button(onClick = {}) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.PlayCircle,
+                                        contentDescription = null
+                                    )
+                                    Text(text = "Play")
                                 }
-                            },
-                        contentScale = ContentScale.FillHeight)
-
-                    Column(modifier = modifier
-                        .fillMaxSize()
-                        .wrapContentSize(align = Alignment.BottomStart)
-                        .padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text(text = titleImage?.title ?: "", style = MaterialTheme.typography.titleLarge, color = Color.White)
-                        Text(text = uiState.data.titleGenre, style = MaterialTheme.typography.bodyMedium, color = Color.White)
-
-                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Button(onClick = {}) {
-                                Icon(imageVector = Icons.Rounded.PlayCircle, contentDescription = null)
-                                Text(text = "Play")
-                            }
-                            OutlinedButton(onClick = {}) {
-                                Icon(imageVector = Icons.Rounded.Add, contentDescription = null)
-                                Text(text = "My List")
+                                OutlinedButton(onClick = goToMyListClick) {
+                                    Icon(imageVector = Icons.Rounded.Add, contentDescription = null)
+                                    Text(text = "My List")
+                                }
                             }
                         }
                     }

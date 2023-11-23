@@ -213,7 +213,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                         }
 
                         Row(modifier = modifier
-                            .fillMaxWidth()
+                            .fillMaxWidth().horizontalScroll(scrollState)
                             .padding(horizontal = 16.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -221,36 +221,31 @@ fun DetailScreen(modifier: Modifier = Modifier,
 
                             Text(text = movieUIState.data.voteAverage?.toOneDecimal ?: "", style = MaterialTheme.typography.bodyMedium)
 
-                            IconButton(modifier = modifier.then(Modifier.size(20.dp)), onClick = { /*TODO*/ }) {
-                                Icon(imageVector = Icons.Rounded.ArrowForwardIos, contentDescription = null)
+                            IconButton(modifier = modifier.then(Modifier.size(16.dp)), onClick = { /*TODO*/ }) {
+                                Icon(imageVector = Icons.Rounded.ArrowForwardIos,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary)
                             }
 
-                            Row(modifier = modifier.horizontalScroll(rememberScrollState()),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Text(text = movieUIState.data.releaseDate?.split("-")?.get(0) ?: "", style = MaterialTheme.typography.bodyMedium)
+                            Text(text = movieUIState.data.releaseDate?.split("-")?.get(0) ?: "", style = MaterialTheme.typography.bodyMedium)
 
-                                AssistChip(
-                                    onClick = { },
-                                    label = {
-                                        Text(text = "13+", style = MaterialTheme.typography.bodySmall)
-                                    },
-                                    modifier = modifier.requiredHeight(30.dp)
-                                )
+                            OutlinedButton(
+                                onClick = { },
+                                modifier = modifier.requiredHeight(30.dp)
+                            ) {
+                                Text(text = "13+", style = MaterialTheme.typography.bodySmall)
+                            }
 
-                                AssistChip(
-                                    onClick = { /*TODO*/ },
-                                    label = {
-                                        Text(text = "United States",  style = MaterialTheme.typography.bodySmall)
-                                    },
-                                    modifier = modifier.requiredHeight(30.dp))
+                            OutlinedButton(
+                                onClick = { /*TODO*/ },
+                                modifier = modifier.requiredHeight(30.dp)) {
+                                Text(text = "United States",  style = MaterialTheme.typography.bodySmall)
+                            }
 
-                                AssistChip(
-                                    onClick = { /*TODO*/ },
-                                    label = {
-                                        Text(text = "Subtitle",  style = MaterialTheme.typography.bodySmall)
-                                    },
-                                    modifier = modifier.requiredHeight(30.dp))
+                            OutlinedButton(
+                                onClick = { /*TODO*/ },
+                                modifier = modifier.requiredHeight(30.dp)) {
+                                Text(text = "Subtitle",  style = MaterialTheme.typography.bodySmall)
                             }
                         }
 

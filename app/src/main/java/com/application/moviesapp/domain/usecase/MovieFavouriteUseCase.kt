@@ -1,39 +1,31 @@
 package com.application.moviesapp.domain.usecase
 
+import androidx.paging.PagingData
+import androidx.paging.map
 import com.application.moviesapp.data.common.Resource
+import com.application.moviesapp.data.mappers.toMovie
 import com.application.moviesapp.data.mappers.toMovies
 import com.application.moviesapp.data.repository.MoviesRepository
 import com.application.moviesapp.domain.model.MovieFavourite
+import com.application.moviesapp.domain.model.MovieNowPlaying
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import timber.log.Timber
 import javax.inject.Inject
 
 interface MovieFavouriteUseCase {
-    suspend operator fun invoke(): Resource<List<MovieFavourite>>
+    operator fun invoke(): Flow<PagingData<MovieFavourite>>
 }
 
-class GetMovieFavouriteInteractor @Inject constructor(private val moviesRepository: MoviesRepository): MovieFavouriteUseCase {
+class GetMovieFavouriteInteractor @Inject constructor(private val repository: MoviesRepository): MovieFavouriteUseCase {
 
     private companion object {
         const val TAG = "GetMovieFavouriteInteractor"
     }
 
-    override suspend fun invoke(): Resource<List<MovieFavourite>> {
-        return try {
-            val response = moviesRepository.getMovieFavourite()
-
-            if (response.isSuccessful) {
-                val favourite = response.body()?.toMovies() ?: listOf()
-                Timber.tag(TAG).d(favourite.toString())
-                Resource.Success(favourite)
-            } else {
-                Timber.tag(TAG).e("${response.code()} -> ${response.errorBody()}")
-                Resource.Failure(Throwable())
-            }
-
-        } catch (throwable: Throwable) {
-            Timber.tag(TAG).e(throwable)
-            Resource.Failure(throwable)
+    override fun invoke(): Flow<PagingData<MovieFavourite>> = repository.getFavouriteMoviesPagingFlow().map {
+        it.map { movie ->
+            movie.toMovie()
         }
-
     }
 }

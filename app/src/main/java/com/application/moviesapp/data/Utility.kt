@@ -5,3 +5,4 @@ enum class SORT_BY(val title: String) {
     LATEST_RELEASE("primary_release_date.desc"),
     VOTE_AVERAGE("vote_average.desc")
 }
+

@@ -1,6 +1,6 @@
 package com.application.moviesapp.data.mappers
 
-import com.application.moviesapp.data.api.response.MovieFavouriteDto
+import com.application.moviesapp.data.remote.MovieFavouriteDto
 import com.application.moviesapp.data.api.response.MovieStateDto
 import com.application.moviesapp.data.api.response.MovieTrailerDto
 import com.application.moviesapp.data.local.entity.MovieNowPlayingEntity
