@@ -1,3 +1,6 @@
+## About the project
+![movie_github_screenshot](https://github.com/sheikh-20/MoviesApp/assets/121604647/40864c04-6488-4a51-86ae-dc88d8ac2483)
+
 # Movies App
 Movies App is a TMDb mobile app that list movies and series, shows their details, you can even watch trailers, save movies to list for watch later 
 
