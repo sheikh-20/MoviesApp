@@ -39,6 +39,8 @@ fun DetailScreenApp(modifier: Modifier = Modifier,
     val bookmarkUiState by viewModel.movieStateResponse.collectAsState()
     val downloaderUiState by viewModel.downloaderUiState.collectAsState()
 
+    val tvSeriesEpisodesUiState by viewModel.tvSeriesEpisodesResponse.collectAsState()
+
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
@@ -61,7 +63,9 @@ fun DetailScreenApp(modifier: Modifier = Modifier,
             bookmarkUiState = bookmarkUiState,
             onTrailerClick = viewModel::getVideoInfo,
             downloaderUiState = downloaderUiState,
-            onTrailerDownloadClick = viewModel::videoDownload
+            onTrailerDownloadClick = viewModel::videoDownload,
+            tvSeriesEpisodesUIState = tvSeriesEpisodesUiState,
+            onTvSeriesEpisode = viewModel::getTvSeriesEpisodes
             )
     }
 }

@@ -10,12 +10,14 @@ import com.application.moviesapp.domain.model.MovieTrailerWithYoutube
 import com.application.moviesapp.domain.model.MoviesDetail
 import com.application.moviesapp.domain.model.Stream
 import com.application.moviesapp.domain.model.TvSeriesDetail
+import com.application.moviesapp.domain.model.TvSeriesEpisodes
 import com.application.moviesapp.domain.model.TvSeriesTrailerWithYoutube
 import com.application.moviesapp.domain.usecase.MovieDetailsUseCase
 import com.application.moviesapp.domain.usecase.MovieStateUseCase
 import com.application.moviesapp.domain.usecase.MovieTrailerUseCase
 import com.application.moviesapp.domain.usecase.MovieUpdateFavouriteInteractor
 import com.application.moviesapp.domain.usecase.TvSeriesDetailsUseCase
+import com.application.moviesapp.domain.usecase.TvSeriesEpisodesUseCase
 import com.application.moviesapp.domain.usecase.TvSeriesTrailerUseCase
 import com.application.moviesapp.domain.usecase.worker.DownloadUseCase
 import com.application.moviesapp.domain.usecase.worker.VideoInfoUseCase
@@ -53,7 +55,8 @@ class DetailsViewModel @Inject constructor(private val useCase: MovieDetailsUseC
                                            private val updateMovieFavouriteUseCase: MovieUpdateFavouriteInteractor,
                                            private val getMovieStateUseCase: MovieStateUseCase,
                                            private val videoInfoUseCase: VideoInfoUseCase,
-                                           private val downloadUseCase: DownloadUseCase): ViewModel() {
+                                           private val downloadUseCase: DownloadUseCase,
+                                           private val tvSeriesEpisodesUseCase: TvSeriesEpisodesUseCase): ViewModel() {
 
     private companion object {
         const val TAG = "DetailsViewModel"
@@ -76,6 +79,11 @@ class DetailsViewModel @Inject constructor(private val useCase: MovieDetailsUseC
     private var _movieStateResponse = MutableStateFlow<Resource<MovieState>>(Resource.Loading)
     val movieStateResponse get() = _movieStateResponse.asStateFlow()
 
+
+    private var _tvSeriesEpisodesResponse = MutableStateFlow<Resource<TvSeriesEpisodes>>(Resource.Loading)
+    val tvSeriesEpisodesResponse: StateFlow<Resource<TvSeriesEpisodes>> get() = _tvSeriesEpisodesResponse
+
+
     fun getMovieDetail(movieId: Int) = viewModelScope.launch {
         _movieDetailResponse.value = useCase(movieId)
         Timber.tag(TAG).d(movieDetailResponse.value.toString())
@@ -93,6 +101,11 @@ class DetailsViewModel @Inject constructor(private val useCase: MovieDetailsUseC
     fun getTvSeriesTrailer(seriesId: Int) = viewModelScope.launch {
         _tvSeriesTrailerResponse.value = tvSeriesTrailerUseCase(seriesId)
         Timber.tag(TAG).d(tvSeriesTrailerResponse.value.toString())
+    }
+
+    fun getTvSeriesEpisodes(seriesId: Int, seasonNumber: Int = 1) = viewModelScope.launch {
+        _tvSeriesEpisodesResponse.value = tvSeriesEpisodesUseCase(seriesId, seasonNumber)
+        Timber.tag(TAG).d(tvSeriesEpisodesResponse.value.toString())
     }
 
     fun updateMovieFavourite(mediaType: String, mediaId: Int, isFavorite: Boolean) = viewModelScope.launch {

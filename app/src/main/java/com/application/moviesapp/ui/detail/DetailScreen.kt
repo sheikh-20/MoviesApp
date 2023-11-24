@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -28,10 +29,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.rounded.ArrowForwardIos
 import androidx.compose.material.icons.rounded.Bookmark
 import androidx.compose.material.icons.rounded.BookmarkBorder
+import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.PlayCircle
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Share
@@ -52,6 +55,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -89,6 +93,7 @@ import com.application.moviesapp.domain.model.MovieTrailerWithYoutube
 import com.application.moviesapp.domain.model.MoviesDetail
 import com.application.moviesapp.domain.model.Stream
 import com.application.moviesapp.domain.model.TvSeriesDetail
+import com.application.moviesapp.domain.model.TvSeriesEpisodes
 import com.application.moviesapp.domain.model.TvSeriesTrailerWithYoutube
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.utility.toImageUrl
@@ -102,7 +107,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 private const val TAG = "DetailScreen"
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun DetailScreen(modifier: Modifier = Modifier,
                  movieUIState: Resource<MoviesDetail> = Resource.Loading,
@@ -115,7 +120,10 @@ fun DetailScreen(modifier: Modifier = Modifier,
                  bookmarkUiState: Resource<MovieState> = Resource.Loading,
                  onTrailerClick: (String) -> Unit = { _ -> },
                  downloaderUiState: DownloadUiState = DownloadUiState.Default,
-                 onTrailerDownloadClick: (String, Stream, Stream, MovieDownloadEntity) -> Unit = { _, _, _, _ -> }
+                 onTrailerDownloadClick: (String, Stream, Stream, MovieDownloadEntity) -> Unit = { _, _, _, _ -> },
+                 tvSeriesEpisodesUIState: Resource<TvSeriesEpisodes> = Resource.Loading,
+                 onTvSeriesEpisode: (Int, Int) -> Unit = { _, _ -> }
+
 ) {
 
     val coroutineScope = rememberCoroutineScope()
@@ -213,7 +221,8 @@ fun DetailScreen(modifier: Modifier = Modifier,
                         }
 
                         Row(modifier = modifier
-                            .fillMaxWidth().horizontalScroll(scrollState)
+                            .fillMaxWidth()
+                            .horizontalScroll(scrollState)
                             .padding(horizontal = 16.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -508,7 +517,8 @@ fun DetailScreen(modifier: Modifier = Modifier,
                         }
 
                         Row(modifier = modifier
-                            .fillMaxWidth().horizontalScroll(scrollState)
+                            .fillMaxWidth()
+                            .horizontalScroll(scrollState)
                             .padding(horizontal = 16.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -663,6 +673,81 @@ fun DetailScreen(modifier: Modifier = Modifier,
                                     }
                                 }
                             }
+                        }
+
+                        Row(modifier = modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween) {
+                            Text(text = "Episodes",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold)
+
+                            Row {
+                                Text(text = "Season ${tvSeriesUIState.data.seasons?.get(0)?.seasonNumber}",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.primary)
+                                Icon(imageVector = Icons.Rounded.ExpandMore,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary)
+                            }
+                        }
+
+                        LaunchedEffect(key1 = null) {
+                            onTvSeriesEpisode(tvSeriesUIState.data.id ?: 0, 1)
+                        }
+
+                        when (tvSeriesEpisodesUIState) {
+                            is Resource.Loading -> {
+                                CircularProgressIndicator(modifier = modifier
+                                    .fillMaxWidth()
+                                    .wrapContentWidth(align = Alignment.CenterHorizontally))
+                            }
+                            is Resource.Success -> {
+                                LazyRow(modifier = modifier.fillMaxWidth(),
+                                    contentPadding = PaddingValues(horizontal = 16.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+
+                                    items(count = tvSeriesEpisodesUIState.data.episodes?.size ?: 0) { index ->
+                                        Card(onClick = { },
+                                            shape = RoundedCornerShape(10),
+                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
+                                        ) {
+                                            Card(
+                                                modifier = modifier.size(height = 100.dp, width = 140.dp),
+                                                shape = RoundedCornerShape(20)
+                                            ) {
+                                                Box(contentAlignment = Alignment.Center) {
+                                                    AsyncImage(
+                                                        model = ImageRequest.Builder(context = LocalContext.current)
+                                                            .data(tvSeriesEpisodesUIState.data.episodes?.get(index)?.stillPath?.toImageUrl ?: "")
+                                                            .crossfade(true)
+                                                            .build(),
+                                                        placeholder = painterResource(id = R.drawable.ic_image_placeholder),
+                                                        contentDescription = null,
+                                                        modifier = modifier
+                                                            .fillMaxSize(),
+                                                        contentScale = ContentScale.Crop
+                                                    )
+                                                    Icon(
+                                                        imageVector = Icons.Rounded.PlayCircle,
+                                                        contentDescription = null,
+                                                        tint = Color.White
+                                                    )
+
+                                                    Text(
+                                                        text = "Episode ${tvSeriesEpisodesUIState.data.episodes?.get(index)?.episodeNumber}",
+                                                        modifier = modifier.fillMaxSize().wrapContentSize(align = Alignment.BottomStart).padding(10.dp),
+                                                        style = MaterialTheme.typography.bodyMedium
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            is Resource.Failure -> { Text(text = "Failure") }
                         }
 
                         TabRow(selectedTabIndex = pager.currentPage) {
