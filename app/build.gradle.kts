@@ -76,6 +76,7 @@ android {
 
         }
         release {
+
             isDebuggable = false
             isMinifyEnabled = false
             proguardFiles(

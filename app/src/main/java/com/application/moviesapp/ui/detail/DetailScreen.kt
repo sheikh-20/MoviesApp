@@ -2,6 +2,7 @@ package com.application.moviesapp.ui.detail
 
 import android.app.Activity
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -122,8 +123,8 @@ fun DetailScreen(modifier: Modifier = Modifier,
                  downloaderUiState: DownloadUiState = DownloadUiState.Default,
                  onTrailerDownloadClick: (String, Stream, Stream, MovieDownloadEntity) -> Unit = { _, _, _, _ -> },
                  tvSeriesEpisodesUIState: Resource<TvSeriesEpisodes> = Resource.Loading,
-                 onTvSeriesEpisode: (Int, Int) -> Unit = { _, _ -> }
-
+                 onTvSeriesEpisode: (Int, Int) -> Unit = { _, _ -> },
+                 onSeasonClick: () -> Unit = {  }
 ) {
 
     val coroutineScope = rememberCoroutineScope()
@@ -682,10 +683,10 @@ fun DetailScreen(modifier: Modifier = Modifier,
                             horizontalArrangement = Arrangement.SpaceBetween) {
                             Text(text = "Episodes",
                                 style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.SemiBold)
+                                fontWeight = FontWeight.Bold)
 
-                            Row {
-                                Text(text = "Season ${tvSeriesUIState.data.seasons?.get(0)?.seasonNumber}",
+                            Row(modifier = modifier.clickable(onClick = onSeasonClick)) {
+                                Text(text = "Season ${tvSeriesUIState.data.seasons?.get(0)?.seasonNumber?.inc()}",
                                     style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.primary)
                                 Icon(imageVector = Icons.Rounded.ExpandMore,
@@ -695,7 +696,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                         }
 
                         LaunchedEffect(key1 = null) {
-                            onTvSeriesEpisode(tvSeriesUIState.data.id ?: 0, 1)
+                            onTvSeriesEpisode(tvSeriesUIState.data.id ?: 0, 0)
                         }
 
                         when (tvSeriesEpisodesUIState) {
