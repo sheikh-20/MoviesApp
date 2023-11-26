@@ -696,7 +696,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                         }
 
                         LaunchedEffect(key1 = null) {
-                            onTvSeriesEpisode(tvSeriesUIState.data.id ?: 0, 0)
+                            onTvSeriesEpisode(tvSeriesUIState.data.id ?: 0, 1)
                         }
 
                         when (tvSeriesEpisodesUIState) {

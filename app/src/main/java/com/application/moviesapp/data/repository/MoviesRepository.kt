@@ -94,7 +94,7 @@ interface MoviesRepository {
 
     suspend fun getTvSeriesNowPlayingList(): Response<TvSeriesNowPlayingDto>
 
-    suspend fun getTvSeriesEpisodes(seriesId: Int, seasonNumber: Int = 0): Response<TvSeriesEpisodesDto>
+    suspend fun getTvSeriesEpisodes(seriesId: Int, seasonNumber: Int = 1): Response<TvSeriesEpisodesDto>
 }
 
 @OptIn(ExperimentalPagingApi::class)

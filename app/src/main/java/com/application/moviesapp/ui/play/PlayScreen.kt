@@ -76,7 +76,12 @@ fun PlayScreen(modifier: Modifier = Modifier,
                onPlayOrPause: () -> Unit = { },
                playerUIState: PlayerUIState = PlayerUIState(),
                onScreenTouch: () -> Unit = {},
-               onSeekTo: (Float) -> Unit = { }
+               onSeekTo: (Float) -> Unit = { },
+               onSeekForward: () -> Unit = {  },
+               onSeekBackward: () -> Unit = {  },
+               onNextVideo: () -> Unit = {  },
+               onPreviousVideo: () -> Unit = { },
+               videoTitle: String = ""
 ) {
 
     val context = LocalContext.current
@@ -104,6 +109,7 @@ fun PlayScreen(modifier: Modifier = Modifier,
 
 
     Box(modifier = modifier.fillMaxSize()) {
+
         AndroidView(
             factory = { context ->
 
@@ -122,14 +128,17 @@ fun PlayScreen(modifier: Modifier = Modifier,
 
         if (playerUIState.onScreenTouch) {
             CustomPlayerUI(
-                videoTitle = (context as Activity).intent.getStringExtra(PlayActivity.VIDEO_TITLE)
-                    ?: "",
+                videoTitle = videoTitle,
                 player = player,
                 onPlayOrPause = onPlayOrPause,
                 playerUIState = playerUIState,
                 onSeekTo = onSeekTo,
                 onFullScreenModeClicked = { fullScreenMode = it },
-                isFullScreen = fullScreenMode
+                isFullScreen = fullScreenMode,
+                onSeekForward = onSeekForward,
+                onSeekBackward = onSeekBackward,
+                onNextVideo = onNextVideo,
+                onPreviousVideo = onPreviousVideo
             )
         }
     }
@@ -144,7 +153,11 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
                            playerUIState: PlayerUIState = PlayerUIState(),
                            onSeekTo: (Float) -> Unit = { },
                            onFullScreenModeClicked: (Boolean) -> Unit = { },
-                           isFullScreen: Boolean = false) {
+                           isFullScreen: Boolean = false,
+                           onSeekForward: () -> Unit = {  },
+                           onSeekBackward: () -> Unit = {  },
+                           onNextVideo: () -> Unit = {  },
+                           onPreviousVideo: () -> Unit = {  }) {
 
     val context = LocalContext.current
 
@@ -241,14 +254,14 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)) {
 
 
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = onSeekBackward) {
                         Icon(imageVector = Icons.Rounded.Replay10,
                             contentDescription = null,
                             modifier = modifier.size(30.dp), tint = MaterialTheme.colorScheme.onPrimary)
                     }
 
 
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = onPreviousVideo) {
                         Icon(imageVector = Icons.Rounded.SkipPrevious,
                              contentDescription = null,
                             modifier = modifier.size(36.dp), tint = MaterialTheme.colorScheme.onPrimary)
@@ -268,14 +281,14 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
                     }
 
 
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = onNextVideo) {
                         Icon(imageVector = Icons.Rounded.SkipNext,
                             contentDescription = null,
                             modifier = modifier.size(36.dp), tint = MaterialTheme.colorScheme.onPrimary)
                     }
 
 
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = onSeekForward) {
                         Icon(imageVector = Icons.Rounded.Forward10,
                             contentDescription = null,
                             modifier = modifier.size(30.dp), tint = MaterialTheme.colorScheme.onPrimary)

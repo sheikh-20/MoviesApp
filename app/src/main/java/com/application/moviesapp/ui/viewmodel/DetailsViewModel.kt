@@ -103,7 +103,7 @@ class DetailsViewModel @Inject constructor(private val useCase: MovieDetailsUseC
         Timber.tag(TAG).d(tvSeriesTrailerResponse.value.toString())
     }
 
-    fun getTvSeriesEpisodes(seriesId: Int, seasonNumber: Int = 0) = viewModelScope.launch {
+    fun getTvSeriesEpisodes(seriesId: Int, seasonNumber: Int = 1) = viewModelScope.launch {
         _tvSeriesEpisodesResponse.value = tvSeriesEpisodesUseCase(seriesId, seasonNumber)
         Timber.tag(TAG).d(tvSeriesEpisodesResponse.value.toString())
     }

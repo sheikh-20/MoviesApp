@@ -79,7 +79,7 @@ interface MoviesApi {
     suspend fun getTvSeriesDetailsCast(@Path("series_id") seriesId: Int, @Query("language") language: String = "en-US"): Response<TvSeriesDetailsCastDto>
 
     @GET("/3/tv/{series_id}/season/{season_number}")
-    suspend fun getTvSeriesEpisodes(@Path("series_id") seriesId: Int, @Path("season_number") seasonNumber: Int = 0, @Query("language") language: String = "en-US",): Response<TvSeriesEpisodesDto>
+    suspend fun getTvSeriesEpisodes(@Path("series_id") seriesId: Int, @Path("season_number") seasonNumber: Int = 1, @Query("language") language: String = "en-US",): Response<TvSeriesEpisodesDto>
 
     @GET("/3/movie/{movie_id}/videos")
     suspend fun getMovieTrailer(@Path("movie_id") movieId: Int): Response<MovieTrailerDto>
