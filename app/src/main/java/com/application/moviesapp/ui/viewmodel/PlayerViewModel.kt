@@ -20,6 +20,7 @@ data class MovieDownload(
 data class PlayerUIState(
     val isPlaying: Boolean = true,
     val onScreenTouch: Boolean = true,
+    val isLockMode: Boolean = false,
     val currentTime: Long = 0L,
     val totalDuration: Long = 0L,
     val bufferedPercentage: Int = 0,
@@ -59,6 +60,12 @@ class PlayerViewModel @Inject constructor(val player: Player): ViewModel() {
     fun onScreenTouch() {
         _playerUIState.update {
             it.copy(onScreenTouch = it.onScreenTouch.not())
+        }
+    }
+
+    fun onLockMode() {
+        _playerUIState.update {
+            it.copy(isLockMode = it.isLockMode.not())
         }
     }
 
