@@ -83,7 +83,8 @@ fun PlayScreen(modifier: Modifier = Modifier,
                onSeekBackward: () -> Unit = {  },
                onNextVideo: () -> Unit = {  },
                onPreviousVideo: () -> Unit = { },
-               videoTitle: String = ""
+               videoTitle: String = "",
+               onDownloadClick: () -> Unit = {  }
 ) {
 
     val context = LocalContext.current
@@ -141,7 +142,8 @@ fun PlayScreen(modifier: Modifier = Modifier,
                     onSeekBackward = onSeekBackward,
                     onNextVideo = onNextVideo,
                     onPreviousVideo = onPreviousVideo,
-                    onLockModeClick = onLockModeClick
+                    onLockModeClick = onLockModeClick,
+                    onDownloadClick = onDownloadClick
                 )
         }
     }
@@ -161,7 +163,8 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
                            onSeekBackward: () -> Unit = {  },
                            onNextVideo: () -> Unit = {  },
                            onPreviousVideo: () -> Unit = {  },
-                           onLockModeClick: () -> Unit = {  }) {
+                           onLockModeClick: () -> Unit = {  },
+                           onDownloadClick: () -> Unit = {  }) {
 
     val context = LocalContext.current
 
@@ -313,7 +316,7 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
                     Row(verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)) {
 
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(onClick = onDownloadClick) {
                             Icon(imageVector = Icons.Outlined.FileDownload,
                                 contentDescription = null,
                                 modifier = modifier.size(24.dp), tint = MaterialTheme.colorScheme.onPrimary)

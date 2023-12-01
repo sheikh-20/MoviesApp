@@ -251,7 +251,18 @@ fun HomeApp(modifier: Modifier = Modifier,
 
     Scaffold(
         topBar = {
-            HomeTopAppbar(navController = navController, exploreViewModel = exploreViewModel, exploreHideTopAppBar = exploreHideTopAppBar, mylistHideTopAppBar = myListHideTopAppBar, downloadHideTopAppBar = downloadHideTopAppBar, onFilterClick = { showBottomSheet = BottomSheet.Filter }, search = searchUiState.search)
+            HomeTopAppbar(
+                navController = navController,
+                exploreViewModel = exploreViewModel,
+                exploreHideTopAppBar = exploreHideTopAppBar,
+                mylistHideTopAppBar = myListHideTopAppBar,
+                downloadHideTopAppBar = downloadHideTopAppBar,
+                onFilterClick = { showBottomSheet = BottomSheet.Filter },
+                search = searchUiState.search,
+                onHomeSearchClick = {
+                    navController.popBackStack()
+                    navController.navigate(BottomNavigationScreens.Explore.route)
+                })
         },
         bottomBar = {
             HomeBottomBarNavigation(navController)
@@ -671,7 +682,8 @@ private fun HomeTopAppbar(navController: NavHostController,
                           mylistHideTopAppBar: Boolean,
                           downloadHideTopAppBar: Boolean,
                           onFilterClick: () -> Unit = {},
-                          search: String = ""
+                          search: String = "",
+                          onHomeSearchClick: () -> Unit = {  }
                           ) {
 
     val context = LocalContext.current
@@ -802,7 +814,7 @@ private fun HomeTopAppbar(navController: NavHostController,
                     }
                 },
                 actions = {
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = onHomeSearchClick) {
                         Icon(imageVector = Icons.Rounded.Search, contentDescription = null, tint = Color.White)
                     }
 

@@ -1,6 +1,7 @@
 package com.application.moviesapp.ui.play
 
 import android.app.Activity
+import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
@@ -29,6 +30,7 @@ import com.application.moviesapp.ui.viewmodel.PlayerUIState
 import com.application.moviesapp.ui.viewmodel.PlayerViewModel
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import java.io.File
 
 @Composable
 fun PlayScreenApp(modifier: Modifier = Modifier,
@@ -68,6 +70,15 @@ fun PlayScreenApp(modifier: Modifier = Modifier,
             onPreviousVideo = {
                               playerViewModel.onPreviousVideo(context, downloadUIState.data)
             },
-            videoTitle = playerUIState.movieDownload.title)
+            videoTitle = playerUIState.movieDownload.title,
+            onDownloadClick = {
+                playerViewModel.saveMediaToStorage(
+                    context = context,
+                    filePath = File(context.filesDir, "/output/${playerUIState.movieDownload.filePath}").path,
+                    isVideo = true,
+                    fileName = playerUIState.movieDownload.title
+                )
+                Toast.makeText(context, "Video Downloaded", Toast.LENGTH_SHORT).show()
+            })
     }
 }
