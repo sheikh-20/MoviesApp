@@ -17,7 +17,9 @@ import com.application.moviesapp.data.api.response.MovieStateDto
 import com.application.moviesapp.data.api.response.MovieTopRatedResponse
 import com.application.moviesapp.data.api.response.MovieTrailerDto
 import com.application.moviesapp.data.api.response.MovieUpdateFavouriteDto
+import com.application.moviesapp.data.api.response.TvSeriesDetailsCastDto
 import com.application.moviesapp.data.api.response.TvSeriesDetailsDto
+import com.application.moviesapp.data.api.response.TvSeriesEpisodesDto
 import com.application.moviesapp.data.api.response.TvSeriesNowPlayingDto
 import com.application.moviesapp.data.api.response.TvSeriesTrailerDto
 import com.application.moviesapp.data.local.MoviesDatabase
@@ -68,6 +70,8 @@ interface MoviesRepository {
 
     suspend fun getMovieDetailsCast(movieId: Int): Response<MovieDetailsCastDto>
 
+    suspend fun getTvSeriesDetailsCast(seriesId: Int): Response<TvSeriesDetailsCastDto>
+
     suspend fun getMovieTrailer(movieId: Int): Response<MovieTrailerDto>
 
     suspend fun getTvSeriesTrailer(seriesId: Int): Response<TvSeriesTrailerDto>
@@ -89,6 +93,8 @@ interface MoviesRepository {
     suspend fun getMovieNowPlayingList(page: Int = 1): Response<MovieNowPlayingDto>
 
     suspend fun getTvSeriesNowPlayingList(): Response<TvSeriesNowPlayingDto>
+
+    suspend fun getTvSeriesEpisodes(seriesId: Int, seasonNumber: Int = 1): Response<TvSeriesEpisodesDto>
 }
 
 @OptIn(ExperimentalPagingApi::class)
@@ -151,6 +157,8 @@ class MoviesRepositoryImpl @Inject constructor(private val movies: MoviesApi,
 
     override suspend fun getMovieDetailsCast(movieId: Int): Response<MovieDetailsCastDto> = movies.getMovieDetailsCast(movieId)
 
+    override suspend fun getTvSeriesDetailsCast(seriesId: Int): Response<TvSeriesDetailsCastDto> = movies.getTvSeriesDetailsCast(seriesId)
+
     override suspend fun getMovieTrailer(movieId: Int): Response<MovieTrailerDto> = movies.getMovieTrailer(movieId)
 
     override suspend fun getTvSeriesTrailer(seriesId: Int): Response<TvSeriesTrailerDto> = movies.getTvSeriesTrailer(seriesId)
@@ -172,4 +180,6 @@ class MoviesRepositoryImpl @Inject constructor(private val movies: MoviesApi,
     override suspend fun getMovieNowPlayingList(page: Int): Response<MovieNowPlayingDto> = movies.getNowPlayingMovieList(page = page)
 
     override suspend fun getTvSeriesNowPlayingList(): Response<TvSeriesNowPlayingDto> = movies.getNowPlayingSeriesList()
+
+    override suspend fun getTvSeriesEpisodes(seriesId: Int, seasonNumber: Int): Response<TvSeriesEpisodesDto> = movies.getTvSeriesEpisodes(seriesId = seriesId, seasonNumber = seasonNumber)
 }

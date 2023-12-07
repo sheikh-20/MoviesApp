@@ -1,6 +1,7 @@
 package com.application.moviesapp.ui.play
 
 import android.app.Activity
+import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
@@ -23,14 +24,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.Player
+import com.application.moviesapp.ui.viewmodel.DownloadViewModel
+import com.application.moviesapp.ui.viewmodel.DownloadsUiState
 import com.application.moviesapp.ui.viewmodel.PlayerUIState
 import com.application.moviesapp.ui.viewmodel.PlayerViewModel
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import java.io.File
 
 @Composable
 fun PlayScreenApp(modifier: Modifier = Modifier,
-                  playerViewModel: PlayerViewModel = hiltViewModel()) {
+                  playerViewModel: PlayerViewModel = hiltViewModel(),
+                  downloadViewModel: DownloadViewModel = hiltViewModel()) {
 
     val context = LocalContext.current
     val systemUiController: SystemUiController = rememberSystemUiController()
@@ -40,9 +45,10 @@ fun PlayScreenApp(modifier: Modifier = Modifier,
     systemUiController.isSystemBarsVisible = false
 
     val playerUIState: PlayerUIState by playerViewModel.playerUIState.collectAsState()
+    val downloadUIState: DownloadsUiState by downloadViewModel.readAllDownload().collectAsState()
 
     LaunchedEffect(key1 = null) {
-        playerViewModel.playVideo(context, (context as Activity).intent.getStringExtra(PlayActivity.FILE_PATH) ?: return@LaunchedEffect)
+        playerViewModel.playVideo(context, (context as Activity).intent.getStringExtra(PlayActivity.VIDEO_TITLE) ?: return@LaunchedEffect ,(context as Activity).intent.getStringExtra(PlayActivity.FILE_PATH) ?: return@LaunchedEffect)
     }
 
     Scaffold(
@@ -54,6 +60,25 @@ fun PlayScreenApp(modifier: Modifier = Modifier,
             onPlayOrPause = playerViewModel::playOrPauseVideo,
             playerUIState = playerUIState,
             onScreenTouch = playerViewModel::onScreenTouch,
-            onSeekTo = playerViewModel::onSeekTo)
+            onLockModeClick = playerViewModel::onLockMode,
+            onSeekTo = playerViewModel::onSeekTo,
+            onSeekForward = playerViewModel::onSeekForward,
+            onSeekBackward = playerViewModel::onSeekBackward,
+            onNextVideo = {
+                          playerViewModel.onNextVideo(context, downloadUIState.data)
+            },
+            onPreviousVideo = {
+                              playerViewModel.onPreviousVideo(context, downloadUIState.data)
+            },
+            videoTitle = playerUIState.movieDownload.title,
+            onDownloadClick = {
+                playerViewModel.saveMediaToStorage(
+                    context = context,
+                    filePath = File(context.filesDir, "/output/${playerUIState.movieDownload.filePath}").path,
+                    isVideo = true,
+                    fileName = playerUIState.movieDownload.title
+                )
+                Toast.makeText(context, "Video Downloaded", Toast.LENGTH_SHORT).show()
+            })
     }
 }

@@ -1,6 +1,9 @@
 package com.application.moviesapp.ui.home
 
+import android.Manifest
 import android.app.Activity
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -59,6 +62,9 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -120,11 +126,14 @@ import com.application.moviesapp.ui.viewmodel.ExploreViewModel
 import com.application.moviesapp.ui.viewmodel.HomeViewModel
 import com.application.moviesapp.ui.viewmodel.MyListViewModel
 import com.application.moviesapp.ui.viewmodel.ProfileViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import kotlinx.coroutines.launch
 import java.io.File
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun HomeApp(modifier: Modifier = Modifier,
             navController: NavHostController = rememberNavController(),
@@ -132,7 +141,8 @@ fun HomeApp(modifier: Modifier = Modifier,
             exploreViewModel: ExploreViewModel = hiltViewModel(),
             myListViewModel: MyListViewModel = hiltViewModel(),
             profileViewModel: ProfileViewModel = hiltViewModel(),
-            downloadViewModel: DownloadViewModel = hiltViewModel()) {
+            downloadViewModel: DownloadViewModel = hiltViewModel(),
+) {
 
     val searchUiState by exploreViewModel.searchInputUiState.collectAsState()
     val sortAndFilterUiState by exploreViewModel.sortAndFilterUiState.collectAsState()
@@ -163,6 +173,37 @@ fun HomeApp(modifier: Modifier = Modifier,
     var downloadEntity by remember { mutableStateOf(MovieDownloadEntity(backdropPath = "", title = "", runtime = "", filePath = "")) }
 
     val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val permissionState = rememberMultiplePermissionsState(permissions = listOf(Manifest.permission.POST_NOTIFICATIONS))
+
+    permissionState.permissions.forEach {
+        when (it.permission) {
+            Manifest.permission.POST_NOTIFICATIONS -> {
+                when {
+                    it.hasPermission -> {
+//                                        coroutineScope.launch {
+//                                            snackbarHostState.showSnackbar(message = "Notification permission granted!", duration = SnackbarDuration.Short)
+//                                        }
+                    }
+                    it.shouldShowRationale -> {
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar(message = "Notification permission is needed", duration = SnackbarDuration.Long)
+                        }
+                    }
+                    it.hasPermission.not() && it.shouldShowRationale.not() -> {
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar(message = "Notification permission was permanently denied, You can enable it on app settings!", duration = SnackbarDuration.Long)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        permissionState.launchMultiplePermissionRequest()
+    }
 
     when (showBottomSheet) {
         BottomSheet.Default -> { }
@@ -251,11 +292,23 @@ fun HomeApp(modifier: Modifier = Modifier,
 
     Scaffold(
         topBar = {
-            HomeTopAppbar(navController = navController, exploreViewModel = exploreViewModel, exploreHideTopAppBar = exploreHideTopAppBar, mylistHideTopAppBar = myListHideTopAppBar, downloadHideTopAppBar = downloadHideTopAppBar, onFilterClick = { showBottomSheet = BottomSheet.Filter }, search = searchUiState.search)
+            HomeTopAppbar(
+                navController = navController,
+                exploreViewModel = exploreViewModel,
+                exploreHideTopAppBar = exploreHideTopAppBar,
+                mylistHideTopAppBar = myListHideTopAppBar,
+                downloadHideTopAppBar = downloadHideTopAppBar,
+                onFilterClick = { showBottomSheet = BottomSheet.Filter },
+                search = searchUiState.search,
+                onHomeSearchClick = {
+                    navController.popBackStack()
+                    navController.navigate(BottomNavigationScreens.Explore.route)
+                })
         },
         bottomBar = {
             HomeBottomBarNavigation(navController)
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
         NavHost(
             navController = navController, startDestination = BottomNavigationScreens.Home.route) {
@@ -615,7 +668,10 @@ private fun BottomSheetContentDownloadDelete(modifier: Modifier = Modifier, onNe
                 }
             }
 
-            Column(modifier = modifier.weight(1f).requiredHeight(100.dp).padding(vertical = 8.dp),
+            Column(modifier = modifier
+                .weight(1f)
+                .requiredHeight(100.dp)
+                .padding(vertical = 8.dp),
                 verticalArrangement = Arrangement.SpaceBetween) {
                 Text(
                     text = movieDownloadEntity?.title ?: "",
@@ -671,7 +727,8 @@ private fun HomeTopAppbar(navController: NavHostController,
                           mylistHideTopAppBar: Boolean,
                           downloadHideTopAppBar: Boolean,
                           onFilterClick: () -> Unit = {},
-                          search: String = ""
+                          search: String = "",
+                          onHomeSearchClick: () -> Unit = {  }
                           ) {
 
     val context = LocalContext.current
@@ -802,7 +859,7 @@ private fun HomeTopAppbar(navController: NavHostController,
                     }
                 },
                 actions = {
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = onHomeSearchClick) {
                         Icon(imageVector = Icons.Rounded.Search, contentDescription = null, tint = Color.White)
                     }
 

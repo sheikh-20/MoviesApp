@@ -27,6 +27,7 @@ import androidx.compose.material.icons.rounded.Forward10
 import androidx.compose.material.icons.rounded.Fullscreen
 import androidx.compose.material.icons.rounded.FullscreenExit
 import androidx.compose.material.icons.rounded.KeyboardVoice
+import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.LockOpen
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Pause
@@ -76,7 +77,14 @@ fun PlayScreen(modifier: Modifier = Modifier,
                onPlayOrPause: () -> Unit = { },
                playerUIState: PlayerUIState = PlayerUIState(),
                onScreenTouch: () -> Unit = {},
-               onSeekTo: (Float) -> Unit = { }
+               onLockModeClick: () -> Unit = { },
+               onSeekTo: (Float) -> Unit = { },
+               onSeekForward: () -> Unit = {  },
+               onSeekBackward: () -> Unit = {  },
+               onNextVideo: () -> Unit = {  },
+               onPreviousVideo: () -> Unit = { },
+               videoTitle: String = "",
+               onDownloadClick: () -> Unit = {  }
 ) {
 
     val context = LocalContext.current
@@ -104,6 +112,7 @@ fun PlayScreen(modifier: Modifier = Modifier,
 
 
     Box(modifier = modifier.fillMaxSize()) {
+
         AndroidView(
             factory = { context ->
 
@@ -121,16 +130,21 @@ fun PlayScreen(modifier: Modifier = Modifier,
         )
 
         if (playerUIState.onScreenTouch) {
-            CustomPlayerUI(
-                videoTitle = (context as Activity).intent.getStringExtra(PlayActivity.VIDEO_TITLE)
-                    ?: "",
-                player = player,
-                onPlayOrPause = onPlayOrPause,
-                playerUIState = playerUIState,
-                onSeekTo = onSeekTo,
-                onFullScreenModeClicked = { fullScreenMode = it },
-                isFullScreen = fullScreenMode
-            )
+                CustomPlayerUI(
+                    videoTitle = videoTitle,
+                    player = player,
+                    onPlayOrPause = onPlayOrPause,
+                    playerUIState = playerUIState,
+                    onSeekTo = onSeekTo,
+                    onFullScreenModeClicked = { fullScreenMode = it },
+                    isFullScreen = fullScreenMode,
+                    onSeekForward = onSeekForward,
+                    onSeekBackward = onSeekBackward,
+                    onNextVideo = onNextVideo,
+                    onPreviousVideo = onPreviousVideo,
+                    onLockModeClick = onLockModeClick,
+                    onDownloadClick = onDownloadClick
+                )
         }
     }
 }
@@ -144,55 +158,62 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
                            playerUIState: PlayerUIState = PlayerUIState(),
                            onSeekTo: (Float) -> Unit = { },
                            onFullScreenModeClicked: (Boolean) -> Unit = { },
-                           isFullScreen: Boolean = false) {
+                           isFullScreen: Boolean = false,
+                           onSeekForward: () -> Unit = {  },
+                           onSeekBackward: () -> Unit = {  },
+                           onNextVideo: () -> Unit = {  },
+                           onPreviousVideo: () -> Unit = {  },
+                           onLockModeClick: () -> Unit = {  },
+                           onDownloadClick: () -> Unit = {  }) {
 
     val context = LocalContext.current
-
 
     Column(modifier = modifier
         .fillMaxSize()
         .padding(16.dp)) {
 
-        Row(modifier = modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        if (playerUIState.isLockMode.not()) {
+            Row(modifier = modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)) {
 
-            IconButton(onClick = { (context as Activity).finish() }) {
-                Icon(imageVector = Icons.Rounded.ArrowBack, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
-            }
+                IconButton(onClick = { (context as Activity).finish() }) {
+                    Icon(imageVector = Icons.Rounded.ArrowBack, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
+                }
 
-            Text(
-                text = videoTitle,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = modifier.weight(1f),
-                color = MaterialTheme.colorScheme.onPrimary
-            )
+                Text(
+                    text = videoTitle,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = modifier.weight(1f),
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
 
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Rounded.Speed, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
-            }
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(imageVector = Icons.Rounded.Speed, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
+                }
 
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Rounded.Timer, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
-            }
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(imageVector = Icons.Rounded.Timer, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
+                }
 
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Rounded.Subtitles, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
-            }
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(imageVector = Icons.Rounded.Subtitles, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
+                }
 
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Rounded.KeyboardVoice, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
-            }
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(imageVector = Icons.Rounded.KeyboardVoice, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
+                }
 
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Rounded.Cast, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
-            }
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(imageVector = Icons.Rounded.Cast, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
+                }
 
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Rounded.MoreVert, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(imageVector = Icons.Rounded.MoreVert, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
+                }
             }
         }
 
@@ -201,19 +222,21 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
         Column(modifier = modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally) {
 
-            Row(modifier = modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            if (playerUIState.isLockMode.not()) {
+                Row(modifier = modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)) {
 
-                Text(text = playerUIState.currentTime.formatMinSec(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimary)
+                    Text(text = playerUIState.currentTime.formatMinSec(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimary)
 
-                Slider(value = playerUIState.currentTime.toFloat(),
-                    onValueChange = { onSeekTo(it) },
-                    modifier = modifier.weight(1f),
-                    valueRange = 0f..playerUIState.totalDuration.toFloat(),
-                    colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.onSecondary))
+                    Slider(value = playerUIState.currentTime.toFloat(),
+                        onValueChange = { onSeekTo(it) },
+                        modifier = modifier.weight(1f),
+                        valueRange = 0f..playerUIState.totalDuration.toFloat(),
+                        colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.onSecondary))
 
-                Text(text = playerUIState.totalDuration.formatMinSec(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimary)
+                    Text(text = playerUIState.totalDuration.formatMinSec(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimary)
+                }
             }
 
             Row(modifier = modifier.fillMaxWidth(),
@@ -223,79 +246,86 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
                 Row(verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)) {
 
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(imageVector = Icons.Rounded.LockOpen,
+                    IconButton(onClick = onLockModeClick) {
+                        Icon(imageVector = if (playerUIState.isLockMode.not()) Icons.Rounded.LockOpen else Icons.Rounded.Lock,
                             contentDescription = null,
                             modifier = modifier.size(24.dp), tint = MaterialTheme.colorScheme.onPrimary)
                     }
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(imageVector = Icons.Rounded.VolumeUp,
-                            contentDescription = null,
-                            modifier = modifier.size(24.dp), tint = MaterialTheme.colorScheme.onPrimary)
-                    }
-                }
 
-                Spacer(modifier = modifier.weight(1f))
-
-                Row(verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-
-
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(imageVector = Icons.Rounded.Replay10,
-                            contentDescription = null,
-                            modifier = modifier.size(30.dp), tint = MaterialTheme.colorScheme.onPrimary)
-                    }
-
-
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(imageVector = Icons.Rounded.SkipPrevious,
-                             contentDescription = null,
-                            modifier = modifier.size(36.dp), tint = MaterialTheme.colorScheme.onPrimary)
-                    }
-
-
-                    IconButton(onClick = onPlayOrPause) {
-                        if (playerUIState.isPlaying) {
-                            Icon(imageVector = Icons.Rounded.Pause,
+                    if (playerUIState.isLockMode.not()) {
+                        IconButton(onClick = { /*TODO*/ }) {
+                            Icon(imageVector = Icons.Rounded.VolumeUp,
                                 contentDescription = null,
-                                modifier = modifier.size(80.dp), tint = MaterialTheme.colorScheme.onPrimary)
-                        } else {
-                            Icon(imageVector = Icons.Rounded.PlayArrow,
-                                contentDescription = null,
-                                modifier = modifier.size(80.dp), tint = MaterialTheme.colorScheme.onPrimary)
+                                modifier = modifier.size(24.dp), tint = MaterialTheme.colorScheme.onPrimary)
                         }
                     }
+                }
+
+                Spacer(modifier = modifier.weight(1f))
+
+                if (playerUIState.isLockMode.not()) {
+                    Row(verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)) {
 
 
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(imageVector = Icons.Rounded.SkipNext,
-                            contentDescription = null,
-                            modifier = modifier.size(36.dp), tint = MaterialTheme.colorScheme.onPrimary)
-                    }
+                        IconButton(onClick = onSeekBackward) {
+                            Icon(imageVector = Icons.Rounded.Replay10,
+                                contentDescription = null,
+                                modifier = modifier.size(30.dp), tint = MaterialTheme.colorScheme.onPrimary)
+                        }
 
 
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(imageVector = Icons.Rounded.Forward10,
-                            contentDescription = null,
-                            modifier = modifier.size(30.dp), tint = MaterialTheme.colorScheme.onPrimary)
+                        IconButton(onClick = onPreviousVideo) {
+                            Icon(imageVector = Icons.Rounded.SkipPrevious,
+                                contentDescription = null,
+                                modifier = modifier.size(36.dp), tint = MaterialTheme.colorScheme.onPrimary)
+                        }
+
+
+                        IconButton(onClick = onPlayOrPause) {
+                            if (playerUIState.isPlaying) {
+                                Icon(imageVector = Icons.Rounded.Pause,
+                                    contentDescription = null,
+                                    modifier = modifier.size(80.dp), tint = MaterialTheme.colorScheme.onPrimary)
+                            } else {
+                                Icon(imageVector = Icons.Rounded.PlayArrow,
+                                    contentDescription = null,
+                                    modifier = modifier.size(80.dp), tint = MaterialTheme.colorScheme.onPrimary)
+                            }
+                        }
+
+
+                        IconButton(onClick = onNextVideo) {
+                            Icon(imageVector = Icons.Rounded.SkipNext,
+                                contentDescription = null,
+                                modifier = modifier.size(36.dp), tint = MaterialTheme.colorScheme.onPrimary)
+                        }
+
+
+                        IconButton(onClick = onSeekForward) {
+                            Icon(imageVector = Icons.Rounded.Forward10,
+                                contentDescription = null,
+                                modifier = modifier.size(30.dp), tint = MaterialTheme.colorScheme.onPrimary)
+                        }
                     }
                 }
 
                 Spacer(modifier = modifier.weight(1f))
 
-                Row(verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                if (playerUIState.isLockMode.not()) {
+                    Row(verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)) {
 
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(imageVector = Icons.Outlined.FileDownload,
-                            contentDescription = null,
-                            modifier = modifier.size(24.dp), tint = MaterialTheme.colorScheme.onPrimary)
-                    }
-                    IconButton(onClick = { onFullScreenModeClicked(isFullScreen.not()) }) {
-                        Icon(imageVector = if (isFullScreen) Icons.Rounded.FullscreenExit else Icons.Rounded.Fullscreen,
-                            contentDescription = null,
-                            modifier = modifier.size(24.dp), tint = MaterialTheme.colorScheme.onPrimary)
+                        IconButton(onClick = onDownloadClick) {
+                            Icon(imageVector = Icons.Outlined.FileDownload,
+                                contentDescription = null,
+                                modifier = modifier.size(24.dp), tint = MaterialTheme.colorScheme.onPrimary)
+                        }
+                        IconButton(onClick = { onFullScreenModeClicked(isFullScreen.not()) }) {
+                            Icon(imageVector = if (isFullScreen) Icons.Rounded.FullscreenExit else Icons.Rounded.Fullscreen,
+                                contentDescription = null,
+                                modifier = modifier.size(24.dp), tint = MaterialTheme.colorScheme.onPrimary)
+                        }
                     }
                 }
             }

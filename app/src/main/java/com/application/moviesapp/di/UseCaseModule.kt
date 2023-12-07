@@ -28,6 +28,7 @@ import com.application.moviesapp.domain.usecase.GetMovieSearchInteractor
 import com.application.moviesapp.domain.usecase.GetMovieWithTvSeriesInteractor
 import com.application.moviesapp.domain.usecase.GetSettingsInteractor
 import com.application.moviesapp.domain.usecase.GetTvSeriesDetailsInteractor
+import com.application.moviesapp.domain.usecase.GetTvSeriesEpisodesUseCase
 import com.application.moviesapp.domain.usecase.GetTvSeriesGenreInteractor
 import com.application.moviesapp.domain.usecase.GetTvSeriesNowPlayingInteractor
 import com.application.moviesapp.domain.usecase.GetTvSeriesTrailerInteractor
@@ -51,6 +52,7 @@ import com.application.moviesapp.domain.usecase.SignInGoogleUseCase
 import com.application.moviesapp.domain.usecase.SignUpEmailInteractor
 import com.application.moviesapp.domain.usecase.SignUpEmailUseCase
 import com.application.moviesapp.domain.usecase.TvSeriesDetailsUseCase
+import com.application.moviesapp.domain.usecase.TvSeriesEpisodesUseCase
 import com.application.moviesapp.domain.usecase.TvSeriesGenreUseCase
 import com.application.moviesapp.domain.usecase.TvSeriesNowPlayingUseCase
 import com.application.moviesapp.domain.usecase.TvSeriesTrailerUseCase
@@ -233,6 +235,12 @@ class UseCaseModule {
     @Singleton
     fun providesMovieSearchUseCase(moviesRepository: MoviesRepository): MovieSearchUseCase {
         return GetMovieSearchInteractor(moviesRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesTvSeriesEpisodesUseCase(moviesRepository: MoviesRepository): TvSeriesEpisodesUseCase {
+        return GetTvSeriesEpisodesUseCase(moviesRepository)
     }
 }
 

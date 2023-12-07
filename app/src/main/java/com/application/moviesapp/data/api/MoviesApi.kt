@@ -13,7 +13,9 @@ import com.application.moviesapp.data.api.response.MovieStateDto
 import com.application.moviesapp.data.api.response.MovieTopRatedResponse
 import com.application.moviesapp.data.api.response.MovieTrailerDto
 import com.application.moviesapp.data.api.response.MovieUpdateFavouriteDto
+import com.application.moviesapp.data.api.response.TvSeriesDetailsCastDto
 import com.application.moviesapp.data.api.response.TvSeriesDetailsDto
+import com.application.moviesapp.data.api.response.TvSeriesEpisodesDto
 import com.application.moviesapp.data.api.response.TvSeriesNowPlayingDto
 import com.application.moviesapp.data.api.response.TvSeriesTrailerDto
 import com.application.moviesapp.data.remote.MovieNewReleasesDto
@@ -72,6 +74,12 @@ interface MoviesApi {
 
     @GET("/3/movie/{movie_id}/credits")
     suspend fun getMovieDetailsCast(@Path("movie_id") movieId: Int): Response<MovieDetailsCastDto>
+
+    @GET("/3/tv/{series_id}/aggregate_credits")
+    suspend fun getTvSeriesDetailsCast(@Path("series_id") seriesId: Int, @Query("language") language: String = "en-US"): Response<TvSeriesDetailsCastDto>
+
+    @GET("/3/tv/{series_id}/season/{season_number}")
+    suspend fun getTvSeriesEpisodes(@Path("series_id") seriesId: Int, @Path("season_number") seasonNumber: Int = 1, @Query("language") language: String = "en-US",): Response<TvSeriesEpisodesDto>
 
     @GET("/3/movie/{movie_id}/videos")
     suspend fun getMovieTrailer(@Path("movie_id") movieId: Int): Response<MovieTrailerDto>
