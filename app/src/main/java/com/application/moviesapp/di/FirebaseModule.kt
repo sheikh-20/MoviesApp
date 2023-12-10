@@ -3,6 +3,7 @@ package com.application.moviesapp.di
 import android.content.Context
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
 import dagger.Module
 import dagger.Provides
@@ -23,5 +24,9 @@ object FirebaseModule {
     @Singleton
     fun providesSignInClient(@ApplicationContext context: Context) = Identity.getSignInClient(context)
 
+
+    @Provides
+    @Singleton
+    fun providesFirebaseRealtimeDatabase() = FirebaseDatabase.getInstance()
 
 }
