@@ -3,6 +3,7 @@ package com.application.moviesapp.ui.home.download
 import android.app.Activity
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -174,7 +175,7 @@ private fun DownloadCard(modifier: Modifier = Modifier,
 
                 Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
 
-                    Card {
+                    Card(modifier = modifier.border(width = 1.dp, color = MaterialTheme.colorScheme.primary, shape = CardDefaults.shape)) {
                         Text(text = "${movie?.filePath?.getFileSize(context)} MB",
                             style = MaterialTheme.typography.bodySmall,
                             modifier = modifier.padding(8.dp),

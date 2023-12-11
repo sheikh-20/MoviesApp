@@ -1,6 +1,7 @@
 package com.application.moviesapp.di
 
 import com.application.moviesapp.data.python.WorkManagerRepository
+import com.application.moviesapp.data.repository.AccountSetupRepository
 import com.application.moviesapp.data.repository.AuthRepository
 import com.application.moviesapp.data.repository.MoviesRepository
 import com.application.moviesapp.data.repository.SettingsPreferenceRepository
@@ -179,8 +180,8 @@ class UseCaseModule {
 
     @Provides
     @Singleton
-    fun providesSetAccountSetupUseCase(userPreferenceRepository: UserPreferenceRepository): AccountSetupUseCase {
-        return GetAccountSetupInteractor(userPreferenceRepository)
+    fun providesSetAccountSetupUseCase(userPreferenceRepository: UserPreferenceRepository, accountSetupRepository: AccountSetupRepository): AccountSetupUseCase {
+        return GetAccountSetupInteractor(userPreferenceRepository, accountSetupRepository)
     }
 
     @Provides

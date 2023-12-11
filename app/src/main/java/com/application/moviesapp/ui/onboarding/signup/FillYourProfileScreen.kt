@@ -3,14 +3,22 @@ package com.application.moviesapp.ui.onboarding.signup
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsDraggedAsState
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -19,6 +27,8 @@ import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
@@ -54,8 +64,13 @@ fun FillYourProfileScreen(modifier: Modifier = Modifier, onContinueClick: (UserP
     var nickName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
+    var gender by remember { mutableStateOf("") }
 
     val focusManager = LocalFocusManager.current
+
+    var showGenderDropdown by remember { mutableStateOf(false) }
+
+    val interactionSource = remember { MutableInteractionSource() }
 
     Column(
         modifier = modifier
@@ -123,22 +138,44 @@ fun FillYourProfileScreen(modifier: Modifier = Modifier, onContinueClick: (UserP
                 keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
             )
 
-            OutlinedTextField(
-                value = "",
-                onValueChange = {},
-                label = { Text(text = "Gender") },
-                trailingIcon = { Icon(
-                    imageVector = Icons.Rounded.ArrowDropDown,
-                    contentDescription = null
-                ) },
-                modifier = modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(30),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Done,
-                    keyboardType = KeyboardType.Text
-                ),
-                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
-            )
+            Box {
+                OutlinedTextField(
+                    value = gender,
+                    onValueChange = {  },
+                    label = { Text(text = "Gender") },
+                    trailingIcon = { Icon(
+                        imageVector = Icons.Rounded.ArrowDropDown,
+                        contentDescription = null
+                    ) },
+                    modifier = modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(30),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Done,
+                        keyboardType = KeyboardType.Text
+                    ),
+                    keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+                    interactionSource = interactionSource
+                )
+
+                DropdownMenu(
+                    expanded = interactionSource.collectIsFocusedAsState().value,
+                    onDismissRequest = {  },
+                    modifier = modifier) {
+
+                    DropdownMenuItem(
+                        text = { Text(text = "Male") },
+                        onClick = {
+                            gender = "Male"
+                            focusManager.clearFocus()
+                        })
+                    DropdownMenuItem(
+                        text = { Text(text = "Female") },
+                        onClick = {
+                            gender = "Female"
+                            focusManager.clearFocus()
+                        })
+                }
+            }
         }
 
         Row(modifier = modifier.fillMaxWidth(),
@@ -147,7 +184,7 @@ fun FillYourProfileScreen(modifier: Modifier = Modifier, onContinueClick: (UserP
             OutlinedButton(onClick = { /*TODO*/ }, modifier = modifier.weight(1f)) {
                 Text(text = "Skip")
             }
-            Button(onClick = { onContinueClick(UserProfile(fullName, nickName, email, phoneNumber.toLongOrNull() ?: 0L, "")) }, modifier = modifier.weight(1f)) {
+            Button(onClick = { onContinueClick(UserProfile(fullName, nickName, email, phoneNumber.toLongOrNull() ?: 0L, gender)) }, modifier = modifier.weight(1f)) {
                 Text(text = "Continue")
             }
         }

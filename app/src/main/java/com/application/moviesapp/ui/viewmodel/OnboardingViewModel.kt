@@ -9,6 +9,7 @@ import com.application.moviesapp.data.api.response.MovieGenreResponse
 import com.application.moviesapp.data.common.Resource
 import com.application.moviesapp.data.repository.AuthRepository
 import com.application.moviesapp.data.repository.MoviesRepository
+import com.application.moviesapp.domain.model.Member
 import com.application.moviesapp.domain.model.MovieGenre
 import com.application.moviesapp.domain.model.MoviesDetail
 import com.application.moviesapp.domain.usecase.AccountSetupUseCase
@@ -93,7 +94,8 @@ class OnboardingViewModel @Inject constructor(private val movieGenresUseCase: Mo
 
     fun updateProfile(fullName: String, nickName: String, email: String, phoneNumber: Long, gender: String) = viewModelScope.launch(Dispatchers.IO) {
         try {
-            accountSetupUseCase.updateProfile(fullName, nickName, email, phoneNumber, gender)
+//            accountSetupUseCase.updateProfile(fullName, nickName, email, phoneNumber, gender)
+            accountSetupUseCase.updateInfo(auth.currentUser?.uid ?: return@launch, Member(fullName, nickName, email, phoneNumber.toString(), gender))
         } catch (exception: IOException) {
             Timber.tag(TAG).e(exception)
         }

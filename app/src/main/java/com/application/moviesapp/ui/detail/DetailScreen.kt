@@ -156,7 +156,9 @@ fun DetailScreen(modifier: Modifier = Modifier,
                 }
                 is Resource.Success -> {
 
-                    Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Column(modifier = modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         AsyncImage(model = ImageRequest.Builder(context = LocalContext.current)
                             .data(movieUIState.data.backdropPath?.toImageUrl ?: "")
                             .crossfade(true)
@@ -379,56 +381,56 @@ fun DetailScreen(modifier: Modifier = Modifier,
                             }
                         }
 
-                        TabRow(selectedTabIndex = pager.currentPage) {
-                            items.forEachIndexed { index, horizontalPagerContent ->
-                                Tab(selected = pager.currentPage == index,
-                                    onClick = { /*TODO*/ },
-                                    text = {
-                                        Text(text = items[index].title)
-                                    })
+                        Column(modifier = modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                            TabRow(selectedTabIndex = pager.currentPage) {
+                                items.forEachIndexed { index, horizontalPagerContent ->
+                                    Tab(selected = pager.currentPage == index,
+                                        onClick = { /*TODO*/ },
+                                        text = {
+                                            Text(text = items[index].title)
+                                        })
+                                }
                             }
-                        }
 
-                        HorizontalPager(count = items.size, state = pager, modifier = modifier
-                            .fillMaxWidth()
-                            .weight(1f)) { index ->
-                            when (index) {
-                                0 -> {
-                                    when(moviesTrailerUiState) {
-                                        is Resource.Loading -> { CircularProgressIndicator() }
-                                        is Resource.Failure -> { Text(text = "Failed!") }
-                                        is Resource.Success -> {
-                                            LazyColumn(
-                                                modifier = modifier.fillMaxSize(),
-                                                verticalArrangement = Arrangement.spacedBy(8.dp),
-                                                contentPadding = PaddingValues(horizontal = 16.dp)
-                                            ) {
-                                                items(moviesTrailerUiState.data) { trailer ->
-                                                    MovieTrailerCard(
-                                                        movieTrailerWithYoutube = trailer,
-                                                        onTrailerClick = onTrailerClick,
-                                                        downloaderUiState = downloaderUiState,
-                                                        onTrailerDownloadClick = onTrailerDownloadClick,
-                                                        movieDetail = movieUIState.data)
+                            HorizontalPager(count = items.size, state = pager, modifier = modifier.fillMaxWidth()) { index ->
+                                when (index) {
+                                    0 -> {
+                                        when(moviesTrailerUiState) {
+                                            is Resource.Loading -> { CircularProgressIndicator() }
+                                            is Resource.Failure -> { Text(text = "Failed!") }
+                                            is Resource.Success -> {
+                                                LazyColumn(
+                                                    modifier = modifier.fillMaxSize(),
+                                                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                                                    contentPadding = PaddingValues(horizontal = 16.dp)
+                                                ) {
+                                                    items(moviesTrailerUiState.data) { trailer ->
+                                                        MovieTrailerCard(
+                                                            movieTrailerWithYoutube = trailer,
+                                                            onTrailerClick = onTrailerClick,
+                                                            downloaderUiState = downloaderUiState,
+                                                            onTrailerDownloadClick = onTrailerDownloadClick,
+                                                            movieDetail = movieUIState.data)
+                                                    }
                                                 }
                                             }
                                         }
                                     }
-                                }
-                                1 -> {
-                                    LazyVerticalGrid(columns = GridCells.Fixed(2),
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                                        contentPadding = PaddingValues(horizontal = 16.dp),
-                                    ) {
+                                    1 -> {
+                                        LazyVerticalGrid(columns = GridCells.Fixed(2),
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                                            contentPadding = PaddingValues(horizontal = 16.dp),
+                                        ) {
 
-                                        items(moviesFlow.itemCount) { index ->
-                                            MovieImageCard(imageUrl = moviesFlow[index]?.posterPath ?: "", rating = moviesFlow[index]?.voteAverage.toString() ?: "", movieId = moviesFlow[index]?.id ?: 0)
+                                            items(moviesFlow.itemCount) { index ->
+                                                MovieImageCard(imageUrl = moviesFlow[index]?.posterPath ?: "", rating = moviesFlow[index]?.voteAverage.toString() ?: "", movieId = moviesFlow[index]?.id ?: 0)
+                                            }
                                         }
                                     }
-                                }
-                                2 -> {
-                                    Text(text = "Comments")
+                                    2 -> {
+                                        Text(text = "Comments")
+                                    }
                                 }
                             }
                         }
@@ -452,7 +454,9 @@ fun DetailScreen(modifier: Modifier = Modifier,
                 }
                 is Resource.Success -> {
 
-                    Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Column(modifier = modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         AsyncImage(model = ImageRequest.Builder(context = LocalContext.current)
                             .data(tvSeriesUIState.data.backdropPath?.toImageUrl ?: "")
                             .crossfade(true)
@@ -739,7 +743,10 @@ fun DetailScreen(modifier: Modifier = Modifier,
 
                                                     Text(
                                                         text = "Episode ${tvSeriesEpisodesUIState.data.episodes?.get(index)?.episodeNumber}",
-                                                        modifier = modifier.fillMaxSize().wrapContentSize(align = Alignment.BottomStart).padding(10.dp),
+                                                        modifier = modifier
+                                                            .fillMaxSize()
+                                                            .wrapContentSize(align = Alignment.BottomStart)
+                                                            .padding(10.dp),
                                                         style = MaterialTheme.typography.bodyMedium
                                                     )
                                                 }
@@ -751,56 +758,56 @@ fun DetailScreen(modifier: Modifier = Modifier,
                             is Resource.Failure -> { Text(text = "Failure") }
                         }
 
-                        TabRow(selectedTabIndex = pager.currentPage) {
-                            items.forEachIndexed { index, horizontalPagerContent ->
-                                Tab(selected = pager.currentPage == index,
-                                    onClick = { /*TODO*/ },
-                                    text = {
-                                        Text(text = items[index].title)
-                                    })
+                        Column(modifier = modifier.height(200.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                            TabRow(selectedTabIndex = pager.currentPage) {
+                                items.forEachIndexed { index, horizontalPagerContent ->
+                                    Tab(selected = pager.currentPage == index,
+                                        onClick = { /*TODO*/ },
+                                        text = {
+                                            Text(text = items[index].title)
+                                        })
+                                }
                             }
-                        }
 
-                        HorizontalPager(count = items.size, state = pager, modifier = modifier
-                            .fillMaxWidth()
-                            .weight(1f)) { index ->
-                            when (index) {
-                                0 -> {
-                                    when(tvSeriesTrailerUiState) {
-                                        is Resource.Loading -> { CircularProgressIndicator() }
-                                        is Resource.Failure -> { Text(text = "Failed!") }
-                                        is Resource.Success -> {
-                                            LazyColumn(
-                                                modifier = modifier.fillMaxSize(),
-                                                verticalArrangement = Arrangement.spacedBy(8.dp),
-                                                contentPadding = PaddingValues(horizontal = 16.dp)
-                                            ) {
-                                                items(tvSeriesTrailerUiState.data) { trailer ->
-                                                    TvSeriesTrailerCard(
-                                                        tvSeriesTrailerWithYoutube = trailer,
-                                                        onTrailerClick = onTrailerClick,
-                                                        downloaderUiState = downloaderUiState,
-                                                        onTrailerDownloadClick = onTrailerDownloadClick,
-                                                        tvSeriesDetail = tvSeriesUIState.data)
+                            HorizontalPager(count = items.size, state = pager, modifier = modifier.fillMaxWidth()) { index ->
+                                when (index) {
+                                    0 -> {
+                                        when(tvSeriesTrailerUiState) {
+                                            is Resource.Loading -> { CircularProgressIndicator() }
+                                            is Resource.Failure -> { Text(text = "Failed!") }
+                                            is Resource.Success -> {
+                                                LazyColumn(
+                                                    modifier = modifier.fillMaxSize(),
+                                                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                                                    contentPadding = PaddingValues(horizontal = 16.dp)
+                                                ) {
+                                                    items(tvSeriesTrailerUiState.data) { trailer ->
+                                                        TvSeriesTrailerCard(
+                                                            tvSeriesTrailerWithYoutube = trailer,
+                                                            onTrailerClick = onTrailerClick,
+                                                            downloaderUiState = downloaderUiState,
+                                                            onTrailerDownloadClick = onTrailerDownloadClick,
+                                                            tvSeriesDetail = tvSeriesUIState.data)
+                                                    }
                                                 }
                                             }
                                         }
                                     }
-                                }
-                                1 -> {
-                                    LazyVerticalGrid(columns = GridCells.Fixed(2),
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                                        contentPadding = PaddingValues(horizontal = 16.dp),
-                                    ) {
+                                    1 -> {
+                                        LazyVerticalGrid(columns = GridCells.Fixed(2),
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                                            contentPadding = PaddingValues(horizontal = 16.dp),
+                                        ) {
 
-                                        items(moviesFlow.itemCount) { index ->
-                                            MovieImageCard(imageUrl = moviesFlow[index]?.posterPath ?: "", rating = moviesFlow[index]?.voteAverage.toString() ?: "", movieId = moviesFlow[index]?.id ?: 0)
+                                            items(moviesFlow.itemCount) { index ->
+                                                MovieImageCard(imageUrl = moviesFlow[index]?.posterPath ?: "", rating = moviesFlow[index]?.voteAverage.toString() ?: "", movieId = moviesFlow[index]?.id ?: 0)
+                                            }
                                         }
                                     }
-                                }
-                                2 -> {
-                                    Text(text = "Comments")
+                                    2 -> {
+                                        Text(text = "Comments")
+                                    }
                                 }
                             }
                         }
