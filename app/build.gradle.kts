@@ -244,6 +244,9 @@ dependencies {
 
     //Permission
     implementation("com.google.accompanist:accompanist-permissions:0.21.1-beta")
+
+
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 }
 
 protobuf {

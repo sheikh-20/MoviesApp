@@ -38,6 +38,7 @@ import androidx.compose.material.icons.rounded.SkipPrevious
 import androidx.compose.material.icons.rounded.Speed
 import androidx.compose.material.icons.rounded.Subtitles
 import androidx.compose.material.icons.rounded.Timer
+import androidx.compose.material.icons.rounded.VolumeOff
 import androidx.compose.material.icons.rounded.VolumeUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -84,7 +85,9 @@ fun PlayScreen(modifier: Modifier = Modifier,
                onNextVideo: () -> Unit = {  },
                onPreviousVideo: () -> Unit = { },
                videoTitle: String = "",
-               onDownloadClick: () -> Unit = {  }
+               onDownloadClick: () -> Unit = {  },
+               onVolumeClick: () -> Unit = {  },
+               onPlaybackSpeedClick: () -> Unit = {  }
 ) {
 
     val context = LocalContext.current
@@ -143,7 +146,9 @@ fun PlayScreen(modifier: Modifier = Modifier,
                     onNextVideo = onNextVideo,
                     onPreviousVideo = onPreviousVideo,
                     onLockModeClick = onLockModeClick,
-                    onDownloadClick = onDownloadClick
+                    onDownloadClick = onDownloadClick,
+                    onVolumeClick = onVolumeClick,
+                    onPlaybackSpeedClick = onPlaybackSpeedClick
                 )
         }
     }
@@ -164,7 +169,9 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
                            onNextVideo: () -> Unit = {  },
                            onPreviousVideo: () -> Unit = {  },
                            onLockModeClick: () -> Unit = {  },
-                           onDownloadClick: () -> Unit = {  }) {
+                           onDownloadClick: () -> Unit = {  },
+                           onVolumeClick: () -> Unit = {  },
+                           onPlaybackSpeedClick: () -> Unit = {  }) {
 
     val context = LocalContext.current
 
@@ -191,7 +198,7 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
                     color = MaterialTheme.colorScheme.onPrimary
                 )
 
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = { onPlaybackSpeedClick() }) {
                     Icon(imageVector = Icons.Rounded.Speed, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
                 }
 
@@ -253,8 +260,8 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
                     }
 
                     if (playerUIState.isLockMode.not()) {
-                        IconButton(onClick = { /*TODO*/ }) {
-                            Icon(imageVector = Icons.Rounded.VolumeUp,
+                        IconButton(onClick = onVolumeClick) {
+                            Icon(imageVector = if (playerUIState.hasVolume) Icons.Rounded.VolumeUp else Icons.Rounded.VolumeOff,
                                 contentDescription = null,
                                 modifier = modifier.size(24.dp), tint = MaterialTheme.colorScheme.onPrimary)
                         }

@@ -32,7 +32,8 @@ data class PlayerUIState(
     val currentTime: Long = 0L,
     val totalDuration: Long = 0L,
     val bufferedPercentage: Int = 0,
-    val movieDownload: MovieDownload = MovieDownload()
+    val movieDownload: MovieDownload = MovieDownload(),
+    val hasVolume: Boolean = true
 )
 @HiltViewModel
 class PlayerViewModel @Inject constructor(val player: Player): ViewModel() {
@@ -141,6 +142,18 @@ class PlayerViewModel @Inject constructor(val player: Player): ViewModel() {
         onPlayerListener()
     }
 
+    fun onVolumeClick() {
+        _playerUIState.update {
+            it.copy(hasVolume = it.hasVolume.not())
+        }
+        if (playerUIState.value.hasVolume) {
+            player.volume = 1.0f
+        } else player.volume = 0f
+    }
+
+    fun onPlaybackChange(speed: Float) {
+        player.setPlaybackSpeed(speed)
+    }
 
     fun saveMediaToStorage(context: Context, filePath: String?, isVideo: Boolean, fileName: String) {
         filePath?.let {
