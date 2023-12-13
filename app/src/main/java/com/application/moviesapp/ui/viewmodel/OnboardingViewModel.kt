@@ -2,6 +2,7 @@ package com.application.moviesapp.ui.viewmodel
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.moviesapp.UserPreferences
@@ -26,11 +27,13 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -65,6 +68,9 @@ class OnboardingViewModel @Inject constructor(private val movieGenresUseCase: Mo
     val socialSignIn get() = _socialSignIn.asSharedFlow()
 
 
+    private var _profilePhotoUIState = MutableStateFlow<Resource<Uri>>(Resource.Loading)
+    val profilePhotoUIState get() = _profilePhotoUIState.asStateFlow()
+
     fun getMoviesGenreList() = viewModelScope.launch(Dispatchers.IO) {
         try {
             _movieGenreUiState.value = movieGenresUseCase()
@@ -96,6 +102,32 @@ class OnboardingViewModel @Inject constructor(private val movieGenresUseCase: Mo
         try {
 //            accountSetupUseCase.updateProfile(fullName, nickName, email, phoneNumber, gender)
             accountSetupUseCase.updateInfo(auth.currentUser?.uid ?: return@launch, Member(fullName, nickName, email, phoneNumber.toString(), gender))
+        } catch (exception: IOException) {
+            Timber.tag(TAG).e(exception)
+        }
+    }
+
+    fun uploadProfilePhoto(uri: Uri) = viewModelScope.launch {
+        try {
+            accountSetupUseCase.uploadProfilePhoto(auth.currentUser?.uid ?: return@launch, uri).collectLatest {
+                when (it) {
+                    is Resource.Loading -> {  }
+                    is Resource.Failure -> {  }
+                    is Resource.Success -> {
+                        getProfilePhoto()
+                    }
+                }
+            }
+        } catch (exception: IOException) {
+            Timber.tag(TAG).e(exception)
+        }
+    }
+
+    fun getProfilePhoto() = viewModelScope.launch {
+        try {
+            accountSetupUseCase.getPhoto(auth.currentUser?.uid ?: return@launch).collectLatest {
+                _profilePhotoUIState.value = it
+            }
         } catch (exception: IOException) {
             Timber.tag(TAG).e(exception)
         }

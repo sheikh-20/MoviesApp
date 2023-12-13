@@ -180,7 +180,8 @@ class UseCaseModule {
 
     @Provides
     @Singleton
-    fun providesSetAccountSetupUseCase(userPreferenceRepository: UserPreferenceRepository, accountSetupRepository: AccountSetupRepository): AccountSetupUseCase {
+    fun providesSetAccountSetupUseCase(userPreferenceRepository: UserPreferenceRepository,
+                                       accountSetupRepository: AccountSetupRepository): AccountSetupUseCase {
         return GetAccountSetupInteractor(userPreferenceRepository, accountSetupRepository)
     }
 
