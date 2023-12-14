@@ -125,6 +125,7 @@ import com.application.moviesapp.ui.viewmodel.ExploreUiState
 import com.application.moviesapp.ui.viewmodel.ExploreViewModel
 import com.application.moviesapp.ui.viewmodel.HomeViewModel
 import com.application.moviesapp.ui.viewmodel.MyListViewModel
+import com.application.moviesapp.ui.viewmodel.OnboardingViewModel
 import com.application.moviesapp.ui.viewmodel.ProfileViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -142,6 +143,7 @@ fun HomeApp(modifier: Modifier = Modifier,
             myListViewModel: MyListViewModel = hiltViewModel(),
             profileViewModel: ProfileViewModel = hiltViewModel(),
             downloadViewModel: DownloadViewModel = hiltViewModel(),
+            onboardingViewModel: OnboardingViewModel = hiltViewModel()
 ) {
 
     val searchUiState by exploreViewModel.searchInputUiState.collectAsState()
@@ -177,6 +179,8 @@ fun HomeApp(modifier: Modifier = Modifier,
 
     val permissionState = rememberMultiplePermissionsState(permissions = listOf(Manifest.permission.POST_NOTIFICATIONS))
 
+    val profileUIState by onboardingViewModel.profilePhotoUIState.collectAsState()
+
     permissionState.permissions.forEach {
         when (it.permission) {
             Manifest.permission.POST_NOTIFICATIONS -> {
@@ -203,6 +207,7 @@ fun HomeApp(modifier: Modifier = Modifier,
 
     LaunchedEffect(key1 = Unit) {
         permissionState.launchMultiplePermissionRequest()
+        onboardingViewModel.getProfilePhoto()
     }
 
     when (showBottomSheet) {
@@ -361,7 +366,9 @@ fun HomeApp(modifier: Modifier = Modifier,
                         showBottomSheet = BottomSheet.Logout
                     },
                     darkModeUiState = darkModeUiState,
-                    onModeClick = profileViewModel::updateMode)
+                    onModeClick = profileViewModel::updateMode,
+                    onProfileClick = onboardingViewModel::uploadProfilePhoto,
+                    profileUIState = profileUIState)
             }
         }
     }

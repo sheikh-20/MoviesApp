@@ -45,6 +45,8 @@ fun AccountSetupApp(modifier: Modifier = Modifier,
 
     val movieGenre by onboardingViewModel.readUserPreference.collectAsState()
 
+    val profileUIState by onboardingViewModel.profilePhotoUIState.collectAsState()
+
     Timber.tag(TAG).d(movieGenre.genreList.toString())
 
     Scaffold(
@@ -72,7 +74,9 @@ fun AccountSetupApp(modifier: Modifier = Modifier,
                     onContinueClick = {
                         onboardingViewModel.updateProfile(it.fullName, it.nickName, it.email, it.phoneNumber, it.gender)
                         navController.navigate(AccountSetupScreen.CreateNewPin.title)
-                    }
+                    },
+                    onProfileClick = onboardingViewModel::uploadProfilePhoto,
+                    profileUIState = profileUIState
                 )
             }
 

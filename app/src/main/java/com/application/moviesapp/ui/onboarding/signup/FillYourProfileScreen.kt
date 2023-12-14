@@ -1,6 +1,9 @@
 package com.application.moviesapp.ui.onboarding.signup
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -31,6 +34,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -46,19 +50,29 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.application.moviesapp.R
+import com.application.moviesapp.data.common.Resource
 import com.application.moviesapp.ui.accountsetup.UserProfile
 import com.application.moviesapp.ui.theme.MoviesAppTheme
+import com.application.moviesapp.ui.utility.toImageUrl
+import timber.log.Timber
 
+private const val TAG = "FillYourProfileScreen"
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FillYourProfileScreen(modifier: Modifier = Modifier, onContinueClick: (UserProfile) -> Unit = {  }) {
+fun FillYourProfileScreen(modifier: Modifier = Modifier,
+                          onContinueClick: (UserProfile) -> Unit = {  },
+                          onProfileClick: (Uri) -> Unit = { _ -> },
+                          profileUIState: Resource<Uri> = Resource.Loading) {
 
     var fullName by remember { mutableStateOf("") }
     var nickName by remember { mutableStateOf("") }
@@ -72,6 +86,13 @@ fun FillYourProfileScreen(modifier: Modifier = Modifier, onContinueClick: (UserP
 
     val interactionSource = remember { MutableInteractionSource() }
 
+    val getContent = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
+        it?.let { uri ->
+            Timber.tag(TAG).d(uri.toString())
+            onProfileClick(uri)
+        }
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -79,9 +100,36 @@ fun FillYourProfileScreen(modifier: Modifier = Modifier, onContinueClick: (UserP
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally) {
 
-        Image(imageVector = Icons.Outlined.AccountCircle,
-            contentDescription = null,
-            modifier = modifier.size(200.dp))
+        IconButton(onClick = { getContent.launch("image/*") }, modifier = modifier.size(200.dp)) {
+
+            when (profileUIState) {
+                is Resource.Loading -> {
+                    Icon(imageVector = Icons.Outlined.AccountCircle,
+                    contentDescription = null,
+                    modifier = modifier.size(200.dp))
+                }
+
+                is Resource.Failure -> {
+                    Icon(imageVector = Icons.Outlined.AccountCircle,
+                        contentDescription = null,
+                        modifier = modifier.size(200.dp))
+                }
+
+                is Resource.Success -> {
+                    AsyncImage(
+                        model = ImageRequest.Builder(context = LocalContext.current)
+                            .data(profileUIState.data)
+                            .crossfade(true)
+                            .build(),
+                        error = painterResource(id = R.drawable.ic_broken_image),
+                        placeholder = painterResource(id = R.drawable.ic_image_placeholder),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = modifier.size(200.dp),
+                    )
+                }
+            }
+        }
 
         Column(modifier = modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(8.dp)) {

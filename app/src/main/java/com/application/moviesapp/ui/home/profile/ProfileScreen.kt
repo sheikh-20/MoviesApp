@@ -1,6 +1,10 @@
 package com.application.moviesapp.ui.home.profile
 
+import android.app.Activity
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,6 +22,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.outlined.Info
@@ -47,17 +52,33 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.application.moviesapp.R
+import com.application.moviesapp.data.common.Resource
 import com.application.moviesapp.domain.model.SettingsPreference
+import com.application.moviesapp.ui.editprofile.EditProfileActivity
 import com.application.moviesapp.ui.signin.UserData
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.utility.toImageUrl
+import timber.log.Timber
 
+private const val TAG = "ProfileScreen"
 @Composable
 fun ProfileScreen(modifier: Modifier = Modifier,
                   uiState: UserData? = null,
                   onSignOutClick: () -> Unit = {},
                   darkModeUiState: SettingsPreference = SettingsPreference(false),
-                  onModeClick: (Boolean) -> Unit = {}) {
+                  onModeClick: (Boolean) -> Unit = {},
+                  onProfileClick: (Uri) -> Unit = { _ -> },
+                  profileUIState: Resource<Uri> = Resource.Loading) {
+
+    val context = LocalContext.current
+
+    val getContent = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
+        it?.let { uri ->
+            Timber.tag(TAG).d(uri.toString())
+            onProfileClick(uri)
+        }
+    }
+
     Column(modifier = modifier
         .fillMaxSize()
         .wrapContentSize(align = Alignment.Center)
@@ -71,18 +92,36 @@ fun ProfileScreen(modifier: Modifier = Modifier,
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally) {
 
-            AsyncImage(
-                model = ImageRequest.Builder(context = LocalContext.current)
-                    .data(uiState?.profilePictureUrl)
-                    .crossfade(true)
-                    .build(),
-                error = painterResource(id = R.drawable.ic_broken_image),
-                placeholder = painterResource(id = R.drawable.ic_image_placeholder),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = modifier
-                    .size(100.dp)
-                    .clip(RoundedCornerShape(50)))
+            IconButton(onClick = { getContent.launch("image/*") }, modifier = modifier.size(100.dp)) {
+
+                when (profileUIState) {
+                    is Resource.Loading -> {
+                        Icon(painterResource(id = R.drawable.ic_image_placeholder),
+                            contentDescription = null,
+                            modifier = modifier.size(100.dp))
+                    }
+
+                    is Resource.Failure -> {
+                        Icon(imageVector = Icons.Outlined.AccountCircle,
+                            contentDescription = null,
+                            modifier = modifier.size(100.dp))
+                    }
+
+                    is Resource.Success -> {
+                        AsyncImage(
+                            model = ImageRequest.Builder(context = LocalContext.current)
+                                .data(profileUIState.data)
+                                .crossfade(true)
+                                .build(),
+                            error = painterResource(id = R.drawable.ic_broken_image),
+                            placeholder = painterResource(id = R.drawable.ic_image_placeholder),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = modifier.size(100.dp),
+                        )
+                    }
+                }
+            }
             
             Text(text = uiState?.userName ?: "",
                 style = MaterialTheme.typography.headlineLarge,
@@ -100,7 +139,7 @@ fun ProfileScreen(modifier: Modifier = Modifier,
 
                 Text(text = "Edit Profile", modifier = modifier.weight(1f))
 
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = { EditProfileActivity.startActivity((context as Activity)) }) {
                     Icon(imageVector = Icons.Rounded.ArrowForwardIos, contentDescription = null)
                 }
             }
