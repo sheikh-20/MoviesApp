@@ -31,6 +31,8 @@ interface AccountSetupUseCase {
     fun uploadProfilePhoto(userId: String, uri: Uri): Flow<Resource<UploadTask.TaskSnapshot>>
 
     fun getPhoto(userId: String): Flow<Resource<Uri>>
+
+    fun getUserDetail(userId: String): Flow<Resource<Member>>
 }
 
 class GetAccountSetupInteractor @Inject constructor(private val repository: UserPreferenceRepository,
@@ -62,4 +64,6 @@ class GetAccountSetupInteractor @Inject constructor(private val repository: User
     override fun uploadProfilePhoto(userId: String, uri: Uri): Flow<Resource<UploadTask.TaskSnapshot>> = accountSetupRepository.uploadPhoto(userId, uri)
 
     override fun getPhoto(userId: String): Flow<Resource<Uri>> = accountSetupRepository.getPhoto(userId)
+
+    override fun getUserDetail(userId: String): Flow<Resource<Member>> = accountSetupRepository.getUserDetail(userId)
 }

@@ -71,6 +71,9 @@ class OnboardingViewModel @Inject constructor(private val movieGenresUseCase: Mo
     private var _profilePhotoUIState = MutableStateFlow<Resource<Uri>>(Resource.Loading)
     val profilePhotoUIState get() = _profilePhotoUIState.asStateFlow()
 
+    private var _profileUIState = MutableStateFlow<Resource<Member>>(Resource.Loading)
+    val profileUIState get() = _profileUIState.asStateFlow()
+
     fun getMoviesGenreList() = viewModelScope.launch(Dispatchers.IO) {
         try {
             _movieGenreUiState.value = movieGenresUseCase()
@@ -127,6 +130,16 @@ class OnboardingViewModel @Inject constructor(private val movieGenresUseCase: Mo
         try {
             accountSetupUseCase.getPhoto(auth.currentUser?.uid ?: return@launch).collectLatest {
                 _profilePhotoUIState.value = it
+            }
+        } catch (exception: IOException) {
+            Timber.tag(TAG).e(exception)
+        }
+    }
+
+    fun getProfile() = viewModelScope.launch {
+        try {
+            accountSetupUseCase.getUserDetail(auth.currentUser?.uid ?: return@launch).collectLatest {
+                _profileUIState.value = it
             }
         } catch (exception: IOException) {
             Timber.tag(TAG).e(exception)
