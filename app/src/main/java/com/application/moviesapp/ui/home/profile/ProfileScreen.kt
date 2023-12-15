@@ -54,7 +54,13 @@ import coil.request.ImageRequest
 import com.application.moviesapp.R
 import com.application.moviesapp.data.common.Resource
 import com.application.moviesapp.domain.model.SettingsPreference
+import com.application.moviesapp.ui.download.DownloadActivity
 import com.application.moviesapp.ui.editprofile.EditProfileActivity
+import com.application.moviesapp.ui.helpcenter.HelpCenterActivity
+import com.application.moviesapp.ui.language.LanguageActivity
+import com.application.moviesapp.ui.notification.NotificationActivity
+import com.application.moviesapp.ui.privacypolicy.PrivacyPolicyActivity
+import com.application.moviesapp.ui.security.SecurityActivity
 import com.application.moviesapp.ui.signin.UserData
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.utility.toImageUrl
@@ -151,7 +157,7 @@ fun ProfileScreen(modifier: Modifier = Modifier,
 
                 Text(text = "Notification", modifier = modifier.weight(1f))
 
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = { NotificationActivity.startActivity(context as Activity) }) {
                     Icon(imageVector = Icons.Rounded.ArrowForwardIos, contentDescription = null)
                 }
             }
@@ -163,7 +169,7 @@ fun ProfileScreen(modifier: Modifier = Modifier,
 
                 Text(text = "Download", modifier = modifier.weight(1f))
 
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = { DownloadActivity.startActivity(context as Activity) }) {
                     Icon(imageVector = Icons.Rounded.ArrowForwardIos, contentDescription = null)
                 }
             }
@@ -175,7 +181,7 @@ fun ProfileScreen(modifier: Modifier = Modifier,
 
                 Text(text = "Security", modifier = modifier.weight(1f))
 
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = { SecurityActivity.startActivity(context as Activity) }) {
                     Icon(imageVector = Icons.Rounded.ArrowForwardIos, contentDescription = null)
                 }
             }
@@ -187,7 +193,7 @@ fun ProfileScreen(modifier: Modifier = Modifier,
 
                 Text(text = "Language", modifier = modifier.weight(1f))
 
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = { LanguageActivity.startActivity(context as Activity) }) {
                     Icon(imageVector = Icons.Rounded.ArrowForwardIos, contentDescription = null)
                 }
             }
@@ -210,7 +216,7 @@ fun ProfileScreen(modifier: Modifier = Modifier,
 
                 Text(text = "Help Center", modifier = modifier.weight(1f))
 
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = { HelpCenterActivity.startActivity(context as Activity) }) {
                     Icon(imageVector = Icons.Rounded.ArrowForwardIos, contentDescription = null)
                 }
             }
@@ -223,7 +229,7 @@ fun ProfileScreen(modifier: Modifier = Modifier,
 
                 Text(text = "Privacy Policy", modifier = modifier.weight(1f))
 
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = { PrivacyPolicyActivity.startActivity(context as Activity) }) {
                     Icon(imageVector = Icons.Rounded.ArrowForwardIos, contentDescription = null)
                 }
             }
@@ -240,7 +246,6 @@ fun ProfileScreen(modifier: Modifier = Modifier,
                 }
             }
         }
-
     }
 }
 
