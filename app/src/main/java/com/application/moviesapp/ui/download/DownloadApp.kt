@@ -19,8 +19,8 @@ import androidx.compose.ui.platform.LocalContext
 fun DownloadApp(modifier: Modifier = Modifier) {
     Scaffold(
         topBar = { DownloadTopAppbar() }
-    ) {
-        DownloadTopAppbar()
+    ) { paddingValues ->
+        DownloadScreen(paddingValues = paddingValues)
     }
 }
 

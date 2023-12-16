@@ -19,8 +19,8 @@ import androidx.compose.ui.platform.LocalContext
 fun NotificationApp(modifier: Modifier = Modifier) {
     Scaffold(
         topBar = {  NotificationTopAppbar() }
-    ) {
-        NotificationScreen()
+    ) { paddingValues ->
+        NotificationScreen(paddingValues = paddingValues)
     }
 }
 
