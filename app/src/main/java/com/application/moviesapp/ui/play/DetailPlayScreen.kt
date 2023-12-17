@@ -1,14 +1,8 @@
 package com.application.moviesapp.ui.play
 
 import android.app.Activity
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import android.net.Uri
-import android.util.Log
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.TextView
-import android.widget.Toast
-import androidx.annotation.OptIn
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -49,9 +43,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -63,41 +55,18 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.common.util.UnstableApi
-import androidx.media3.common.util.Util
-import androidx.media3.datasource.DefaultDataSourceFactory
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.media3.ui.PlayerView
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.utility.formatMinSec
 import com.application.moviesapp.ui.viewmodel.PlayerUIState
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.collectLatest
-import timber.log.Timber
-import java.io.File
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 
-@OptIn(UnstableApi::class) @Composable
-fun PlayScreen(modifier: Modifier = Modifier,
-               player: Player? = null,
-               onPlayOrPause: () -> Unit = { },
-               playerUIState: PlayerUIState = PlayerUIState(),
-               onScreenTouch: () -> Unit = {},
-               onLockModeClick: () -> Unit = { },
-               onSeekTo: (Float) -> Unit = { },
-               onSeekForward: () -> Unit = {  },
-               onSeekBackward: () -> Unit = {  },
-               onNextVideo: () -> Unit = {  },
-               onPreviousVideo: () -> Unit = { },
-               videoTitle: String = "",
-               onDownloadClick: () -> Unit = {  },
-               onVolumeClick: () -> Unit = {  },
-               onPlaybackSpeedClick: () -> Unit = {  },
-) {
 
+@Composable
+fun DetailPlayScreen(modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
     var fullScreenMode by remember {
@@ -107,7 +76,7 @@ fun PlayScreen(modifier: Modifier = Modifier,
     val modifierOriginalScreen = modifier
         .fillMaxSize()
         .clickable(
-            onClick = onScreenTouch,
+            onClick = { },
             interactionSource = remember { MutableInteractionSource() },
             indication = null
         )
@@ -116,7 +85,7 @@ fun PlayScreen(modifier: Modifier = Modifier,
         .fillMaxSize()
         .aspectRatio(16 / 9f)
         .clickable(
-            onClick = onScreenTouch,
+            onClick = { },
             interactionSource = remember { MutableInteractionSource() },
             indication = null
         )
@@ -126,40 +95,21 @@ fun PlayScreen(modifier: Modifier = Modifier,
 
         AndroidView(
             factory = { context ->
-
-                PlayerView(context).also {
-                    it.player = player
-                    it.layoutParams =
-                        FrameLayout.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.MATCH_PARENT
-                        )
-                    it.useController = false
-                }
+                val view = YouTubePlayerView(context)
+                val fragment = view.addYouTubePlayerListener(
+                    object : AbstractYouTubePlayerListener() {
+                        override fun onReady(youTubePlayer: YouTubePlayer) {
+                            super.onReady(youTubePlayer)
+                            youTubePlayer.loadVideo((context as Activity).intent.getStringExtra(PlayActivity.VIDEO_ID) ?: "", 0f)
+                        }
+                    }
+                )
+                view
             },
-            update = {},
             modifier = if (fullScreenMode) modifierFullScreen else modifierOriginalScreen
         )
 
-        if (playerUIState.onScreenTouch) {
-                CustomPlayerUI(
-                    videoTitle = videoTitle,
-                    player = player,
-                    onPlayOrPause = onPlayOrPause,
-                    playerUIState = playerUIState,
-                    onSeekTo = onSeekTo,
-                    onFullScreenModeClicked = { fullScreenMode = it },
-                    isFullScreen = fullScreenMode,
-                    onSeekForward = onSeekForward,
-                    onSeekBackward = onSeekBackward,
-                    onNextVideo = onNextVideo,
-                    onPreviousVideo = onPreviousVideo,
-                    onLockModeClick = onLockModeClick,
-                    onDownloadClick = onDownloadClick,
-                    onVolumeClick = onVolumeClick,
-                    onPlaybackSpeedClick = onPlaybackSpeedClick,
-                )
-        }
+            CustomPlayerUI()
     }
 }
 
@@ -349,18 +299,16 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
     }
 }
 
-@Preview(showSystemUi = true, showBackground = true, )
 @Composable
-private fun PlayScreenLightThemePreview() {
+private fun DetailPlayLightThemePreview() {
     MoviesAppTheme(darkTheme = false) {
-        PlayScreen()
+        DetailPlayScreen()
     }
 }
 
-@Preview(showSystemUi = true, showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
-private fun PlayScreenDarkThemePreview() {
+private fun DetailPlayDarkThemePreview() {
     MoviesAppTheme(darkTheme = true) {
-        PlayScreen()
+        DetailPlayScreen()
     }
 }

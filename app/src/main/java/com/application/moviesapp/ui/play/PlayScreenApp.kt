@@ -54,6 +54,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.Player
 import com.application.moviesapp.ui.utility.toOneDecimal
 import com.application.moviesapp.ui.viewmodel.DownloadViewModel
@@ -78,7 +79,7 @@ fun PlayScreenApp(modifier: Modifier = Modifier,
     systemUiController.isNavigationBarVisible = false
     systemUiController.isSystemBarsVisible = false
 
-    val playerUIState: PlayerUIState by playerViewModel.playerUIState.collectAsState()
+    val playerUIState: PlayerUIState by playerViewModel.playerUIState.collectAsStateWithLifecycle()
     val downloadUIState: DownloadsUiState by downloadViewModel.readAllDownload().collectAsState()
 
     var drawerState by remember { mutableStateOf(DrawerValue.Closed) }
@@ -98,34 +99,45 @@ fun PlayScreenApp(modifier: Modifier = Modifier,
             val parentHeight = constraints.maxHeight.dp
 
             Box {
-                PlayScreen(
-                    modifier = modifier,
-                    player = playerViewModel.player,
-                    onPlayOrPause = playerViewModel::playOrPauseVideo,
-                    playerUIState = playerUIState,
-                    onScreenTouch = playerViewModel::onScreenTouch,
-                    onLockModeClick = playerViewModel::onLockMode,
-                    onSeekTo = playerViewModel::onSeekTo,
-                    onSeekForward = playerViewModel::onSeekForward,
-                    onSeekBackward = playerViewModel::onSeekBackward,
-                    onNextVideo = {
-                        playerViewModel.onNextVideo(context, downloadUIState.data)
-                    },
-                    onPreviousVideo = {
-                        playerViewModel.onPreviousVideo(context, downloadUIState.data)
-                    },
-                    videoTitle = playerUIState.movieDownload.title,
-                    onDownloadClick = {
-                        playerViewModel.saveMediaToStorage(
-                            context = context,
-                            filePath = File(context.filesDir, "/output/${playerUIState.movieDownload.filePath}").path,
-                            isVideo = true,
-                            fileName = playerUIState.movieDownload.title
+                when ((context as Activity).intent.getStringExtra(PlayActivity.FROM_SCREEN)) {
+                    Screen.Download.title -> {
+                        PlayScreen(
+                            modifier = modifier,
+                            player = playerViewModel.player,
+                            onPlayOrPause = playerViewModel::playOrPauseVideo,
+                            playerUIState = playerUIState,
+                            onScreenTouch = playerViewModel::onScreenTouch,
+                            onLockModeClick = playerViewModel::onLockMode,
+                            onSeekTo = playerViewModel::onSeekTo,
+                            onSeekForward = playerViewModel::onSeekForward,
+                            onSeekBackward = playerViewModel::onSeekBackward,
+                            onNextVideo = {
+                                playerViewModel.onNextVideo(context, downloadUIState.data)
+                            },
+                            onPreviousVideo = {
+                                playerViewModel.onPreviousVideo(context, downloadUIState.data)
+                            },
+                            videoTitle = playerUIState.movieDownload.title,
+                            onDownloadClick = {
+                                playerViewModel.saveMediaToStorage(
+                                    context = context,
+                                    filePath = File(context.filesDir, "/output/${playerUIState.movieDownload.filePath}").path,
+                                    isVideo = true,
+                                    fileName = playerUIState.movieDownload.title
+                                )
+                                Toast.makeText(context, "Video Downloaded", Toast.LENGTH_SHORT).show()
+                            },
+                            onVolumeClick = playerViewModel::onVolumeClick,
+                            onPlaybackSpeedClick = { drawerState = DrawerValue.Open },
+                            )
+                    }
+
+                    else -> {
+                        DetailPlayScreen(
+                            modifier = modifier,
                         )
-                        Toast.makeText(context, "Video Downloaded", Toast.LENGTH_SHORT).show()
-                    },
-                    onVolumeClick = playerViewModel::onVolumeClick,
-                    onPlaybackSpeedClick = { drawerState = DrawerValue.Open })
+                    }
+                }
                 
                 if (drawerState == DrawerValue.Open && playerUIState.onScreenTouch) {
                     SideSheet(modifier = modifier
@@ -179,7 +191,10 @@ private fun SideSheet(modifier: Modifier = Modifier,
                 valueRange = 0.1f .. 2f
                 )
 
-            Row(modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp).padding(start = 16.dp, end = maxWidth / 4.5f),
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
+                .padding(start = 16.dp, end = maxWidth / 4.5f),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween) {
 

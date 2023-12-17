@@ -5,17 +5,27 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import com.application.moviesapp.R
 import com.application.moviesapp.data.local.entity.MovieDownloadEntity
+import com.application.moviesapp.ui.utility.formatMinSec
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -38,10 +48,17 @@ data class PlayerUIState(
 @HiltViewModel
 class PlayerViewModel @Inject constructor(val player: Player): ViewModel() {
 
+    private companion object {
+        const val TAG = "PlayerViewModel"
+    }
+
     private var _playerUIState = MutableStateFlow(PlayerUIState())
     val playerUIState: StateFlow<PlayerUIState> get() = _playerUIState.asStateFlow()
 
-    
+
+    private val handler: Handler = Handler(Looper.getMainLooper())
+    private lateinit var runnable: Runnable
+
     fun playVideo(context: Context, videoTitle: String = "", filePath: String) {
         player.setMediaItem(MediaItem.fromUri(
             File(context.filesDir, "output/$filePath").toString()
@@ -50,6 +67,21 @@ class PlayerViewModel @Inject constructor(val player: Player): ViewModel() {
         _playerUIState.update {
             it.copy(isPlaying = true, movieDownload = MovieDownload(title = videoTitle, filePath = filePath))
         }
+
+        runnable = object : Runnable {
+            override fun run() {
+
+                _playerUIState.update {
+                    it.copy(
+                        totalDuration = player.duration.coerceAtLeast(0L),
+                        currentTime = player.currentPosition.coerceAtLeast(0L),
+                        bufferedPercentage = player.bufferedPercentage
+                    )
+                }
+                handler.postDelayed(this,500L)
+            }
+        }
+        runnable.run()
     }
 
     fun playOrPauseVideo() {
@@ -75,20 +107,6 @@ class PlayerViewModel @Inject constructor(val player: Player): ViewModel() {
     fun onLockMode() {
         _playerUIState.update {
             it.copy(isLockMode = it.isLockMode.not())
-        }
-    }
-
-    private fun onPlayerListener() = object : Player.Listener {
-        override fun onEvents(player: Player, events: Player.Events) {
-            super.onEvents(player, events)
-
-            _playerUIState.update {
-                it.copy(
-                    totalDuration = player.duration.coerceAtLeast(0L),
-                    currentTime = player.currentPosition.coerceAtLeast(0L),
-                    bufferedPercentage = player.bufferedPercentage
-                )
-            }
         }
     }
 
@@ -120,7 +138,7 @@ class PlayerViewModel @Inject constructor(val player: Player): ViewModel() {
         }
 
         playVideo(context = context, videoTitle = videos[nextIndex].title ?: "", filePath = videos[nextIndex].filePath ?: "")
-        onPlayerListener()
+//        onPlayerListener()
     }
 
     fun onPreviousVideo(context: Context, videos: List<MovieDownloadEntity>) {
@@ -139,7 +157,7 @@ class PlayerViewModel @Inject constructor(val player: Player): ViewModel() {
         }
 
         playVideo(context = context, videoTitle = videos[nextIndex].title ?: "", filePath = videos[nextIndex].filePath ?: "")
-        onPlayerListener()
+//        onPlayerListener()
     }
 
     fun onVolumeClick() {
@@ -217,10 +235,10 @@ class PlayerViewModel @Inject constructor(val player: Player): ViewModel() {
     override fun onCleared() {
         super.onCleared()
         player.release()
+        handler.removeCallbacks(runnable)
     }
 
     init {
         player.prepare()
-        player.addListener(onPlayerListener())
     }
 }

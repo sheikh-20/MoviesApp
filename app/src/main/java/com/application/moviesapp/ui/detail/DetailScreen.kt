@@ -96,6 +96,8 @@ import com.application.moviesapp.domain.model.Stream
 import com.application.moviesapp.domain.model.TvSeriesDetail
 import com.application.moviesapp.domain.model.TvSeriesEpisodes
 import com.application.moviesapp.domain.model.TvSeriesTrailerWithYoutube
+import com.application.moviesapp.ui.play.PlayActivity
+import com.application.moviesapp.ui.play.Screen
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.utility.toImageUrl
 import com.application.moviesapp.ui.utility.toOneDecimal
@@ -871,7 +873,10 @@ private fun MovieTrailerCard(modifier: Modifier = Modifier,
 
     val context = LocalContext.current
 
-    Card(onClick = { },
+    Card(onClick = {
+        PlayActivity.startActivity(activity = context as Activity, videoTitle = null, filePath = null, videoId = movieTrailerWithYoutube.id, fromScreen = Screen.Detail)
+
+    },
         shape = RoundedCornerShape(20),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
     ) {
@@ -949,7 +954,6 @@ private fun MovieTrailerCard(modifier: Modifier = Modifier,
             }
         }
     }
-
 }
 
 
@@ -966,7 +970,9 @@ private fun TvSeriesTrailerCard(modifier: Modifier = Modifier,
 
     val context = LocalContext.current
 
-    Card(onClick = { },
+    Card(onClick = {
+        PlayActivity.startActivity(activity = context as Activity, videoTitle = null, filePath = null, videoId = tvSeriesTrailerWithYoutube.id, fromScreen = Screen.Detail)
+    },
         shape = RoundedCornerShape(20),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
     ) {
@@ -1044,7 +1050,6 @@ private fun TvSeriesTrailerCard(modifier: Modifier = Modifier,
             }
         }
     }
-
 }
 
 @Composable
