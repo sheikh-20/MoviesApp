@@ -8,28 +8,28 @@ import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
-import android.util.Log
+import android.util.SparseArray
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
-import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import com.application.moviesapp.R
 import com.application.moviesapp.data.local.entity.MovieDownloadEntity
-import com.application.moviesapp.ui.utility.formatMinSec
+import com.maxrave.kotlinyoutubeextractor.State
+import com.maxrave.kotlinyoutubeextractor.VideoMeta
+import com.maxrave.kotlinyoutubeextractor.YTExtractor
+import com.maxrave.kotlinyoutubeextractor.YtFile
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import javax.inject.Inject
+
 
 data class MovieDownload(
     val title: String = "",
@@ -45,6 +45,11 @@ data class PlayerUIState(
     val movieDownload: MovieDownload = MovieDownload(),
     val hasVolume: Boolean = true
 )
+
+data class PlayerStreamUIState(
+    val title: String = "",
+    val isPlaying: Boolean = true,
+)
 @HiltViewModel
 class PlayerViewModel @Inject constructor(val player: Player): ViewModel() {
 
@@ -55,6 +60,8 @@ class PlayerViewModel @Inject constructor(val player: Player): ViewModel() {
     private var _playerUIState = MutableStateFlow(PlayerUIState())
     val playerUIState: StateFlow<PlayerUIState> get() = _playerUIState.asStateFlow()
 
+    private var _playerStreamUIState = MutableStateFlow(PlayerStreamUIState())
+    val playerStreamUIState: StateFlow<PlayerStreamUIState> get() = _playerStreamUIState.asStateFlow()
 
     private val handler: Handler = Handler(Looper.getMainLooper())
     private lateinit var runnable: Runnable
@@ -232,9 +239,36 @@ class PlayerViewModel @Inject constructor(val player: Player): ViewModel() {
         }
     }
 
+
+    fun getYoutubeUrl(videoId: String, context: Context) = viewModelScope.launch {
+        val yt = YTExtractor(con = context, CACHING = true, LOGGING = true, retryCount = 3)
+
+        var ytFiles: SparseArray<YtFile>? = null
+        var videoMeta: VideoMeta? = null
+
+        yt.extract(videoId)
+
+        if (yt.state == State.SUCCESS) {
+            ytFiles = yt.getYTFiles()
+            videoMeta = yt.getVideoMeta()
+
+            _playerStreamUIState.update {
+                it.copy(
+                    title = videoMeta?.title ?: "title",
+                    isPlaying = true
+                )
+            }
+
+            player.setMediaItem(MediaItem.fromUri(ytFiles?.get(22)?.url ?: ""))
+            player.play()
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         player.release()
+
+        runnable = Runnable {  }
         handler.removeCallbacks(runnable)
     }
 

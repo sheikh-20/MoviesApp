@@ -121,7 +121,6 @@ fun PlayScreen(modifier: Modifier = Modifier,
             indication = null
         )
 
-
     Box(modifier = modifier.fillMaxSize()) {
 
         AndroidView(

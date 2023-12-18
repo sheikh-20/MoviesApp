@@ -59,6 +59,7 @@ import androidx.media3.common.Player
 import com.application.moviesapp.ui.utility.toOneDecimal
 import com.application.moviesapp.ui.viewmodel.DownloadViewModel
 import com.application.moviesapp.ui.viewmodel.DownloadsUiState
+import com.application.moviesapp.ui.viewmodel.PlayerStreamUIState
 import com.application.moviesapp.ui.viewmodel.PlayerUIState
 import com.application.moviesapp.ui.viewmodel.PlayerViewModel
 import com.google.accompanist.systemuicontroller.SystemUiController
@@ -82,11 +83,20 @@ fun PlayScreenApp(modifier: Modifier = Modifier,
     val playerUIState: PlayerUIState by playerViewModel.playerUIState.collectAsStateWithLifecycle()
     val downloadUIState: DownloadsUiState by downloadViewModel.readAllDownload().collectAsState()
 
+    val playStreamUIState: PlayerStreamUIState by playerViewModel.playerStreamUIState.collectAsStateWithLifecycle()
+
     var drawerState by remember { mutableStateOf(DrawerValue.Closed) }
     var playbackSpeed by remember { mutableFloatStateOf(1.0f) }
 
     LaunchedEffect(key1 = null) {
-        playerViewModel.playVideo(context, (context as Activity).intent.getStringExtra(PlayActivity.VIDEO_TITLE) ?: return@LaunchedEffect ,(context as Activity).intent.getStringExtra(PlayActivity.FILE_PATH) ?: return@LaunchedEffect)
+        when ((context as Activity).intent.getStringExtra(PlayActivity.FROM_SCREEN)) {
+            Screen.Download.title -> {
+                playerViewModel.playVideo(context, (context as Activity).intent.getStringExtra(PlayActivity.VIDEO_TITLE) ?: return@LaunchedEffect ,(context as Activity).intent.getStringExtra(PlayActivity.FILE_PATH) ?: return@LaunchedEffect)
+            }
+            else -> {
+                playerViewModel.getYoutubeUrl(videoId = (context as Activity).intent.getStringExtra(PlayActivity.VIDEO_ID) ?: return@LaunchedEffect, context = context)
+            }
+        }
     }
 
     Scaffold(
@@ -135,6 +145,8 @@ fun PlayScreenApp(modifier: Modifier = Modifier,
                     else -> {
                         DetailPlayScreen(
                             modifier = modifier,
+                            player = playerViewModel.player,
+                            playerStreamUIState = playStreamUIState
                         )
                     }
                 }

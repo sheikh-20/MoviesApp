@@ -1,6 +1,7 @@
 package com.application.moviesapp.ui.play
 
 import android.app.Activity
+import android.content.Context
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.compose.foundation.clickable
@@ -43,6 +44,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,15 +61,23 @@ import androidx.media3.common.Player
 import androidx.media3.ui.PlayerView
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.utility.formatMinSec
+import com.application.moviesapp.ui.viewmodel.PlayerStreamUIState
 import com.application.moviesapp.ui.viewmodel.PlayerUIState
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.YouTubePlayerTracker
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 
 
 @Composable
-fun DetailPlayScreen(modifier: Modifier = Modifier) {
+fun DetailPlayScreen(modifier: Modifier = Modifier,
+                     player: Player? = null,
+                     playerStreamUIState: PlayerStreamUIState = PlayerStreamUIState()
+) {
     val context = LocalContext.current
+
+    val tracker = YouTubePlayerTracker()
 
     var fullScreenMode by remember {
         mutableStateOf(false)
@@ -95,21 +105,26 @@ fun DetailPlayScreen(modifier: Modifier = Modifier) {
 
         AndroidView(
             factory = { context ->
-                val view = YouTubePlayerView(context)
-                val fragment = view.addYouTubePlayerListener(
-                    object : AbstractYouTubePlayerListener() {
-                        override fun onReady(youTubePlayer: YouTubePlayer) {
-                            super.onReady(youTubePlayer)
-                            youTubePlayer.loadVideo((context as Activity).intent.getStringExtra(PlayActivity.VIDEO_ID) ?: "", 0f)
-                        }
-                    }
-                )
-                view
+                PlayerView(context).also {
+                    it.player = player
+                    it.layoutParams =
+                        FrameLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT
+                        )
+                    it.useController = false
+                }
             },
+            update = {},
             modifier = if (fullScreenMode) modifierFullScreen else modifierOriginalScreen
         )
 
-            CustomPlayerUI()
+            CustomPlayerUI(
+                onFullScreenModeClicked = { fullScreenMode = it },
+                isFullScreen = fullScreenMode,
+                totalDuration = tracker.videoDuration,
+                videoTitle = playerStreamUIState.title
+            )
     }
 }
 
@@ -130,7 +145,8 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
                            onLockModeClick: () -> Unit = {  },
                            onDownloadClick: () -> Unit = {  },
                            onVolumeClick: () -> Unit = {  },
-                           onPlaybackSpeedClick: () -> Unit = {  }) {
+                           onPlaybackSpeedClick: () -> Unit = {  },
+                           totalDuration: Float = 0f) {
 
     val context = LocalContext.current
 
@@ -201,7 +217,7 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
                         valueRange = 0f..playerUIState.totalDuration.toFloat(),
                         colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.onSecondary))
 
-                    Text(text = playerUIState.totalDuration.formatMinSec(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimary)
+                    Text(text = totalDuration.toString(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimary)
                 }
             }
 

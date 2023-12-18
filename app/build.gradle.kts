@@ -41,7 +41,7 @@ android {
 
     defaultConfig {
         applicationId = "com.application.moviesapp"
-        minSdk = 21
+        minSdk = 24
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
@@ -255,6 +255,9 @@ dependencies {
 
     //Youtube Player
     implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:12.1.0")
+
+    //Youtube Url Extracter
+    implementation("com.github.maxrave-dev:kotlin-youtubeExtractor:0.0.7")
 }
 
 protobuf {
