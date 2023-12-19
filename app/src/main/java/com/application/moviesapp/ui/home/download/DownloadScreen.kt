@@ -58,6 +58,7 @@ import coil.request.ImageRequest
 import com.application.moviesapp.R
 import com.application.moviesapp.data.local.entity.MovieDownloadEntity
 import com.application.moviesapp.ui.play.PlayActivity
+import com.application.moviesapp.ui.play.Screen
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.utility.getFileSize
 import com.application.moviesapp.ui.utility.toImageUrl
@@ -135,7 +136,7 @@ private fun DownloadCard(modifier: Modifier = Modifier,
 
     val context = LocalContext.current
 
-    Card(onClick = { PlayActivity.startActivity(context as Activity, movie?.title, movie?.filePath) },
+    Card(onClick = { PlayActivity.startActivity(activity = context as Activity, videoTitle = movie?.title, filePath = movie?.filePath, videoId = null, fromScreen = Screen.Download) },
         shape = RoundedCornerShape(20),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
     ) {

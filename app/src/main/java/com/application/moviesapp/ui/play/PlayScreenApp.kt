@@ -2,40 +2,27 @@ package com.application.moviesapp.ui.play
 
 import android.app.Activity
 import android.widget.Toast
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Cast
-import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -43,7 +30,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,17 +40,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.media3.common.Player
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.application.moviesapp.ui.utility.toOneDecimal
 import com.application.moviesapp.ui.viewmodel.DownloadViewModel
 import com.application.moviesapp.ui.viewmodel.DownloadsUiState
+import com.application.moviesapp.ui.viewmodel.PlayerStreamUIState
 import com.application.moviesapp.ui.viewmodel.PlayerUIState
 import com.application.moviesapp.ui.viewmodel.PlayerViewModel
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import kotlinx.coroutines.launch
 import java.io.File
-import kotlin.math.ceil
 
 @Composable
 fun PlayScreenApp(modifier: Modifier = Modifier,
@@ -78,14 +63,23 @@ fun PlayScreenApp(modifier: Modifier = Modifier,
     systemUiController.isNavigationBarVisible = false
     systemUiController.isSystemBarsVisible = false
 
-    val playerUIState: PlayerUIState by playerViewModel.playerUIState.collectAsState()
+    val playerUIState: PlayerUIState by playerViewModel.playerUIState.collectAsStateWithLifecycle()
     val downloadUIState: DownloadsUiState by downloadViewModel.readAllDownload().collectAsState()
+
+    val playStreamUIState: PlayerStreamUIState by playerViewModel.playerStreamUIState.collectAsStateWithLifecycle()
 
     var drawerState by remember { mutableStateOf(DrawerValue.Closed) }
     var playbackSpeed by remember { mutableFloatStateOf(1.0f) }
 
     LaunchedEffect(key1 = null) {
-        playerViewModel.playVideo(context, (context as Activity).intent.getStringExtra(PlayActivity.VIDEO_TITLE) ?: return@LaunchedEffect ,(context as Activity).intent.getStringExtra(PlayActivity.FILE_PATH) ?: return@LaunchedEffect)
+        when ((context as Activity).intent.getStringExtra(PlayActivity.FROM_SCREEN)) {
+            Screen.Download.title -> {
+                playerViewModel.playVideo(context, (context as Activity).intent.getStringExtra(PlayActivity.VIDEO_TITLE) ?: return@LaunchedEffect ,(context as Activity).intent.getStringExtra(PlayActivity.FILE_PATH) ?: return@LaunchedEffect)
+            }
+            else -> {
+                playerViewModel.playVideoStream(videoId = (context as Activity).intent.getStringExtra(PlayActivity.VIDEO_ID) ?: return@LaunchedEffect, context = context)
+            }
+        }
     }
 
     Scaffold(
@@ -98,35 +92,56 @@ fun PlayScreenApp(modifier: Modifier = Modifier,
             val parentHeight = constraints.maxHeight.dp
 
             Box {
-                PlayScreen(
-                    modifier = modifier,
-                    player = playerViewModel.player,
-                    onPlayOrPause = playerViewModel::playOrPauseVideo,
-                    playerUIState = playerUIState,
-                    onScreenTouch = playerViewModel::onScreenTouch,
-                    onLockModeClick = playerViewModel::onLockMode,
-                    onSeekTo = playerViewModel::onSeekTo,
-                    onSeekForward = playerViewModel::onSeekForward,
-                    onSeekBackward = playerViewModel::onSeekBackward,
-                    onNextVideo = {
-                        playerViewModel.onNextVideo(context, downloadUIState.data)
-                    },
-                    onPreviousVideo = {
-                        playerViewModel.onPreviousVideo(context, downloadUIState.data)
-                    },
-                    videoTitle = playerUIState.movieDownload.title,
-                    onDownloadClick = {
-                        playerViewModel.saveMediaToStorage(
-                            context = context,
-                            filePath = File(context.filesDir, "/output/${playerUIState.movieDownload.filePath}").path,
-                            isVideo = true,
-                            fileName = playerUIState.movieDownload.title
+                when ((context as Activity).intent.getStringExtra(PlayActivity.FROM_SCREEN)) {
+                    Screen.Download.title -> {
+                        PlayScreen(
+                            modifier = modifier,
+                            player = playerViewModel.player,
+                            onPlayOrPause = playerViewModel::playOrPauseVideo,
+                            playerUIState = playerUIState,
+                            onScreenTouch = playerViewModel::onScreenTouch,
+                            onLockModeClick = playerViewModel::onLockMode,
+                            onSeekTo = playerViewModel::onSeekTo,
+                            onSeekForward = playerViewModel::onSeekForward,
+                            onSeekBackward = playerViewModel::onSeekBackward,
+                            onNextVideo = {
+                                playerViewModel.onNextVideo(context, downloadUIState.data)
+                            },
+                            onPreviousVideo = {
+                                playerViewModel.onPreviousVideo(context, downloadUIState.data)
+                            },
+                            videoTitle = playerUIState.movieDownload.title,
+                            onDownloadClick = {
+                                playerViewModel.saveMediaToStorage(
+                                    context = context,
+                                    filePath = File(context.filesDir, "/output/${playerUIState.movieDownload.filePath}").path,
+                                    isVideo = true,
+                                    fileName = playerUIState.movieDownload.title
+                                )
+                                Toast.makeText(context, "Video Downloaded", Toast.LENGTH_SHORT).show()
+                            },
+                            onVolumeClick = playerViewModel::onVolumeClick,
+                            onPlaybackSpeedClick = { drawerState = DrawerValue.Open },
+                            )
+                    }
+
+                    else -> {
+                        DetailPlayScreen(
+                            modifier = modifier,
+                            player = playerViewModel.player,
+                            onPlayOrPause = playerViewModel::playOrPauseVideo,
+                            playerStreamUIState = playStreamUIState,
+                            onScreenTouch = playerViewModel::onScreenTouch,
+                            onLockModeClick = playerViewModel::onLockMode,
+                            onVolumeClick = playerViewModel::onVolumeClick,
+                            onSeekTo = playerViewModel::onSeekTo,
+                            onSeekForward = playerViewModel::onSeekForward,
+                            onSeekBackward = playerViewModel::onSeekBackward,
+                            onPlaybackSpeedClick = { drawerState = DrawerValue.Open },
                         )
-                        Toast.makeText(context, "Video Downloaded", Toast.LENGTH_SHORT).show()
-                    },
-                    onVolumeClick = playerViewModel::onVolumeClick,
-                    onPlaybackSpeedClick = { drawerState = DrawerValue.Open })
-                
+                    }
+                }
+
                 if (drawerState == DrawerValue.Open && playerUIState.onScreenTouch) {
                     SideSheet(modifier = modifier
                         .width(width = parentWidth / 2)
@@ -179,7 +194,10 @@ private fun SideSheet(modifier: Modifier = Modifier,
                 valueRange = 0.1f .. 2f
                 )
 
-            Row(modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp).padding(start = 16.dp, end = maxWidth / 4.5f),
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
+                .padding(start = 16.dp, end = maxWidth / 4.5f),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween) {
 

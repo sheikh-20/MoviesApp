@@ -27,11 +27,17 @@ class PlayActivity: BaseActivity() {
     companion object {
         const val FILE_PATH = "file_path"
         const val VIDEO_TITLE = "video_title"
+        const val VIDEO_ID = "video_id"
+        const val FROM_SCREEN = "from_screen"
 
-        fun startActivity(activity: Activity?, videoTitle: String?, filePath: String?) {
+        fun startActivity(activity: Activity?, videoTitle: String?, filePath: String?, videoId: String?, fromScreen: Screen?) {
             val intent = Intent(activity, PlayActivity::class.java)
             intent.putExtra(VIDEO_TITLE, videoTitle)
             intent.putExtra(FILE_PATH, filePath)
+
+            //Detail screen
+            intent.putExtra(VIDEO_ID, videoId)
+            intent.putExtra(FROM_SCREEN, fromScreen?.title)
             activity?.startActivity(intent)
         }
     }

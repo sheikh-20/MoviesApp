@@ -5,21 +5,33 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
+import android.util.SparseArray
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import com.application.moviesapp.R
 import com.application.moviesapp.data.local.entity.MovieDownloadEntity
+import com.application.moviesapp.ui.play.Screen
+import com.maxrave.kotlinyoutubeextractor.State
+import com.maxrave.kotlinyoutubeextractor.VideoMeta
+import com.maxrave.kotlinyoutubeextractor.YTExtractor
+import com.maxrave.kotlinyoutubeextractor.YtFile
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import javax.inject.Inject
+
 
 data class MovieDownload(
     val title: String = "",
@@ -35,13 +47,33 @@ data class PlayerUIState(
     val movieDownload: MovieDownload = MovieDownload(),
     val hasVolume: Boolean = true
 )
+
+data class PlayerStreamUIState(
+    val title: String = "",
+    val isPlaying: Boolean = true,
+    val onScreenTouch: Boolean = true,
+    val isLockMode: Boolean = false,
+    val hasVolume: Boolean = true,
+    val currentTime: Long = 0L,
+    val totalDuration: Long = 0L,
+    val bufferedPercentage: Int = 0,
+)
 @HiltViewModel
 class PlayerViewModel @Inject constructor(val player: Player): ViewModel() {
+
+    private companion object {
+        const val TAG = "PlayerViewModel"
+    }
 
     private var _playerUIState = MutableStateFlow(PlayerUIState())
     val playerUIState: StateFlow<PlayerUIState> get() = _playerUIState.asStateFlow()
 
-    
+    private var _playerStreamUIState = MutableStateFlow(PlayerStreamUIState())
+    val playerStreamUIState: StateFlow<PlayerStreamUIState> get() = _playerStreamUIState.asStateFlow()
+
+    private val handler: Handler = Handler(Looper.getMainLooper())
+    private lateinit var runnable: Runnable
+
     fun playVideo(context: Context, videoTitle: String = "", filePath: String) {
         player.setMediaItem(MediaItem.fromUri(
             File(context.filesDir, "output/$filePath").toString()
@@ -49,6 +81,65 @@ class PlayerViewModel @Inject constructor(val player: Player): ViewModel() {
         player.play()
         _playerUIState.update {
             it.copy(isPlaying = true, movieDownload = MovieDownload(title = videoTitle, filePath = filePath))
+        }
+
+        runnable = object : Runnable {
+            override fun run() {
+
+                _playerUIState.update {
+                    it.copy(
+                        totalDuration = player.duration.coerceAtLeast(0L),
+                        currentTime = player.currentPosition.coerceAtLeast(0L),
+                        bufferedPercentage = player.bufferedPercentage
+                    )
+                }
+                handler.postDelayed(this,500L)
+            }
+        }
+        runnable.run()
+    }
+
+    /***
+     * Detail screen - onPlay
+     */
+    fun playVideoStream(videoId: String, context: Context) = viewModelScope.launch {
+        val yt = YTExtractor(con = context, CACHING = true, LOGGING = true, retryCount = 3)
+
+        var ytFiles: SparseArray<YtFile>? = null
+        var videoMeta: VideoMeta? = null
+
+        yt.extract(videoId)
+
+        if (yt.state == State.SUCCESS) {
+            ytFiles = yt.getYTFiles()
+            videoMeta = yt.getVideoMeta()
+
+            Timber.tag(TAG).d("Video Meta: ${videoMeta?.videoLength}")
+
+            _playerStreamUIState.update {
+                it.copy(
+                    title = videoMeta?.title ?: "title",
+                    isPlaying = true
+                )
+            }
+
+            player.setMediaItem(MediaItem.fromUri(ytFiles?.get(22)?.url ?: ""))
+            player.play()
+
+            runnable = object : Runnable {
+                override fun run() {
+
+                    _playerStreamUIState.update {
+                        it.copy(
+                            totalDuration = videoMeta?.videoLength?.times(1000)?.coerceAtLeast(0L) ?: 0L,
+                            currentTime = player.currentPosition.coerceAtLeast(0L),
+                            bufferedPercentage = player.bufferedPercentage
+                        )
+                    }
+                    handler.postDelayed(this,500L)
+                }
+            }
+            runnable.run()
         }
     }
 
@@ -58,9 +149,15 @@ class PlayerViewModel @Inject constructor(val player: Player): ViewModel() {
             _playerUIState.update {
                 it.copy(isPlaying = false)
             }
+            _playerStreamUIState.update {
+                it.copy(isPlaying = false)
+            }
         } else {
             player.play()
             _playerUIState.update {
+                it.copy(isPlaying = true)
+            }
+            _playerStreamUIState.update {
                 it.copy(isPlaying = true)
             }
         }
@@ -70,25 +167,17 @@ class PlayerViewModel @Inject constructor(val player: Player): ViewModel() {
         _playerUIState.update {
             it.copy(onScreenTouch = it.onScreenTouch.not())
         }
+        _playerStreamUIState.update {
+            it.copy(onScreenTouch = it.onScreenTouch.not())
+        }
     }
 
     fun onLockMode() {
         _playerUIState.update {
             it.copy(isLockMode = it.isLockMode.not())
         }
-    }
-
-    private fun onPlayerListener() = object : Player.Listener {
-        override fun onEvents(player: Player, events: Player.Events) {
-            super.onEvents(player, events)
-
-            _playerUIState.update {
-                it.copy(
-                    totalDuration = player.duration.coerceAtLeast(0L),
-                    currentTime = player.currentPosition.coerceAtLeast(0L),
-                    bufferedPercentage = player.bufferedPercentage
-                )
-            }
+        _playerStreamUIState.update {
+            it.copy(isLockMode = it.isLockMode.not())
         }
     }
 
@@ -120,7 +209,7 @@ class PlayerViewModel @Inject constructor(val player: Player): ViewModel() {
         }
 
         playVideo(context = context, videoTitle = videos[nextIndex].title ?: "", filePath = videos[nextIndex].filePath ?: "")
-        onPlayerListener()
+//        onPlayerListener()
     }
 
     fun onPreviousVideo(context: Context, videos: List<MovieDownloadEntity>) {
@@ -139,16 +228,34 @@ class PlayerViewModel @Inject constructor(val player: Player): ViewModel() {
         }
 
         playVideo(context = context, videoTitle = videos[nextIndex].title ?: "", filePath = videos[nextIndex].filePath ?: "")
-        onPlayerListener()
+//        onPlayerListener()
     }
 
-    fun onVolumeClick() {
-        _playerUIState.update {
-            it.copy(hasVolume = it.hasVolume.not())
+    fun onVolumeClick(fromScreen: String) {
+        when (fromScreen) {
+            Screen.Download.title -> {
+                _playerUIState.update {
+                    it.copy(hasVolume = it.hasVolume.not())
+                }
+
+                if (playerUIState.value.hasVolume) {
+                    player.volume = 1.0f
+                } else {
+                    player.volume = 0f
+                }
+            }
+            else -> {
+                _playerStreamUIState.update {
+                    it.copy(hasVolume = it.hasVolume.not())
+                }
+
+                if (playerStreamUIState.value.hasVolume) {
+                    player.volume = 1.0f
+                } else {
+                    player.volume = 0f
+                }
+            }
         }
-        if (playerUIState.value.hasVolume) {
-            player.volume = 1.0f
-        } else player.volume = 0f
     }
 
     fun onPlaybackChange(speed: Float) {
@@ -214,13 +321,16 @@ class PlayerViewModel @Inject constructor(val player: Player): ViewModel() {
         }
     }
 
+
     override fun onCleared() {
         super.onCleared()
         player.release()
+
+        runnable = Runnable {  }
+        handler.removeCallbacks(runnable)
     }
 
     init {
         player.prepare()
-        player.addListener(onPlayerListener())
     }
 }
