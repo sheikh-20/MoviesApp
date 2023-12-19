@@ -2,6 +2,7 @@ package com.application.moviesapp.ui.play
 
 import android.app.Activity
 import android.content.Context
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.compose.foundation.clickable
@@ -73,11 +74,17 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTube
 @Composable
 fun DetailPlayScreen(modifier: Modifier = Modifier,
                      player: Player? = null,
-                     playerStreamUIState: PlayerStreamUIState = PlayerStreamUIState()
+                     onPlayOrPause: () -> Unit = { },
+                     playerStreamUIState: PlayerStreamUIState = PlayerStreamUIState(),
+                     onScreenTouch: () -> Unit = { },
+                     onLockModeClick: () -> Unit = { },
+                     onVolumeClick: (String) -> Unit = { _ -> },
+                     onSeekTo: (Float) -> Unit = { },
+                     onSeekForward: () -> Unit = {  },
+                     onSeekBackward: () -> Unit = {  },
+                     onPlaybackSpeedClick: () -> Unit = {  },
 ) {
     val context = LocalContext.current
-
-    val tracker = YouTubePlayerTracker()
 
     var fullScreenMode by remember {
         mutableStateOf(false)
@@ -86,7 +93,7 @@ fun DetailPlayScreen(modifier: Modifier = Modifier,
     val modifierOriginalScreen = modifier
         .fillMaxSize()
         .clickable(
-            onClick = { },
+            onClick = onScreenTouch,
             interactionSource = remember { MutableInteractionSource() },
             indication = null
         )
@@ -95,7 +102,7 @@ fun DetailPlayScreen(modifier: Modifier = Modifier,
         .fillMaxSize()
         .aspectRatio(16 / 9f)
         .clickable(
-            onClick = { },
+            onClick = onScreenTouch,
             interactionSource = remember { MutableInteractionSource() },
             indication = null
         )
@@ -119,12 +126,21 @@ fun DetailPlayScreen(modifier: Modifier = Modifier,
             modifier = if (fullScreenMode) modifierFullScreen else modifierOriginalScreen
         )
 
+        if (playerStreamUIState.onScreenTouch) {
             CustomPlayerUI(
+                playerStreamUIState = playerStreamUIState,
                 onFullScreenModeClicked = { fullScreenMode = it },
                 isFullScreen = fullScreenMode,
-                totalDuration = tracker.videoDuration,
-                videoTitle = playerStreamUIState.title
+                videoTitle = playerStreamUIState.title,
+                onPlayOrPause = onPlayOrPause,
+                onLockModeClick = onLockModeClick,
+                onVolumeClick = onVolumeClick,
+                onSeekTo = onSeekTo,
+                onSeekForward = onSeekForward,
+                onSeekBackward = onSeekBackward,
+                onPlaybackSpeedClick = onPlaybackSpeedClick
             )
+        }
     }
 }
 
@@ -134,9 +150,9 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
                            videoTitle: String = "",
                            player: Player? = null,
                            onPlayOrPause: () -> Unit = {},
-                           playerUIState: PlayerUIState = PlayerUIState(),
+                           playerStreamUIState: PlayerStreamUIState = PlayerStreamUIState(),
                            onSeekTo: (Float) -> Unit = { },
-                           onFullScreenModeClicked: (Boolean) -> Unit = { },
+                           onFullScreenModeClicked: (Boolean) -> Unit = { _ -> },
                            isFullScreen: Boolean = false,
                            onSeekForward: () -> Unit = {  },
                            onSeekBackward: () -> Unit = {  },
@@ -144,9 +160,8 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
                            onPreviousVideo: () -> Unit = {  },
                            onLockModeClick: () -> Unit = {  },
                            onDownloadClick: () -> Unit = {  },
-                           onVolumeClick: () -> Unit = {  },
-                           onPlaybackSpeedClick: () -> Unit = {  },
-                           totalDuration: Float = 0f) {
+                           onVolumeClick: (String) -> Unit = { _ -> },
+                           onPlaybackSpeedClick: () -> Unit = {  }) {
 
     val context = LocalContext.current
 
@@ -154,7 +169,7 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
         .fillMaxSize()
         .padding(16.dp)) {
 
-        if (playerUIState.isLockMode.not()) {
+        if (playerStreamUIState.isLockMode.not()) {
             Row(modifier = modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -204,20 +219,20 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
         Column(modifier = modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally) {
 
-            if (playerUIState.isLockMode.not()) {
+            if (playerStreamUIState.isLockMode.not()) {
                 Row(modifier = modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(10.dp)) {
 
-                    Text(text = playerUIState.currentTime.formatMinSec(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimary)
+                    Text(text = playerStreamUIState.currentTime.formatMinSec(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimary)
 
-                    Slider(value = playerUIState.currentTime.toFloat(),
+                    Slider(value = playerStreamUIState.currentTime.toFloat(),
                         onValueChange = { onSeekTo(it) },
                         modifier = modifier.weight(1f),
-                        valueRange = 0f..playerUIState.totalDuration.toFloat(),
+                        valueRange = 0f..playerStreamUIState.totalDuration.toFloat(),
                         colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.onSecondary))
 
-                    Text(text = totalDuration.toString(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimary)
+                    Text(text = playerStreamUIState.totalDuration.formatMinSec(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimary)
                 }
             }
 
@@ -229,14 +244,14 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)) {
 
                     IconButton(onClick = onLockModeClick) {
-                        Icon(imageVector = if (playerUIState.isLockMode.not()) Icons.Rounded.LockOpen else Icons.Rounded.Lock,
+                        Icon(imageVector = if (playerStreamUIState.isLockMode.not()) Icons.Rounded.LockOpen else Icons.Rounded.Lock,
                             contentDescription = null,
                             modifier = modifier.size(24.dp), tint = MaterialTheme.colorScheme.onPrimary)
                     }
 
-                    if (playerUIState.isLockMode.not()) {
-                        IconButton(onClick = onVolumeClick) {
-                            Icon(imageVector = if (playerUIState.hasVolume) Icons.Rounded.VolumeUp else Icons.Rounded.VolumeOff,
+                    if (playerStreamUIState.isLockMode.not()) {
+                        IconButton(onClick = { onVolumeClick((context as Activity).intent.getStringExtra(PlayActivity.FROM_SCREEN) ?: return@IconButton) }) {
+                            Icon(imageVector = if (playerStreamUIState.hasVolume) Icons.Rounded.VolumeUp else Icons.Rounded.VolumeOff,
                                 contentDescription = null,
                                 modifier = modifier.size(24.dp), tint = MaterialTheme.colorScheme.onPrimary)
                         }
@@ -245,10 +260,9 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
 
                 Spacer(modifier = modifier.weight(1f))
 
-                if (playerUIState.isLockMode.not()) {
+                if (playerStreamUIState.isLockMode.not()) {
                     Row(verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-
 
                         IconButton(onClick = onSeekBackward) {
                             Icon(imageVector = Icons.Rounded.Replay10,
@@ -256,16 +270,14 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
                                 modifier = modifier.size(30.dp), tint = MaterialTheme.colorScheme.onPrimary)
                         }
 
-
                         IconButton(onClick = onPreviousVideo) {
                             Icon(imageVector = Icons.Rounded.SkipPrevious,
                                 contentDescription = null,
                                 modifier = modifier.size(36.dp), tint = MaterialTheme.colorScheme.onPrimary)
                         }
 
-
                         IconButton(onClick = onPlayOrPause) {
-                            if (playerUIState.isPlaying) {
+                            if (playerStreamUIState.isPlaying) {
                                 Icon(imageVector = Icons.Rounded.Pause,
                                     contentDescription = null,
                                     modifier = modifier.size(80.dp), tint = MaterialTheme.colorScheme.onPrimary)
@@ -276,13 +288,11 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
                             }
                         }
 
-
                         IconButton(onClick = onNextVideo) {
                             Icon(imageVector = Icons.Rounded.SkipNext,
                                 contentDescription = null,
                                 modifier = modifier.size(36.dp), tint = MaterialTheme.colorScheme.onPrimary)
                         }
-
 
                         IconButton(onClick = onSeekForward) {
                             Icon(imageVector = Icons.Rounded.Forward10,
@@ -294,7 +304,7 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
 
                 Spacer(modifier = modifier.weight(1f))
 
-                if (playerUIState.isLockMode.not()) {
+                if (playerStreamUIState.isLockMode.not()) {
                     Row(verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)) {
 
@@ -315,6 +325,7 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
     }
 }
 
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun DetailPlayLightThemePreview() {
     MoviesAppTheme(darkTheme = false) {
@@ -322,6 +333,7 @@ private fun DetailPlayLightThemePreview() {
     }
 }
 
+@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun DetailPlayDarkThemePreview() {
     MoviesAppTheme(darkTheme = true) {

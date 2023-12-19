@@ -94,7 +94,7 @@ fun PlayScreen(modifier: Modifier = Modifier,
                onPreviousVideo: () -> Unit = { },
                videoTitle: String = "",
                onDownloadClick: () -> Unit = {  },
-               onVolumeClick: () -> Unit = {  },
+               onVolumeClick: (String) -> Unit = {  _ -> },
                onPlaybackSpeedClick: () -> Unit = {  },
 ) {
 
@@ -178,7 +178,7 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
                            onPreviousVideo: () -> Unit = {  },
                            onLockModeClick: () -> Unit = {  },
                            onDownloadClick: () -> Unit = {  },
-                           onVolumeClick: () -> Unit = {  },
+                           onVolumeClick: (String) -> Unit = { _ -> },
                            onPlaybackSpeedClick: () -> Unit = {  }) {
 
     val context = LocalContext.current
@@ -268,7 +268,7 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
                     }
 
                     if (playerUIState.isLockMode.not()) {
-                        IconButton(onClick = onVolumeClick) {
+                        IconButton(onClick = { onVolumeClick((context as Activity).intent.getStringExtra(PlayActivity.FROM_SCREEN) ?: return@IconButton) }) {
                             Icon(imageVector = if (playerUIState.hasVolume) Icons.Rounded.VolumeUp else Icons.Rounded.VolumeOff,
                                 contentDescription = null,
                                 modifier = modifier.size(24.dp), tint = MaterialTheme.colorScheme.onPrimary)
