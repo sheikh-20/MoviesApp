@@ -83,6 +83,7 @@ fun AccountSetupApp(modifier: Modifier = Modifier,
             composable(route = AccountSetupScreen.CreateNewPin.title) {
                 CreateNewPinScreen(
                     modifier = modifier,
+                    paddingValues = paddingValues,
                     onContinueClick = { navController.navigate(AccountSetupScreen.SetYourFingerprint.title) }
                 )
             }
