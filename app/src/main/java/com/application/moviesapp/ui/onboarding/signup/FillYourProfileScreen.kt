@@ -35,6 +35,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -48,6 +49,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -229,11 +231,25 @@ fun FillYourProfileScreen(modifier: Modifier = Modifier,
         Row(modifier = modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            OutlinedButton(onClick = { /*TODO*/ }, modifier = modifier.weight(1f)) {
-                Text(text = "Skip")
+            OutlinedButton(onClick = { /*TODO*/ }, modifier =  modifier
+                .shadow(
+                    elevation = 4.dp,
+                    ambientColor = MaterialTheme.colorScheme.outlineVariant,
+                    spotColor = MaterialTheme.colorScheme.outlineVariant,
+                    shape = RoundedCornerShape(50)
+                )
+                .weight(1f)) {
+                Text(text = "Skip",  modifier = modifier.padding(4.dp))
             }
-            Button(onClick = { onContinueClick(UserProfile(fullName, nickName, email, phoneNumber.toLongOrNull() ?: 0L, gender)) }, modifier = modifier.weight(1f)) {
-                Text(text = "Continue")
+            Button(onClick = { onContinueClick(UserProfile(fullName, nickName, email, phoneNumber.toLongOrNull() ?: 0L, gender)) },
+                modifier =  modifier
+                    .shadow(
+                        elevation = 4.dp,
+                        ambientColor = MaterialTheme.colorScheme.outlineVariant,
+                        spotColor = MaterialTheme.colorScheme.outlineVariant,
+                        shape = RoundedCornerShape(50)
+                    ).weight(1f)) {
+                Text(text = "Continue",  modifier = modifier.padding(4.dp))
             }
         }
     }
