@@ -38,6 +38,9 @@ import androidx.navigation.compose.rememberNavController
 import com.application.moviesapp.domain.usecase.GetSignInFacebookInteractor
 import com.application.moviesapp.domain.usecase.SignInFacebookUseCase
 import com.application.moviesapp.ui.home.HomeActivity
+import com.application.moviesapp.ui.onboarding.forgotpassword.ContactDetailsScreen
+import com.application.moviesapp.ui.onboarding.forgotpassword.CreateNewPasswordScreen
+import com.application.moviesapp.ui.onboarding.forgotpassword.OtpCodeScreen
 import com.application.moviesapp.ui.onboarding.login.LoginScreen
 import com.application.moviesapp.ui.onboarding.login.LoginWithPasswordScreen
 import com.application.moviesapp.ui.onboarding.signup.ChooseYourInterestScreen
@@ -117,6 +120,18 @@ fun OnboardingApp(modifier: Modifier = Modifier,
                         snackbarHostState = snackbarHostState
                     )
                 }
+
+                composable(route = OnboardingScreen.ForgotPassword.name) {
+                    ContactDetailsScreen()
+                }
+
+                composable(route = OnboardingScreen.OtpCode.name) {
+                    OtpCodeScreen()
+                }
+
+                composable(route = OnboardingScreen.CreateNewPassword.name) {
+                    CreateNewPasswordScreen()
+                }
             }
         }
 }
@@ -144,4 +159,7 @@ enum class OnboardingScreen {
     Login,
     LoginWithPassword,
     SignupWithPassword,
+    ForgotPassword,
+    OtpCode,
+    CreateNewPassword
 }
