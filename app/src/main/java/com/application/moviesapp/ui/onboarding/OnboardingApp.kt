@@ -16,6 +16,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBar
@@ -105,7 +106,19 @@ fun OnboardingApp(modifier: Modifier = Modifier,
                         onGoogleSignInClick = { activity, intent ->  onboardingViewModel.signInGoogle(activity, intent) },
                         onGithubSignInClick = { onboardingViewModel.signInGithub(context as Activity) },
                         onSocialSignIn = onSocialSignIn,
-                        snackbarHostState = snackbarHostState
+                        snackbarHostState = snackbarHostState,
+                        onForgotPasswordClick = {
+                            if (onboardingViewModel.email.isEmpty()) {
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar(message = "Enter your email", duration = SnackbarDuration.Short)
+                                }
+                            } else {
+                                navController.navigate(OnboardingScreen.ForgotPassword.name)
+                            }
+
+                        },
+                        email = onboardingViewModel.email,
+                        onEmailChange = onboardingViewModel::onEmailChange
                     )
                 }
 
@@ -117,12 +130,17 @@ fun OnboardingApp(modifier: Modifier = Modifier,
                         onGoogleSignInClick = { activity, intent ->  onboardingViewModel.signInGoogle(activity, intent) },
                         onGithubSignInClick = { onboardingViewModel.signInGithub(context as Activity) },
                         onSocialSignIn = onSocialSignIn,
-                        snackbarHostState = snackbarHostState
+                        snackbarHostState = snackbarHostState,
+
                     )
                 }
 
                 composable(route = OnboardingScreen.ForgotPassword.name) {
-                    ContactDetailsScreen()
+                    ContactDetailsScreen(
+                        email = onboardingViewModel.email,
+                        onPasswordResetOtp = onboardingViewModel::sendPasswordResetOtp,
+                        snackbarHostState = snackbarHostState
+                    )
                 }
 
                 composable(route = OnboardingScreen.OtpCode.name) {

@@ -4,6 +4,7 @@ import com.application.moviesapp.data.python.WorkManagerRepository
 import com.application.moviesapp.data.repository.AccountSetupRepository
 import com.application.moviesapp.data.repository.AuthRepository
 import com.application.moviesapp.data.repository.MoviesRepository
+import com.application.moviesapp.data.repository.PasswordResetRepository
 import com.application.moviesapp.data.repository.SettingsPreferenceRepository
 import com.application.moviesapp.data.repository.UserPreferenceRepository
 import com.application.moviesapp.data.repository.YoutubeRepository
@@ -27,6 +28,7 @@ import com.application.moviesapp.domain.usecase.GetMovieGenreInteractor
 import com.application.moviesapp.domain.usecase.GetMovieNowPlayingInteractor
 import com.application.moviesapp.domain.usecase.GetMovieSearchInteractor
 import com.application.moviesapp.domain.usecase.GetMovieWithTvSeriesInteractor
+import com.application.moviesapp.domain.usecase.GetPasswordResetInteractors
 import com.application.moviesapp.domain.usecase.GetSettingsInteractor
 import com.application.moviesapp.domain.usecase.GetTvSeriesDetailsInteractor
 import com.application.moviesapp.domain.usecase.GetTvSeriesEpisodesUseCase
@@ -42,6 +44,7 @@ import com.application.moviesapp.domain.usecase.MovieTrailerUseCase
 import com.application.moviesapp.domain.usecase.MovieUpdateFavouriteInteractor
 import com.application.moviesapp.domain.usecase.MovieUpdateFavouriteUseCase
 import com.application.moviesapp.domain.usecase.MovieWithTvSeriesUseCase
+import com.application.moviesapp.domain.usecase.PasswordResetUseCase
 import com.application.moviesapp.domain.usecase.SettingsUseCase
 import com.application.moviesapp.domain.usecase.SignInEmailInteractor
 import com.application.moviesapp.domain.usecase.SignInEmailUseCase
@@ -243,6 +246,12 @@ class UseCaseModule {
     @Singleton
     fun providesTvSeriesEpisodesUseCase(moviesRepository: MoviesRepository): TvSeriesEpisodesUseCase {
         return GetTvSeriesEpisodesUseCase(moviesRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesPasswordResetUseCase(passwordResetRepository: PasswordResetRepository): PasswordResetUseCase {
+        return GetPasswordResetInteractors(passwordResetRepository)
     }
 }
 

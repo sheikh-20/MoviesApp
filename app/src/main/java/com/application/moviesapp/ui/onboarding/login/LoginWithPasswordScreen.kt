@@ -99,13 +99,15 @@ fun LoginWithPasswordScreen(modifier: Modifier = Modifier,
                             onGithubSignInClick: () -> Unit = {},
                             onSocialSignIn: SharedFlow<Resource<AuthResult>>? = null,
                             onSignInClick: (String?, String?) -> Unit = { _, _ ->},
-                            snackbarHostState: SnackbarHostState = SnackbarHostState()) {
+                            snackbarHostState: SnackbarHostState = SnackbarHostState(),
+                            onForgotPasswordClick: () -> Unit = { },
+                            email: String = "",
+                            onEmailChange: (String) -> Unit = { _ -> }) {
 
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
 
-    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     var isLoading by remember {
@@ -179,7 +181,7 @@ fun LoginWithPasswordScreen(modifier: Modifier = Modifier,
 
             EmailComponent(
                 email = email,
-                onEmailUpdate = { email = it },
+                onEmailUpdate = onEmailChange,
                 focusManager = focusManager)
 
             PasswordComponent(
@@ -212,7 +214,7 @@ fun LoginWithPasswordScreen(modifier: Modifier = Modifier,
             }
         }
 
-        TextButton(onClick = { /*TODO*/ }) {
+        TextButton(onClick = onForgotPasswordClick) {
             Text(text = "Forgot the password?", fontWeight = FontWeight.Bold)
         }
 

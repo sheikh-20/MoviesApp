@@ -25,8 +25,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -39,9 +42,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.application.moviesapp.R
 import com.application.moviesapp.ui.theme.MoviesAppTheme
+import kotlinx.coroutines.launch
 
 @Composable
-fun ContactDetailsScreen(modifier: Modifier = Modifier) {
+fun ContactDetailsScreen(modifier: Modifier = Modifier,
+                         email: String = "",
+                         onPasswordResetOtp: () -> Unit = { },
+                         snackbarHostState: SnackbarHostState = SnackbarHostState()) {
+
+    val coroutineScope = rememberCoroutineScope()
+
     Column(modifier = modifier
         .fillMaxSize()
         .padding(16.dp),
@@ -58,7 +68,6 @@ fun ContactDetailsScreen(modifier: Modifier = Modifier) {
         Text(text = "Select which contact details should we use to reset your password",
             style = MaterialTheme.typography.bodyLarge)
 
-
         OutlinedButton(onClick = {  },
             shape = RoundedCornerShape(30),
             border = BorderStroke(width = .5.dp, color =  Color.LightGray),
@@ -72,45 +81,11 @@ fun ContactDetailsScreen(modifier: Modifier = Modifier) {
                 horizontalArrangement = Arrangement.spacedBy(16.dp)) {
 
                 IconButton(onClick = { /*TODO*/ },
-                    modifier = modifier.background(
-                        color = Color(0xFFFF6363),
-                        shape = RoundedCornerShape(50)).padding(8.dp)) {
-                    Icon(imageVector = Icons.Rounded.Chat,
-                        contentDescription = null,
-                        modifier = modifier.size(24.dp),
-                        tint = Color.Unspecified)
-                }
-
-                Column {
-                    Text(text = "Via sms",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.DarkGray)
-
-                    Text(text = "+9380*****",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSecondary,
-                        fontWeight = FontWeight.Bold)
-                }
-
-            }
-        }
-
-        OutlinedButton(onClick = {  },
-            shape = RoundedCornerShape(30),
-            border = BorderStroke(width = .5.dp, color =  Color.LightGray),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface)
-        ) {
-
-            Row(modifier = modifier
-                .fillMaxWidth()
-                .padding(10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-
-                IconButton(onClick = { /*TODO*/ },
-                    modifier = modifier.background(
-                        color = Color(0xFFFF6363),
-                        shape = RoundedCornerShape(50))
+                    modifier = modifier
+                        .background(
+                            color = Color(0xFFFF6363),
+                            shape = RoundedCornerShape(50)
+                        )
                         .padding(8.dp)) {
                     Icon(imageVector = Icons.Rounded.Email,
                         contentDescription = null,
@@ -123,7 +98,7 @@ fun ContactDetailsScreen(modifier: Modifier = Modifier) {
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.DarkGray)
 
-                    Text(text = "sheikhzs1032@gmail.com",
+                    Text(text = email,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSecondary,
                         fontWeight = FontWeight.Bold)
@@ -132,7 +107,12 @@ fun ContactDetailsScreen(modifier: Modifier = Modifier) {
             }
         }
 
-        Button(onClick = {  },
+        Button(onClick = {
+            onPasswordResetOtp()
+                       coroutineScope.launch {
+                           snackbarHostState.showSnackbar(message = "Password reset email sent successfully", duration = SnackbarDuration.Short)
+                       }
+                         },
             modifier = modifier
                 .shadow(
                     elevation = 4.dp,
