@@ -3,6 +3,9 @@ package com.application.moviesapp.ui.viewmodel
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.moviesapp.UserPreferences
@@ -15,6 +18,7 @@ import com.application.moviesapp.domain.model.MovieGenre
 import com.application.moviesapp.domain.model.MoviesDetail
 import com.application.moviesapp.domain.usecase.AccountSetupUseCase
 import com.application.moviesapp.domain.usecase.MovieGenresUseCase
+import com.application.moviesapp.domain.usecase.PasswordResetUseCase
 import com.application.moviesapp.domain.usecase.SignInEmailUseCase
 import com.application.moviesapp.domain.usecase.SignInFacebookUseCase
 import com.application.moviesapp.domain.usecase.SignInGithubUseCase
@@ -48,7 +52,8 @@ class OnboardingViewModel @Inject constructor(private val movieGenresUseCase: Mo
                                               private val signInFacebookUseCase: SignInFacebookUseCase,
                                               private val accountSetupUseCase: AccountSetupUseCase,
                                               private val signInEmailUseCase: SignInEmailUseCase,
-                                              private val signUpEmailUseCase: SignUpEmailUseCase
+                                              private val signUpEmailUseCase: SignUpEmailUseCase,
+    private val passwordResetUseCase: PasswordResetUseCase
     ): ViewModel() {
 
     private companion object {
@@ -73,6 +78,14 @@ class OnboardingViewModel @Inject constructor(private val movieGenresUseCase: Mo
 
     private var _profileUIState = MutableStateFlow<Resource<Member>>(Resource.Loading)
     val profileUIState get() = _profileUIState.asStateFlow()
+
+    var email by mutableStateOf("")
+        private set
+
+    fun onEmailChange(value: String) {
+        email = value
+    }
+
 
     fun getMoviesGenreList() = viewModelScope.launch(Dispatchers.IO) {
         try {
@@ -184,6 +197,10 @@ class OnboardingViewModel @Inject constructor(private val movieGenresUseCase: Mo
             Timber.tag(TAG).d("Email called")
             _socialSignIn.emit(it)
         }
+    }
+
+    fun sendPasswordResetOtp() = viewModelScope.launch {
+        passwordResetUseCase.sendOtp(email)
     }
 
     init {

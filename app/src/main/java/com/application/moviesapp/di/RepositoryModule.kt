@@ -12,6 +12,8 @@ import com.application.moviesapp.data.repository.FacebookRepositoryImpl
 import com.application.moviesapp.data.repository.GoogleRepositoryImpl
 import com.application.moviesapp.data.repository.MoviesRepository
 import com.application.moviesapp.data.repository.MoviesRepositoryImpl
+import com.application.moviesapp.data.repository.PasswordResetRepository
+import com.application.moviesapp.data.repository.PasswordResetRepositoryImpl
 import com.application.moviesapp.data.repository.SettingsPreferenceImpl
 import com.application.moviesapp.data.repository.SettingsPreferenceRepository
 import com.application.moviesapp.data.repository.SignInEmailRepositoryImpl
@@ -74,4 +76,7 @@ abstract class RepositoryModule {
 
     @Binds
     abstract fun providesAccountSetupRepositoryImpl(accountSetupRepositoryImpl: AccountSetupRepositoryImpl): AccountSetupRepository
+
+    @Binds
+    abstract fun providesResetPasswordRepositoryImpl(passwordResetRepositoryImpl: PasswordResetRepositoryImpl): PasswordResetRepository
 }
