@@ -40,11 +40,13 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
 
+data class LoginUIState(val isEmailError: Boolean = false, val isPasswordError: Boolean = false)
 @HiltViewModel
 class OnboardingViewModel @Inject constructor(private val movieGenresUseCase: MovieGenresUseCase,
                                               private val signInGoogleUseCase: SignInGoogleUseCase,
@@ -85,6 +87,10 @@ class OnboardingViewModel @Inject constructor(private val movieGenresUseCase: Mo
     fun onEmailChange(value: String) {
         email = value
     }
+
+
+    private var _loginUIState = MutableStateFlow(LoginUIState())
+    val loginUIState: StateFlow<LoginUIState> get() = _loginUIState
 
 
     fun getMoviesGenreList() = viewModelScope.launch(Dispatchers.IO) {
@@ -186,9 +192,26 @@ class OnboardingViewModel @Inject constructor(private val movieGenresUseCase: Mo
     }
 
     fun signInEmail(email: String?, password: String?) = viewModelScope.launch {
-        signInEmailUseCase(email = email, password = password).collectLatest {
-            Timber.tag(TAG).d("Email called")
-            _socialSignIn.emit(it)
+        if (email.isNullOrEmpty()) {
+            _loginUIState.update {
+                it.copy(isEmailError = true)
+            }
+        } else if (email.contains("@").not() || email.contains(".com").not()) {
+            _loginUIState.update {
+                it.copy(isEmailError = true)
+            }
+        } else if (password.isNullOrEmpty()){
+            _loginUIState.update {
+                it.copy(isPasswordError = true)
+            }
+        } else {
+            _loginUIState.update {
+                it.copy(isEmailError = false, isPasswordError = false)
+            }
+            signInEmailUseCase(email = email, password = password).collectLatest {
+                Timber.tag(TAG).d("Email called")
+                _socialSignIn.emit(it)
+            }
         }
     }
 

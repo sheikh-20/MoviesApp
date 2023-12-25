@@ -65,6 +65,8 @@ fun OnboardingApp(modifier: Modifier = Modifier,
     val backStackEntry by navController.currentBackStackEntryAsState()
     val uiState by onboardingViewModel.movieGenreUiState.collectAsState()
 
+    val loginUIState by onboardingViewModel.loginUIState.collectAsState()
+
     val snackbarHostState = remember { SnackbarHostState() }
 
     val onSocialSignIn = onboardingViewModel.socialSignIn
@@ -118,7 +120,8 @@ fun OnboardingApp(modifier: Modifier = Modifier,
 
                         },
                         email = onboardingViewModel.email,
-                        onEmailChange = onboardingViewModel::onEmailChange
+                        onEmailChange = onboardingViewModel::onEmailChange,
+                        loginUIState = loginUIState
                     )
                 }
 
@@ -131,7 +134,6 @@ fun OnboardingApp(modifier: Modifier = Modifier,
                         onGithubSignInClick = { onboardingViewModel.signInGithub(context as Activity) },
                         onSocialSignIn = onSocialSignIn,
                         snackbarHostState = snackbarHostState,
-
                     )
                 }
 

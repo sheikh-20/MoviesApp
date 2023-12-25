@@ -84,6 +84,7 @@ import com.application.moviesapp.ui.onboarding.component.EmailComponent
 import com.application.moviesapp.ui.onboarding.component.PasswordComponent
 import com.application.moviesapp.ui.onboarding.component.SocialLoginComponent
 import com.application.moviesapp.ui.theme.MoviesAppTheme
+import com.application.moviesapp.ui.viewmodel.LoginUIState
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import kotlinx.coroutines.flow.SharedFlow
@@ -102,7 +103,8 @@ fun LoginWithPasswordScreen(modifier: Modifier = Modifier,
                             snackbarHostState: SnackbarHostState = SnackbarHostState(),
                             onForgotPasswordClick: () -> Unit = { },
                             email: String = "",
-                            onEmailChange: (String) -> Unit = { _ -> }) {
+                            onEmailChange: (String) -> Unit = { _ -> },
+                            loginUIState: LoginUIState = LoginUIState()) {
 
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -182,12 +184,14 @@ fun LoginWithPasswordScreen(modifier: Modifier = Modifier,
             EmailComponent(
                 email = email,
                 onEmailUpdate = onEmailChange,
-                focusManager = focusManager)
+                focusManager = focusManager,
+                emailError = loginUIState.isEmailError)
 
             PasswordComponent(
                 password = password, 
                 onPasswordUpdate = { password = it },
-                focusManager = focusManager
+                focusManager = focusManager,
+                passwordError = loginUIState.isPasswordError
             )
 
             Row(verticalAlignment = Alignment.CenterVertically) {
