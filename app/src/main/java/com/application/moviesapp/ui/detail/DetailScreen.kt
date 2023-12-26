@@ -426,7 +426,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                                         ) {
 
                                             items(moviesFlow.itemCount) { index ->
-                                                MovieImageCard(imageUrl = moviesFlow[index]?.posterPath ?: "", rating = moviesFlow[index]?.voteAverage.toString() ?: "", movieId = moviesFlow[index]?.id ?: 0)
+                                                MovieImageCard(imageUrl = moviesFlow[index]?.posterPath ?: "", rating = moviesFlow[index]?.voteAverage?.toOneDecimal ?: "", movieId = moviesFlow[index]?.id ?: 0)
                                             }
                                         }
                                     }
@@ -803,7 +803,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                                         ) {
 
                                             items(moviesFlow.itemCount) { index ->
-                                                MovieImageCard(imageUrl = moviesFlow[index]?.posterPath ?: "", rating = moviesFlow[index]?.voteAverage.toString() ?: "", movieId = moviesFlow[index]?.id ?: 0)
+                                                MovieImageCard(imageUrl = moviesFlow[index]?.posterPath ?: "", rating = moviesFlow[index]?.voteAverage?.toOneDecimal ?: "", movieId = moviesFlow[index]?.id ?: 0)
                                             }
                                         }
                                     }

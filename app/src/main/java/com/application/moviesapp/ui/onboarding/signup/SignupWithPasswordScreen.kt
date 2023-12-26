@@ -71,6 +71,7 @@ import com.application.moviesapp.ui.onboarding.component.EmailComponent
 import com.application.moviesapp.ui.onboarding.component.PasswordComponent
 import com.application.moviesapp.ui.onboarding.component.SocialLoginComponent
 import com.application.moviesapp.ui.theme.MoviesAppTheme
+import com.application.moviesapp.ui.viewmodel.OnboardUIState
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import kotlinx.coroutines.flow.SharedFlow
@@ -86,7 +87,8 @@ fun SignupWithPasswordScreen(modifier: Modifier = Modifier,
                              onGithubSignInClick: () -> Unit = {},
                              onSocialSignIn: SharedFlow<Resource<AuthResult>>? = null,
                              onSignInClick: () -> Unit = { },
-                             snackbarHostState: SnackbarHostState = SnackbarHostState(),) {
+                             snackbarHostState: SnackbarHostState = SnackbarHostState(),
+                             signupUIState: OnboardUIState = OnboardUIState()) {
 
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -169,12 +171,14 @@ fun SignupWithPasswordScreen(modifier: Modifier = Modifier,
             EmailComponent(
                 email = email,
                 onEmailUpdate = { email = it },
-                focusManager = focusManager)
+                focusManager = focusManager,
+                emailError = signupUIState.isEmailError)
 
             PasswordComponent(
                 password = password,
                 onPasswordUpdate = { password = it },
-                focusManager = focusManager
+                focusManager = focusManager,
+                passwordError = signupUIState.isPasswordError
             )
 
 

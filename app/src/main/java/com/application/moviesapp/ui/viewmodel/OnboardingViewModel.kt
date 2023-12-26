@@ -9,10 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.moviesapp.UserPreferences
-import com.application.moviesapp.data.api.response.MovieGenreResponse
 import com.application.moviesapp.data.common.Resource
-import com.application.moviesapp.data.repository.AuthRepository
-import com.application.moviesapp.data.repository.MoviesRepository
 import com.application.moviesapp.domain.model.Member
 import com.application.moviesapp.domain.model.MovieGenre
 import com.application.moviesapp.domain.model.MoviesDetail
@@ -24,14 +21,11 @@ import com.application.moviesapp.domain.usecase.SignInFacebookUseCase
 import com.application.moviesapp.domain.usecase.SignInGithubUseCase
 import com.application.moviesapp.domain.usecase.SignInGoogleUseCase
 import com.application.moviesapp.domain.usecase.SignUpEmailUseCase
-import com.application.moviesapp.domain.usecase.UserInfoUseCase
 import com.google.firebase.auth.AuthResult
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -46,7 +40,7 @@ import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
 
-data class LoginUIState(val isEmailError: Boolean = false, val isPasswordError: Boolean = false)
+data class OnboardUIState(val isEmailError: Boolean = false, val isPasswordError: Boolean = false)
 @HiltViewModel
 class OnboardingViewModel @Inject constructor(private val movieGenresUseCase: MovieGenresUseCase,
                                               private val signInGoogleUseCase: SignInGoogleUseCase,
@@ -89,9 +83,11 @@ class OnboardingViewModel @Inject constructor(private val movieGenresUseCase: Mo
     }
 
 
-    private var _loginUIState = MutableStateFlow(LoginUIState())
-    val loginUIState: StateFlow<LoginUIState> get() = _loginUIState
+    private var _loginUIState = MutableStateFlow(OnboardUIState())
+    val loginUIState: StateFlow<OnboardUIState> get() = _loginUIState
 
+    private var _signupUIState = MutableStateFlow(OnboardUIState())
+    val signupUIState: StateFlow<OnboardUIState> get() = _signupUIState
 
     fun getMoviesGenreList() = viewModelScope.launch(Dispatchers.IO) {
         try {
@@ -216,9 +212,23 @@ class OnboardingViewModel @Inject constructor(private val movieGenresUseCase: Mo
     }
 
     fun signUpEmail(email: String?, password: String?) = viewModelScope.launch {
-        signUpEmailUseCase(email = email, password = password).collectLatest {
-            Timber.tag(TAG).d("Email called")
-            _socialSignIn.emit(it)
+        if (email.isNullOrEmpty()) {
+            _signupUIState.update {
+                it.copy(isEmailError = true)
+            }
+        } else if (email.contains("@").not() || email.contains(".com").not()) {
+            _signupUIState.update {
+                it.copy(isEmailError = true)
+            }
+        } else if (password.isNullOrEmpty()){
+            _signupUIState.update {
+                it.copy(isPasswordError = true)
+            }
+        } else {
+            signUpEmailUseCase(email = email, password = password).collectLatest {
+                Timber.tag(TAG).d("Email called")
+                _socialSignIn.emit(it)
+            }
         }
     }
 

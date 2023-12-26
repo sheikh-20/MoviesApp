@@ -66,6 +66,7 @@ fun OnboardingApp(modifier: Modifier = Modifier,
     val uiState by onboardingViewModel.movieGenreUiState.collectAsState()
 
     val loginUIState by onboardingViewModel.loginUIState.collectAsState()
+    val signupUIState by onboardingViewModel.signupUIState.collectAsState()
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -117,7 +118,6 @@ fun OnboardingApp(modifier: Modifier = Modifier,
                             } else {
                                 navController.navigate(OnboardingScreen.ForgotPassword.name)
                             }
-
                         },
                         email = onboardingViewModel.email,
                         onEmailChange = onboardingViewModel::onEmailChange,
@@ -134,6 +134,7 @@ fun OnboardingApp(modifier: Modifier = Modifier,
                         onGithubSignInClick = { onboardingViewModel.signInGithub(context as Activity) },
                         onSocialSignIn = onSocialSignIn,
                         snackbarHostState = snackbarHostState,
+                        signupUIState = signupUIState
                     )
                 }
 
