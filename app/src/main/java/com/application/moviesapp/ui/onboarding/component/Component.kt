@@ -34,7 +34,9 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun SocialLoginComponent(modifier: Modifier = Modifier, @DrawableRes icon: Int, onClick: () -> Unit) {
     OutlinedIconButton(
-        modifier = modifier.size(height = 50.dp, width = 70.dp).padding(4.dp),
+        modifier = modifier
+            .size(height = 50.dp, width = 70.dp)
+            .padding(4.dp),
         onClick = onClick,
         shape = RoundedCornerShape(30),
         border = BorderStroke(width = .5.dp, color =  Color.LightGray)) {
@@ -49,11 +51,18 @@ fun SocialLoginComponent(modifier: Modifier = Modifier, @DrawableRes icon: Int, 
 }
 
 @Composable
-fun EmailComponent(modifier: Modifier = Modifier, email: String = "", onEmailUpdate: (String) -> Unit = {}, focusManager: FocusManager) {
+fun EmailComponent(modifier: Modifier = Modifier,
+                   email: String = "",
+                   onEmailUpdate: (String) -> Unit = {},
+                   focusManager: FocusManager,
+                   emailError: Boolean = false) {
     OutlinedTextField(
         value = email,
         onValueChange = onEmailUpdate,
-        label = { Text(text = "Email") },
+        label = {
+            if (!emailError) Text(text = "Email") else Text(text = "Enter email address")
+
+                },
         leadingIcon = {
             Icon(imageVector = Icons.Rounded.Email, contentDescription = null)
         },
@@ -64,16 +73,23 @@ fun EmailComponent(modifier: Modifier = Modifier, email: String = "", onEmailUpd
             keyboardType = KeyboardType.Email
         ),
         keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
-        colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary, unfocusedBorderColor = Color.LightGray)
+        colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary, unfocusedBorderColor = Color.LightGray),
+        isError = emailError
     )
 }
 
 @Composable
-fun PasswordComponent(modifier: Modifier = Modifier, password: String = "", onPasswordUpdate: (String) -> Unit = {}, focusManager: FocusManager) {
+fun PasswordComponent(modifier: Modifier = Modifier,
+                      password: String = "",
+                      onPasswordUpdate: (String) -> Unit = {},
+                      focusManager: FocusManager,
+                      passwordError: Boolean = false) {
     OutlinedTextField(
         value = password,
         onValueChange = onPasswordUpdate,
-        label = { Text(text = "Password") },
+        label = {
+            if (!passwordError) Text(text = "Password") else Text(text = "Enter password")
+                },
         leadingIcon = {
             Icon(imageVector = Icons.Rounded.Lock, contentDescription = null)
         },
@@ -90,6 +106,7 @@ fun PasswordComponent(modifier: Modifier = Modifier, password: String = "", onPa
             keyboardType = KeyboardType.Password
         ),
         keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-        colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary, unfocusedBorderColor = Color.LightGray)
+        colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary, unfocusedBorderColor = Color.LightGray),
+        isError = passwordError
     )
 }
