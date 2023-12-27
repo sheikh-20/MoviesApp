@@ -84,7 +84,7 @@ interface MoviesRepository {
 
     suspend fun getTvSeriesGenres(): Response<MovieGenreResponse>
 
-    fun readMovieDownload(): Flow<List<MovieDownloadEntity>>
+    fun readMovieDownload(search: String = ""): Flow<List<MovieDownloadEntity>>
 
     suspend fun insertMovieDownload(download: MovieDownloadEntity)
 
@@ -171,7 +171,7 @@ class MoviesRepositoryImpl @Inject constructor(private val movies: MoviesApi,
 
     override suspend fun getTvSeriesGenres(): Response<MovieGenreResponse> = movies.getTVSeriesGenres()
 
-    override fun readMovieDownload(): Flow<List<MovieDownloadEntity>> = database.movieDownloadDao.getAllDownloads()
+    override fun readMovieDownload(search: String): Flow<List<MovieDownloadEntity>> = database.movieDownloadDao.getAllDownloads(search)
 
     override suspend fun insertMovieDownload(download: MovieDownloadEntity) =  database.movieDownloadDao.insertDownload(download)
 

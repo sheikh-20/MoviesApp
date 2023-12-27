@@ -9,6 +9,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -72,6 +74,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -83,6 +86,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -154,7 +159,12 @@ fun HomeApp(modifier: Modifier = Modifier,
     val exploreUiState: ExploreUiState by exploreViewModel.exploreUiState.collectAsState()
     val profileUiState by homeViewModel.profileInfoUiState.collectAsState()
     val darkModeUiState by profileViewModel.isDarkMode.collectAsState(initial = SettingsPreference(false))
-    val downloadUiState by downloadViewModel.readAllDownload().collectAsState()
+
+
+    var searchValue by remember {
+        mutableStateOf("")
+    }
+    val downloadUiState by downloadViewModel.readAllDownload(searchValue).collectAsState()
 
     val genreUiState by exploreViewModel.genreUiState.collectAsState()
     val accountSetupUiCase by exploreViewModel.readUserPreference.collectAsState()
@@ -308,7 +318,9 @@ fun HomeApp(modifier: Modifier = Modifier,
                 onHomeSearchClick = {
                     navController.popBackStack()
                     navController.navigate(BottomNavigationScreens.Explore.route)
-                })
+                },
+                searchValue = searchValue,
+                onDownloadSearch = { searchValue = it })
         },
         bottomBar = {
             HomeBottomBarNavigation(navController)
@@ -735,7 +747,9 @@ private fun HomeTopAppbar(navController: NavHostController,
                           downloadHideTopAppBar: Boolean,
                           onFilterClick: () -> Unit = {},
                           search: String = "",
-                          onHomeSearchClick: () -> Unit = {  }
+                          onHomeSearchClick: () -> Unit = {  },
+                          searchValue: String = "",
+                          onDownloadSearch: (String) -> Unit = { _ -> }
                           ) {
 
     val context = LocalContext.current
@@ -819,23 +833,63 @@ private fun HomeTopAppbar(navController: NavHostController,
         }
         BottomNavigationScreens.Download.route -> {
 
+            val focusManager = LocalFocusManager.current
+            val interactionSource = remember { MutableInteractionSource() }
+            var onSearchClick by remember { mutableStateOf(false) }
+
+            val focusRequest = remember { FocusRequester() }
+
+            if (!interactionSource.collectIsFocusedAsState().value) {
+                onSearchClick = false
+
+            }
+
             AnimatedVisibility(
                 visible = downloadHideTopAppBar,
                 enter = slideInVertically(animationSpec = tween(durationMillis = 200)),
                 exit = slideOutVertically(animationSpec = tween(durationMillis = 200))) {
 
                 TopAppBar(
-                    title = { Text(text = "Download") },
+                    title = {
+                        if (!onSearchClick) {
+                            Text(text = "Download")
+                        } else {
+                            OutlinedTextField(value = searchValue,
+                                onValueChange = onDownloadSearch,
+                                modifier = Modifier
+                                    .height(64.dp)
+                                    .fillMaxWidth()
+                                    .padding(start = 0.dp, top = 8.dp, end = 16.dp, bottom = 8.dp)
+                                    .focusRequester(focusRequest),
+                                interactionSource = interactionSource,
+                                shape = RoundedCornerShape(30),
+                                textStyle = TextStyle(fontSize = MaterialTheme.typography.bodyLarge.fontSize, lineHeight = MaterialTheme.typography.bodyLarge.lineHeight),
+                                trailingIcon = { Icon(imageVector = Icons.Rounded.Search, contentDescription = null) },
+                                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+                                keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() })
+                            )
+
+                            SideEffect {
+                                focusRequest.requestFocus()
+                            }
+                        }
+                            },
                     navigationIcon = {
-                        IconButton(onClick = {   }) {
-                            Icon(painter = painterResource(id = R.drawable.ic_movie),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary)
+                        if (!onSearchClick) {
+                            IconButton(onClick = {   }) {
+                                Icon(painter = painterResource(id = R.drawable.ic_movie),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary)
+                            }
                         }
                     },
                     actions = {
-                        IconButton(onClick = {}) {
-                            Icon(imageVector = Icons.Rounded.Search, contentDescription = null)
+                        if (!onSearchClick) {
+                            IconButton(onClick = {
+                                onSearchClick = true
+                            }) {
+                                Icon(imageVector = Icons.Rounded.Search, contentDescription = null)
+                            }
                         }
                     },
                     colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent)
