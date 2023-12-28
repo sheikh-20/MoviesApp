@@ -9,9 +9,8 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MovieDownloadDao {
-
-    @Query("SELECT * from movie_download_entity ORDER BY update_at DESC")
-    fun getAllDownloads(): Flow<List<MovieDownloadEntity>>
+    @Query("SELECT * FROM movie_download_entity WHERE title LIKE :search || '%' ORDER BY update_at DESC")
+    fun getAllDownloads(search: String = ""): Flow<List<MovieDownloadEntity>>
 
     @Insert
     suspend fun insertDownload(download: MovieDownloadEntity)

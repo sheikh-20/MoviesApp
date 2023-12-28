@@ -1,5 +1,8 @@
 package com.application.moviesapp.ui.viewmodel
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.moviesapp.data.local.entity.MovieDownloadEntity
@@ -18,7 +21,7 @@ data class DownloadsUiState(val data: List<MovieDownloadEntity> = emptyList())
 @HiltViewModel
 class DownloadViewModel @Inject constructor(private val useCase: MovieDownloadUseCase): ViewModel() {
 
-    fun readAllDownload() = useCase.readMovieDownload().map { DownloadsUiState(it) }
+    fun readAllDownload(search: String = "") = useCase.readMovieDownload(search).map { DownloadsUiState(it) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000L),
