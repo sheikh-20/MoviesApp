@@ -133,6 +133,8 @@ fun DetailScreen(modifier: Modifier = Modifier,
     val context = LocalContext.current
 
     val scrollState = rememberScrollState()
+    val overviewScrollState = rememberScrollState()
+
     val scrollToPosition by remember {
         mutableStateOf(0f)
     }
@@ -316,7 +318,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                                         isViewMore = !isViewMore
                                         if (!isViewMore) {
                                             coroutineScope.launch {
-                                                scrollState.animateScrollTo(value = movieUIState.data.overview?.length ?: 0)
+                                                overviewScrollState.animateScrollTo(value = movieUIState.data.overview?.length ?: 0)
                                             }
                                         }
                                     },
@@ -324,7 +326,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                             } else {
                                 Column(modifier = modifier
                                     .height(100.dp)
-                                    .verticalScroll(state = scrollState)) {
+                                    .verticalScroll(state = overviewScrollState)) {
 
                                     ClickableText(
                                         text = buildAnnotatedString {
@@ -615,7 +617,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                                         isViewMore = !isViewMore
                                         if (!isViewMore) {
                                             coroutineScope.launch {
-                                                scrollState.animateScrollTo(value = tvSeriesUIState.data.overview?.length ?: 0)
+                                                overviewScrollState.animateScrollTo(value = tvSeriesUIState.data.overview?.length ?: 0)
                                             }
                                         }
                                     },
@@ -623,7 +625,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                             } else {
                                 Column(modifier = modifier
                                     .height(100.dp)
-                                    .verticalScroll(state = scrollState)) {
+                                    .verticalScroll(state = overviewScrollState)) {
 
                                     ClickableText(
                                         text = buildAnnotatedString {
