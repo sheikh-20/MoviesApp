@@ -21,8 +21,8 @@ fun LanguageApp(modifier: Modifier = Modifier) {
         topBar = {
             LanguageTopAppbar()
         }
-    ) {
-        LanguageScreen()
+    ) { paddingValues ->
+        LanguageScreen(paddingValues = paddingValues)
     }
 }
 
