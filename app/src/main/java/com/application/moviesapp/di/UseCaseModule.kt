@@ -3,6 +3,7 @@ package com.application.moviesapp.di
 import com.application.moviesapp.data.python.WorkManagerRepository
 import com.application.moviesapp.data.repository.AccountSetupRepository
 import com.application.moviesapp.data.repository.AuthRepository
+import com.application.moviesapp.data.repository.LanguagePreferenceRepository
 import com.application.moviesapp.data.repository.MoviesRepository
 import com.application.moviesapp.data.repository.PasswordResetRepository
 import com.application.moviesapp.data.repository.SettingsPreferenceRepository
@@ -23,6 +24,7 @@ import com.application.moviesapp.domain.usecase.GetSignInFacebookInteractor
 import com.application.moviesapp.domain.usecase.MovieDetailsUseCase
 import com.application.moviesapp.domain.usecase.MovieFavouriteUseCase
 import com.application.moviesapp.domain.usecase.AccountSetupUseCase
+import com.application.moviesapp.domain.usecase.GetLanguageInteractor
 import com.application.moviesapp.domain.usecase.GetMovieDownloadInteractor
 import com.application.moviesapp.domain.usecase.GetMovieGenreInteractor
 import com.application.moviesapp.domain.usecase.GetMovieNowPlayingInteractor
@@ -35,6 +37,7 @@ import com.application.moviesapp.domain.usecase.GetTvSeriesEpisodesUseCase
 import com.application.moviesapp.domain.usecase.GetTvSeriesGenreInteractor
 import com.application.moviesapp.domain.usecase.GetTvSeriesNowPlayingInteractor
 import com.application.moviesapp.domain.usecase.GetTvSeriesTrailerInteractor
+import com.application.moviesapp.domain.usecase.LanguageUseCase
 import com.application.moviesapp.domain.usecase.MovieDownloadUseCase
 import com.application.moviesapp.domain.usecase.MovieGenresUseCase
 import com.application.moviesapp.domain.usecase.MovieNowPlayingUseCase
@@ -71,6 +74,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import org.checkerframework.checker.signature.qual.SignatureBottom
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -252,6 +256,12 @@ class UseCaseModule {
     @Singleton
     fun providesPasswordResetUseCase(passwordResetRepository: PasswordResetRepository): PasswordResetUseCase {
         return GetPasswordResetInteractors(passwordResetRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesLanguageUseCase(languagePreferenceRepository: LanguagePreferenceRepository): LanguageUseCase {
+        return GetLanguageInteractor(languagePreferenceRepository)
     }
 }
 

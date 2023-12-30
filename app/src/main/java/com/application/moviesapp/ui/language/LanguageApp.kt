@@ -11,18 +11,26 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.application.moviesapp.domain.model.LanguagePreference
+import com.application.moviesapp.ui.viewmodel.ProfileViewModel
 
 @Composable
-fun LanguageApp(modifier: Modifier = Modifier) {
+fun LanguageApp(modifier: Modifier = Modifier, profileViewModel: ProfileViewModel = hiltViewModel()) {
+
+    val languageUIState by profileViewModel.selectLanguage.collectAsState(initial = LanguagePreference(language[0].language[0]))
+
     Scaffold(
         topBar = {
             LanguageTopAppbar()
         }
     ) { paddingValues ->
-        LanguageScreen(paddingValues = paddingValues)
+        LanguageScreen(paddingValues = paddingValues, languageUIState = languageUIState, onLanguageClick = profileViewModel::updateLanguage)
     }
 }
 

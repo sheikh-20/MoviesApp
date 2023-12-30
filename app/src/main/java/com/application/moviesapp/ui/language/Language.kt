@@ -7,6 +7,6 @@ val language = listOf<Language>(
         title = "Suggested", listOf("English (US)", "English (UK)")
     ),
     Language(
-        title = "Language", listOf("Tamil", "Arabic", "French")
+        title = "Language", listOf("Tamil", "Arabic")
     ),
 )
