@@ -19,8 +19,12 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FileDownload
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -30,6 +34,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -50,13 +59,38 @@ import com.application.moviesapp.ui.detail.IS_TYPE
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.utility.toImageUrl
 import com.application.moviesapp.ui.utility.toOneDecimal
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterialApi::class,
+    ExperimentalMaterialApi::class
+)
 @Composable
 fun MyListScreen(modifier: Modifier = Modifier,
                  moviesFavouriteFlow: LazyPagingItems<MovieFavourite>? = null,
                  lazyGridState: LazyGridState = LazyGridState(),
                  bottomPadding: PaddingValues = PaddingValues()
 ) {
+
+    val coroutineScope = rememberCoroutineScope()
+
+    var isRefreshing by remember { mutableStateOf(false) }
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing,
+        onRefresh = {
+            coroutineScope.launch {
+                isRefreshing = !isRefreshing
+                moviesFavouriteFlow?.refresh()
+
+                delay(1_000L)
+                isRefreshing = !isRefreshing
+            }
+        })
+
+    LaunchedEffect(key1 = Unit) {
+        moviesFavouriteFlow?.refresh()
+    }
 
 //    when (uiState) {
 //            is Resource.Loading -> {
@@ -89,54 +123,72 @@ fun MyListScreen(modifier: Modifier = Modifier,
 //
 //            is Resource.Success -> {
 
-//                if (uiState.data.isNullOrEmpty()) {
-//                    Column(verticalArrangement = Arrangement.spacedBy(16.dp),
-//                        modifier = modifier
-//                            .fillMaxSize()
-//                            .wrapContentSize(align = Alignment.Center)
-//                            .padding(32.dp)) {
-//                        Image(
-//                            painter = painterResource(id = R.drawable.ic_empty_list),
-//                            contentDescription = null,
-//                            modifier = modifier
-//                                .fillMaxWidth()
-//                                .wrapContentWidth(align = Alignment.CenterHorizontally)
-//                                .size(200.dp),
-//                            contentScale = ContentScale.Crop,
-//                        )
-//
-//                        Text(text = "You List is Empty",
-//                            style = MaterialTheme.typography.titleLarge,
-//                            modifier = modifier
-//                                .fillMaxWidth()
-//                                .wrapContentWidth(align = Alignment.CenterHorizontally))
-//
-//                        Text(text = "It seems you haven't downloaded any movies or series",
-//                            textAlign = TextAlign.Center,
-//                            style = MaterialTheme.typography.bodyLarge,
-//                            modifier = modifier
-//                                .fillMaxWidth()
-//                                .wrapContentWidth(align = Alignment.CenterHorizontally))
-//                    }
+
 //                } else {
-                    Column(modifier = modifier
+
+                    Box(modifier = modifier
                         .fillMaxSize()
                         .padding(
                             top = bottomPadding.calculateTopPadding(),
                             bottom = bottomPadding.calculateBottomPadding()
-                        )) {
+                        )
+                        .pullRefresh(pullRefreshState)) {
+                        Column() {
+                            if (moviesFavouriteFlow?.itemCount == 0) {
+                                Column(
+                                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                                    modifier = modifier
+                                        .fillMaxSize()
+                                        .wrapContentSize(align = Alignment.Center)
+                                        .padding(32.dp)
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.ic_empty_list),
+                                        contentDescription = null,
+                                        modifier = modifier
+                                            .fillMaxWidth()
+                                            .wrapContentWidth(align = Alignment.CenterHorizontally)
+                                            .size(200.dp),
+                                        contentScale = ContentScale.Crop,
+                                    )
 
-                        LazyVerticalGrid(
-                            columns = GridCells.Fixed(2),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                            state = lazyGridState,
-                            contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
+                                    Text(
+                                        text = "You List is Empty",
+                                        style = MaterialTheme.typography.titleLarge,
+                                        modifier = modifier
+                                            .fillMaxWidth()
+                                            .wrapContentWidth(align = Alignment.CenterHorizontally)
+                                    )
 
-                            items(moviesFavouriteFlow?.itemCount ?: return@LazyVerticalGrid) { index ->
-                                MovieImageCard(imageUrl = moviesFavouriteFlow[index]?.posterPath ?: "", rating = moviesFavouriteFlow[index]?.voteAverage.toString(), movieId = moviesFavouriteFlow[index]?.id ?: 0)
+                                    Text(
+                                        text = "It seems you haven't listed any movies or series",
+                                        textAlign = TextAlign.Center,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        modifier = modifier
+                                            .fillMaxWidth()
+                                            .wrapContentWidth(align = Alignment.CenterHorizontally)
+                                    )
+                                }
+                            } else {
+                                LazyVerticalGrid(
+                                    columns = GridCells.Fixed(2),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                                    state = lazyGridState,
+                                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
+
+                                    items(moviesFavouriteFlow?.itemCount ?: return@LazyVerticalGrid) { index ->
+                                        MovieImageCard(imageUrl = moviesFavouriteFlow[index]?.posterPath ?: "", rating = moviesFavouriteFlow[index]?.voteAverage.toString(), movieId = moviesFavouriteFlow[index]?.id ?: 0)
+                                    }
+                                }
                             }
                         }
+
+                        PullRefreshIndicator(
+                            refreshing = isRefreshing,
+                            state = pullRefreshState,
+                            modifier = Modifier.align(Alignment.TopCenter)
+                        )
                     }
 //                }
 //            }
