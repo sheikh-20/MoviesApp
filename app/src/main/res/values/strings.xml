@@ -26,7 +26,12 @@
     <!--Facebook-->
     <string name="facebook_client_token" translatable="false">b548bf56904c90aba2acb9fc859053a5</string>
     <string name="fb_login_protocol_scheme" translatable="false">fb5bf07f71c1ca9d88a0b302</string>
+
+
     <string name="title_activity_account_setup">AccountSetupActivity</string>
     <string name="signin">Sign In</string>
     <string name="seasons">Seasons</string>
+
+
+
 </resources>
