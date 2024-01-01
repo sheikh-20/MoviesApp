@@ -5,12 +5,16 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.application.moviesapp.BuildConfig
 import com.application.moviesapp.R
 import com.application.moviesapp.domain.model.Stream
 import java.io.File
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.floor
 
@@ -119,4 +123,24 @@ fun Long.formatMinSec(): String {
                     )
         )
     }
+}
+
+@Composable
+fun SetLanguage(language: String = "English (US)") {
+    val locale = Locale(
+        when (language) {
+            "English (US)" -> "en"
+            "Tamil" -> "ta"
+            "Arabic" -> "ar"
+            else -> "en"
+        }
+    )
+    Locale.setDefault(locale)
+    val configuration = LocalConfiguration.current
+    configuration.setLocale(locale)
+    configuration.setLocale(locale)
+
+    val resources = LocalContext.current.resources
+    resources.updateConfiguration(configuration, resources.displayMetrics)
+
 }

@@ -117,13 +117,16 @@ import com.application.moviesapp.UserPreferences
 import com.application.moviesapp.data.SORT_BY
 import com.application.moviesapp.data.common.Resource
 import com.application.moviesapp.data.local.entity.MovieDownloadEntity
+import com.application.moviesapp.domain.model.LanguagePreference
 import com.application.moviesapp.domain.model.MovieGenre
 import com.application.moviesapp.domain.model.SettingsPreference
 import com.application.moviesapp.ui.home.download.DownloadScreen
 import com.application.moviesapp.ui.home.explore.ExploreScreen
 import com.application.moviesapp.ui.home.mylist.MyListScreen
 import com.application.moviesapp.ui.home.profile.ProfileScreen
+import com.application.moviesapp.ui.language.language
 import com.application.moviesapp.ui.onboarding.OnboardingActivity
+import com.application.moviesapp.ui.utility.SetLanguage
 import com.application.moviesapp.ui.utility.getFileSize
 import com.application.moviesapp.ui.viewmodel.DownloadViewModel
 import com.application.moviesapp.ui.viewmodel.ExploreUiState
@@ -190,6 +193,12 @@ fun HomeApp(modifier: Modifier = Modifier,
     val permissionState = rememberMultiplePermissionsState(permissions = listOf(Manifest.permission.POST_NOTIFICATIONS))
 
     val profileUIState by onboardingViewModel.profilePhotoUIState.collectAsState()
+
+    val languageUIState by profileViewModel.selectLanguage.collectAsState(initial = LanguagePreference(
+        language[0].language[0])
+    )
+
+    SetLanguage(languageUIState.language)
 
     permissionState.permissions.forEach {
         when (it.permission) {

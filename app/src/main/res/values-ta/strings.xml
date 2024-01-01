@@ -12,10 +12,13 @@
     <string name="or">அல்லது</string>
     <string name="don_t_have_an_account">கணக்கு இல்லையா?</string>
     <string name="sign_up">பதிவு செய்யவும்</string>
-    <string name="home">Home</string>
-    <string name="explore">Explore</string>
-    <string name="mylist">MyList</string>
-    <string name="download">Download</string>
-    <string name="profile">Profile</string>
-    <string name="signin">Sign In</string>
+    <string name="sign_in">உள்நுழைக</string>
+    <string name="already_have_an_account">ஏற்கனவே ஒரு கணக்கு உள்ளதா</string>
+    <string name="choose_your_interests_description">உங்கள் ஆர்வங்களைத் தேர்ந்தெடுத்து சிறந்த திரைப்படப் பரிந்துரையைப் பெறுங்கள். கவலைப்பட வேண்டாம், நீங்கள் எப்போது வேண்டுமானாலும் அதை மாற்றிக்கொள்ளலாம்.</string>
+    <string name="home">வீடு</string>
+    <string name="explore">ஆராயுங்கள்</string>
+    <string name="mylist">எனது பட்டியல்</string>
+    <string name="download">பதிவிறக்க</string>
+    <string name="profile">சுயவிவரம்</string>
+    <string name="signin">உள்நுழையவும்</string>
 </resources>

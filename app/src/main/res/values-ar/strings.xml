@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Movies App</string>
+    <string name="welcome_to_mflix">مرحبا بكم في MFlix</string>
+    <string name="mflix_description">أفضل تطبيق لبث الأفلام في القرن ليجعل أيامك رائعة!</string>
+    <string name="get_started">البدء</string>
+    <string name="continue_with_facebook">Facebook تواصل مع</string>
+    <string name="continue_with_google">Google تواصل مع</string>
+    <string name="continue_with_github">Github تواصل مع</string>
+    <string name="signin_with_password">تسجيل الدخول باستخدام كلمة المرور</string>
+    <string name="let_s_you_in">دعنا ندخل</string>
+    <string name="or">أو</string>
+    <string name="don_t_have_an_account">ليس لديك حساب؟</string>
+    <string name="sign_up">اشتراك</string>
+    <string name="sign_in">تسجيل الدخول</string>
+    <string name="already_have_an_account">هل لديك حساب؟</string>
+    <string name="choose_your_interests_description">اختر اهتماماتك واحصل على أفضل توصية للفيلم. لا تقلق، يمكنك دائمًا تغييره لاحقًا.</string>
+    <string name="home">بيت</string>
+    <string name="explore">يستكشف</string>
+    <string name="mylist">قائمتي</string>
+    <string name="download">تحميل</string>
+    <string name="profile">حساب تعريفي</string>
+    <string name="signin">تسجيل الدخول</string>
+</resources>
