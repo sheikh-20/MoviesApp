@@ -147,7 +147,7 @@ fun LoginWithPasswordScreen(modifier: Modifier = Modifier,
         )
 
         Text(
-            text = "Login To Your Account",
+            text = stringResource(R.string.login_to_your_account),
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Medium
         )
@@ -169,7 +169,7 @@ fun LoginWithPasswordScreen(modifier: Modifier = Modifier,
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(checked = false, onCheckedChange = {})
-                Text(text = "Remember me", style = MaterialTheme.typography.labelLarge)
+                Text(text = stringResource(id = R.string.remember_me), style = MaterialTheme.typography.labelLarge)
             }
 
             Button(onClick = { onSignInClick(email, password) },
@@ -192,7 +192,7 @@ fun LoginWithPasswordScreen(modifier: Modifier = Modifier,
         }
 
         TextButton(onClick = onForgotPasswordClick) {
-            Text(text = "Forgot the password?", fontWeight = FontWeight.Bold)
+            Text(text = stringResource(R.string.forgot_the_password), fontWeight = FontWeight.Bold)
         }
 
         Row(modifier = modifier
@@ -201,7 +201,7 @@ fun LoginWithPasswordScreen(modifier: Modifier = Modifier,
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Divider(modifier = modifier.weight(1f), color = Color.LightGray)
-            Text(text = "or continue with")
+            Text(text = stringResource(id = R.string.or_continue_with))
             Divider(modifier = modifier.weight(1f), color = Color.LightGray)
         }
 
@@ -231,9 +231,9 @@ fun LoginWithPasswordScreen(modifier: Modifier = Modifier,
         }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = "Don't have an account?")
+            Text(text = stringResource(id = R.string.don_t_have_an_account))
             TextButton(onClick = onSignupClick) {
-                Text(text = "Sign up", fontWeight = FontWeight.Bold)
+                Text(text = stringResource(id = R.string.sign_up), fontWeight = FontWeight.Bold)
             }
         }
     }

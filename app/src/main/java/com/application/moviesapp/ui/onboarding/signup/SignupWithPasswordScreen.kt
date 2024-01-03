@@ -160,7 +160,7 @@ fun SignupWithPasswordScreen(modifier: Modifier = Modifier,
         )
 
         Text(
-            text = "Create Your Account",
+            text = stringResource(R.string.create_your_account),
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Medium
         )
@@ -184,7 +184,7 @@ fun SignupWithPasswordScreen(modifier: Modifier = Modifier,
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(checked = false, onCheckedChange = {})
-                Text(text = "Remember me", style = MaterialTheme.typography.labelLarge)
+                Text(text = stringResource(R.string.remember_me), style = MaterialTheme.typography.labelLarge)
             }
 
             Button(onClick = { onSignupClick(email, password) },
@@ -209,7 +209,7 @@ fun SignupWithPasswordScreen(modifier: Modifier = Modifier,
         Row(verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Divider(modifier = modifier.weight(1f), color = Color.LightGray)
-            Text(text = "or continue with")
+            Text(text = stringResource(R.string.or_continue_with))
             Divider(modifier = modifier.weight(1f), color = Color.LightGray)
         }
 
