@@ -33,11 +33,13 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import com.application.moviesapp.R
 
 @Composable
 fun SocialLoginComponent(modifier: Modifier = Modifier, @DrawableRes icon: Int, onClick: () -> Unit) {
@@ -68,8 +70,7 @@ fun EmailComponent(modifier: Modifier = Modifier,
         value = email,
         onValueChange = onEmailUpdate,
         label = {
-            if (!emailError) Text(text = "Email") else Text(text = "Enter email address")
-
+            if (!emailError) Text(text = stringResource(R.string.email)) else Text(text = stringResource(R.string.enter_email_address))
                 },
         leadingIcon = {
             Icon(imageVector = Icons.Rounded.Email, contentDescription = null)
@@ -101,7 +102,10 @@ fun PasswordComponent(modifier: Modifier = Modifier,
         value = password,
         onValueChange = onPasswordUpdate,
         label = {
-            if (!passwordError) Text(text = "Password") else Text(text = "Enter password")
+            if (!passwordError) Text(text = stringResource(R.string.password)) else Text(text = stringResource(
+                R.string.enter_password
+            )
+            )
                 },
         leadingIcon = {
             Icon(imageVector = Icons.Rounded.Lock, contentDescription = null)

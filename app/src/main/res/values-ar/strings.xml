@@ -21,4 +21,12 @@
     <string name="download">تحميل</string>
     <string name="profile">حساب تعريفي</string>
     <string name="signin">تسجيل الدخول</string>
+    <string name="remember_me">تذكرنى</string>
+    <string name="or_continue_with">أو الاستمرار مع</string>
+    <string name="email">بريد إلكتروني</string>
+    <string name="enter_email_address">أدخل عنوان البريد الالكتروني</string>
+    <string name="password">كلمة المرور</string>
+    <string name="enter_password">أدخل كلمة المرور</string>
+    <string name="login_to_your_account">تسجيل الدخول إلى حسابك</string>
+    <string name="forgot_the_password">هل نسيت كلمة المرور؟</string>
 </resources>
