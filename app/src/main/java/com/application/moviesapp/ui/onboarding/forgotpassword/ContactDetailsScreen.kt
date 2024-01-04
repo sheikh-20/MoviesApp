@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -51,6 +52,7 @@ fun ContactDetailsScreen(modifier: Modifier = Modifier,
                          snackbarHostState: SnackbarHostState = SnackbarHostState()) {
 
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     Column(modifier = modifier
         .fillMaxSize()
@@ -65,7 +67,7 @@ fun ContactDetailsScreen(modifier: Modifier = Modifier,
             contentScale = ContentScale.Crop,
         )
 
-        Text(text = "Select which contact details should we use to reset your password",
+        Text(text = stringResource(R.string.select_which_contact_details_should_we_use_to_reset_your_password),
             style = MaterialTheme.typography.bodyLarge)
 
         OutlinedButton(onClick = {  },
@@ -94,7 +96,7 @@ fun ContactDetailsScreen(modifier: Modifier = Modifier,
                 }
 
                 Column {
-                    Text(text = "Via email",
+                    Text(text = stringResource(R.string.via_email),
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.DarkGray)
 
@@ -110,7 +112,7 @@ fun ContactDetailsScreen(modifier: Modifier = Modifier,
         Button(onClick = {
             onPasswordResetOtp()
                        coroutineScope.launch {
-                           snackbarHostState.showSnackbar(message = "Password reset email sent successfully", duration = SnackbarDuration.Short)
+                           snackbarHostState.showSnackbar(message = context.getString(R.string.password_reset_email_sent_successfully), duration = SnackbarDuration.Short)
                        }
                          },
             modifier = modifier
@@ -123,7 +125,7 @@ fun ContactDetailsScreen(modifier: Modifier = Modifier,
                 .fillMaxWidth()
                 .requiredHeight(50.dp)) {
 
-            Text(text = "Continue",
+            Text(text = stringResource(R.string.continue_text),
                 modifier = modifier.padding(4.dp))
         }
     }
