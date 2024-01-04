@@ -36,6 +36,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.application.moviesapp.R
 import com.application.moviesapp.domain.usecase.GetSignInFacebookInteractor
 import com.application.moviesapp.domain.usecase.SignInFacebookUseCase
 import com.application.moviesapp.ui.home.HomeActivity
@@ -113,7 +114,7 @@ fun OnboardingApp(modifier: Modifier = Modifier,
                         onForgotPasswordClick = {
                             if (onboardingViewModel.email.isEmpty()) {
                                 coroutineScope.launch {
-                                    snackbarHostState.showSnackbar(message = "Enter your email", duration = SnackbarDuration.Short)
+                                    snackbarHostState.showSnackbar(message = context.getString(R.string.enter_email_address), duration = SnackbarDuration.Short)
                                 }
                             } else {
                                 navController.navigate(OnboardingScreen.ForgotPassword.name)

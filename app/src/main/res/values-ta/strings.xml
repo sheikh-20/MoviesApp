@@ -30,4 +30,8 @@
     <string name="enter_password">கடவுச்சொல்லை உள்ளிடவும்</string>
     <string name="login_to_your_account">உங்கள் கணக்கில் உள்நுழைக</string>
     <string name="forgot_the_password">கடவுச்சொல் மறந்துவிட்டதா?</string>
+    <string name="select_which_contact_details_should_we_use_to_reset_your_password">உங்கள் கடவுச்சொல்லை மீட்டமைக்க எந்த தொடர்பு விவரங்களைப் பயன்படுத்த வேண்டும் என்பதைத் தேர்ந்தெடுக்கவும்</string>
+    <string name="via_email">மின்னஞ்சல் வழியாக</string>
+    <string name="password_reset_email_sent_successfully">கடவுச்சொல் மீட்டமைப்பு மின்னஞ்சல் வெற்றிகரமாக அனுப்பப்பட்டது</string>
+    <string name="continue_text">தொடரவும்</string>
 </resources>

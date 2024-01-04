@@ -29,4 +29,8 @@
     <string name="enter_password">أدخل كلمة المرور</string>
     <string name="login_to_your_account">تسجيل الدخول إلى حسابك</string>
     <string name="forgot_the_password">هل نسيت كلمة المرور؟</string>
+    <string name="select_which_contact_details_should_we_use_to_reset_your_password">حدد تفاصيل الاتصال التي يجب أن نستخدمها لإعادة تعيين كلمة المرور الخاصة بك</string>
+    <string name="via_email">عبر البريد الالكتروني</string>
+    <string name="password_reset_email_sent_successfully">تم إرسال البريد الإلكتروني لإعادة تعيين كلمة المرور بنجاح</string>
+    <string name="continue_text">يكمل</string>
 </resources>
