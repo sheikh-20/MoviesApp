@@ -348,7 +348,8 @@ fun HomeApp(modifier: Modifier = Modifier,
                         navController.navigate(BottomNavigationScreens.Download.route)
                     },
                     goToMyListClick = {
-                    }
+                    },
+                    onMovieWithTvSeries = homeViewModel::getMovieWithTvSeries
                 )
             }
             composable(route = BottomNavigationScreens.Explore.route) {

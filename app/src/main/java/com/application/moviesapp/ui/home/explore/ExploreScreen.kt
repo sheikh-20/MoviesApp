@@ -13,12 +13,21 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -38,7 +47,10 @@ import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.utility.toImageUrl
 import com.application.moviesapp.ui.utility.toOneDecimal
 import com.application.moviesapp.ui.viewmodel.ExploreUiState
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ExploreScreen(modifier: Modifier = Modifier,
                   uiState: ExploreUiState = ExploreUiState.Loading,
@@ -48,6 +60,24 @@ fun ExploreScreen(modifier: Modifier = Modifier,
                   lazyGridState: LazyGridState = LazyGridState(),
                   bottomPadding: PaddingValues = PaddingValues()
 ) {
+
+    val coroutineScope = rememberCoroutineScope()
+    var isRefreshing by remember { mutableStateOf(false) }
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing,
+        onRefresh = {
+            coroutineScope.launch {
+                isRefreshing = !isRefreshing
+                moviesDiscoverFlow.refresh()
+
+                delay(1_000L)
+                isRefreshing = !isRefreshing
+            }
+        })
+
+    LaunchedEffect(key1 = Unit) {
+        moviesDiscoverFlow.refresh()
+    }
 
 //    when (moviesPopularFlow.loadState.refresh) {
 //        is LoadState.Loading -> {
@@ -78,47 +108,52 @@ fun ExploreScreen(modifier: Modifier = Modifier,
 //        }
 //        else -> {
 
-            Column(modifier = modifier
-                .fillMaxSize()
-                .padding(top = bottomPadding.calculateTopPadding(), bottom = bottomPadding.calculateBottomPadding())) {
+    Box(modifier = modifier
+        .fillMaxSize()
+        .padding(
+            top = bottomPadding.calculateTopPadding(),
+            bottom = bottomPadding.calculateBottomPadding()
+        ).pullRefresh(pullRefreshState)) {
+        Column {
 
-                if (searchClicked) {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        state = lazyGridState,
-                        contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp)
-                    ) {
+            if (searchClicked) {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    state = lazyGridState,
+                    contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp)
+                ) {
 
-                        items(count = movieSearchFlow.itemCount) { index ->
-                            MovieImageCard(
-                                imageUrl = movieSearchFlow[index]?.posterPath ?: "",
-                                rating = movieSearchFlow[index]?.voteAverage.toString() ?: "",
-                                movieId = movieSearchFlow[index]?.id
-                            )
-                        }
-                    }
-                } else {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        state = lazyGridState,
-                        contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp)
-                    ) {
-
-                        items(count = moviesDiscoverFlow.itemCount) { index ->
-                            MovieImageCard(
-                                imageUrl = moviesDiscoverFlow[index]?.posterPath ?: "",
-                                rating = moviesDiscoverFlow[index]?.voteAverage.toString() ?: "",
-                                movieId = moviesDiscoverFlow[index]?.id
-                            )
-                        }
+                    items(count = movieSearchFlow.itemCount) { index ->
+                        MovieImageCard(
+                            imageUrl = movieSearchFlow[index]?.posterPath ?: "",
+                            rating = movieSearchFlow[index]?.voteAverage.toString() ?: "",
+                            movieId = movieSearchFlow[index]?.id
+                        )
                     }
                 }
+            } else {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    state = lazyGridState,
+                    contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp)
+                ) {
+
+                    items(count = moviesDiscoverFlow.itemCount) { index ->
+                        MovieImageCard(
+                            imageUrl = moviesDiscoverFlow[index]?.posterPath ?: "",
+                            rating = moviesDiscoverFlow[index]?.voteAverage.toString() ?: "",
+                            movieId = moviesDiscoverFlow[index]?.id
+                        )
+                    }
+                }
+            }
 //            }
 //        }
+        }
     }
 }
 

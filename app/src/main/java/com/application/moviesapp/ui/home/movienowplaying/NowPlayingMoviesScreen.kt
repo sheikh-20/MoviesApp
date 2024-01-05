@@ -2,6 +2,7 @@ package com.application.moviesapp.ui.home.movienowplaying
 
 import android.app.Activity
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,14 +13,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Warning
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -29,12 +35,20 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,7 +64,10 @@ import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.utility.toImageUrl
 import com.application.moviesapp.ui.utility.toOneDecimal
 import com.application.moviesapp.ui.viewmodel.MovieTopRatedUiState
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun NowPlayingMoviesScreen(modifier: Modifier = Modifier,
                     uiState: MovieTopRatedUiState = MovieTopRatedUiState.Loading,
@@ -58,130 +75,79 @@ fun NowPlayingMoviesScreen(modifier: Modifier = Modifier,
                     lazyGridState: LazyGridState = LazyGridState(),
                     bottomPadding: PaddingValues = PaddingValues()
 ) {
-//    when (uiState) {
-//        is MovieTopRatedUiState.Loading -> {
-//            Column(modifier = modifier.fillMaxSize()) {
-//                CircularProgressIndicator(modifier = modifier
-//                    .fillMaxSize()
-//                    .wrapContentSize(align = Alignment.Center))
-//            }
-//        }
-//        is MovieTopRatedUiState.Failure -> {
-//            Text(text = "404")
-//        }
-//        is MovieTopRatedUiState.Success -> {
-//            Column(modifier = modifier
-//                .fillMaxSize()
-//                .padding(16.dp)) {
-//
-//                LazyVerticalGrid(columns = GridCells.Fixed(2),
-//                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-//                    verticalArrangement = Arrangement.spacedBy(8.dp)) {
-//                    items(uiState.movieTopRated.results ?: listOf()) {
-//                        MovieImageCard(imageUrl = it?.posterPath ?: "", rating = it?.voteAverage.toString() ?: "")
-//                    }
-//                }
-//            }
-//        }
-//    }
 
-    Column(modifier = modifier
+    val coroutineScope = rememberCoroutineScope()
+
+    var isRefreshing by remember { mutableStateOf(false) }
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing,
+        onRefresh = {
+            coroutineScope.launch {
+                isRefreshing = !isRefreshing
+                moviesFlow.refresh()
+
+                delay(1_000L)
+                isRefreshing = !isRefreshing
+            }
+        })
+
+    LaunchedEffect(key1 = Unit) {
+        moviesFlow.refresh()
+    }
+
+    Box(modifier = modifier
         .fillMaxSize()
         .padding(
             top = bottomPadding.calculateTopPadding(),
             bottom = bottomPadding.calculateBottomPadding()
-        )) {
+        ).pullRefresh(pullRefreshState)) {
+        Column {
+            if (moviesFlow.itemCount == 0) {
+                Column(modifier = modifier
+                    .fillMaxSize()
+                    .wrapContentSize(align = Alignment.Center),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)) {
 
+                    Text(text = "Not found",
+                        style = MaterialTheme.typography.displayMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center)
 
-        LazyVerticalGrid(columns = GridCells.Fixed(2),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            state = lazyGridState,
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
+                    Text(text = "Check you internet connection",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center)
 
-            val loadState = moviesFlow.loadState.mediator
+                    TextButton(onClick = {  }, modifier = modifier
+                        .fillMaxWidth()
+                        .wrapContentWidth(align = Alignment.CenterHorizontally),) {
+                        Text(text = "Go to Downloads",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.SemiBold)
+                    }
+                }
+            } else {
+                LazyVerticalGrid(columns = GridCells.Fixed(2),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    state = lazyGridState,
+                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
 
-            
-            items(moviesFlow.itemCount) { index ->
-                MovieImageCard(imageUrl = moviesFlow[index]?.posterPath ?: "", rating = moviesFlow[index]?.voteAverage.toString() ?: "", movieId = moviesFlow[index]?.id ?: 0)
+                    items(moviesFlow.itemCount) { index ->
+                        MovieImageCard(imageUrl = moviesFlow[index]?.posterPath ?: "", rating = moviesFlow[index]?.voteAverage.toString() ?: "", movieId = moviesFlow[index]?.id ?: 0)
+                    }
+                }
             }
-
-//            item {
-//                if (loadState?.refresh == LoadState.Loading) {
-//                    Column(
-//                        modifier = Modifier
-//                            .fillMaxSize(),
-//                        horizontalAlignment = Alignment.CenterHorizontally,
-//                        verticalArrangement = Arrangement.Center,
-//                    ) {
-//                        Text(
-//                            modifier = Modifier
-//                                .padding(8.dp),
-//                            text = "Refresh Loading"
-//                        )
-//
-//                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-//                    }
-//                }
-//
-//
-//                if (loadState?.append == LoadState.Loading) {
-//                    Box(
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(16.dp),
-//                        contentAlignment = Alignment.Center,
-//                    ) {
-//                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-//                    }
-//                }
-//
-//                if (loadState?.refresh is LoadState.Error || loadState?.append is LoadState.Error) {
-//                    val isPaginatingError =
-//                        (loadState.append is LoadState.Error) || moviesFlow.itemCount > 1
-//                    val error = if (loadState.append is LoadState.Error)
-//                        (loadState.append as LoadState.Error).error
-//                    else
-//                        (loadState.refresh as LoadState.Error).error
-//
-//                    val modifier = if (isPaginatingError) {
-//                        Modifier.padding(8.dp)
-//                    } else {
-//                        Modifier.fillMaxSize()
-//                    }
-//                    Column(
-//                        modifier = modifier,
-//                        verticalArrangement = Arrangement.Center,
-//                        horizontalAlignment = Alignment.CenterHorizontally,
-//                    ) {
-//                        if (!isPaginatingError) {
-//                            Icon(
-//                                modifier = Modifier
-//                                    .size(64.dp),
-//                                imageVector = Icons.Rounded.Warning, contentDescription = null
-//                            )
-//                        }
-//
-//                        Text(
-//                            modifier = Modifier
-//                                .padding(8.dp),
-//                            text = error.message ?: error.toString(),
-//                            textAlign = TextAlign.Center,
-//                        )
-//
-//                        Button(
-//                            onClick = {
-//                                moviesFlow.refresh()
-//                            },
-//                            content = {
-//                                Text(text = "Refresh")
-//                            },
-//                        )
-//                    }
-//                }
-//
-//            }
         }
+
+        PullRefreshIndicator(
+            refreshing = isRefreshing,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
     }
 }
 
