@@ -44,6 +44,14 @@
     <string name="via_email">Via email</string>
     <string name="password_reset_email_sent_successfully">Password reset email sent successfully</string>
     <string name="continue_text">Continue</string>
+    <string name="not_found">Not found</string>
+    <string name="check_you_internet_connection">Check you internet connection</string>
+    <string name="go_to_downloads">Go to Downloads</string>
+    <string name="play">Play</string>
+    <string name="my_list">My List</string>
+    <string name="now_playing_movies">Now Playing Movies</string>
+    <string name="see_all">See all</string>
+    <string name="now_playing_series">Now Playing Series</string>
 
 
 </resources>

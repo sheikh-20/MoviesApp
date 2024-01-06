@@ -34,4 +34,12 @@
     <string name="via_email">மின்னஞ்சல் வழியாக</string>
     <string name="password_reset_email_sent_successfully">கடவுச்சொல் மீட்டமைப்பு மின்னஞ்சல் வெற்றிகரமாக அனுப்பப்பட்டது</string>
     <string name="continue_text">தொடரவும்</string>
+    <string name="not_found">கிடைக்கவில்லை</string>
+    <string name="check_you_internet_connection">உங்கள் இணைய இணைப்பைச் சரிபார்க்கவும்</string>
+    <string name="go_to_downloads">பதிவிறக்கங்களுக்குச் செல்லவும்</string>
+    <string name="play">விளையாடு</string>
+    <string name="my_list">எனது பட்டியல்</string>
+    <string name="now_playing_movies">இப்போது விளையாடும் திரைப்படங்கள்</string>
+    <string name="see_all">அனைத்தையும் பார்</string>
+    <string name="now_playing_series">இப்போது தொடர் விளையாடுகிறது</string>
 </resources>
