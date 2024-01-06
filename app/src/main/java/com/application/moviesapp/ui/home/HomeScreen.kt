@@ -56,6 +56,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -120,14 +121,14 @@ fun HomeScreen(modifier: Modifier = Modifier,
                 .wrapContentSize(align = Alignment.Center),
                 verticalArrangement = Arrangement.spacedBy(8.dp)) {
 
-                Text(text = "Not found",
+                Text(text = stringResource(R.string.not_found),
                     style = MaterialTheme.typography.displayMedium,
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.SemiBold,
                     modifier = modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center)
 
-                Text(text = "Check you internet connection",
+                Text(text = stringResource(R.string.check_you_internet_connection),
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center)
@@ -135,7 +136,7 @@ fun HomeScreen(modifier: Modifier = Modifier,
                 TextButton(onClick = goToDownloadClick, modifier = modifier
                     .fillMaxWidth()
                     .wrapContentWidth(align = Alignment.CenterHorizontally),) {
-                    Text(text = "Go to Downloads",
+                    Text(text = stringResource(R.string.go_to_downloads),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.SemiBold)
@@ -214,11 +215,11 @@ fun HomeScreen(modifier: Modifier = Modifier,
                                             imageVector = Icons.Rounded.PlayCircle,
                                             contentDescription = null
                                         )
-                                        Text(text = "Play")
+                                        Text(text = stringResource(R.string.play))
                                     }
                                     OutlinedButton(onClick = goToMyListClick) {
                                         Icon(imageVector = Icons.Rounded.Add, contentDescription = null)
-                                        Text(text = "My List")
+                                        Text(text = stringResource(R.string.my_list))
                                     }
                                 }
                             }
@@ -233,14 +234,14 @@ fun HomeScreen(modifier: Modifier = Modifier,
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                             Text(
-                                text = "Now Playing Movies",
+                                text = stringResource(R.string.now_playing_movies),
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.SemiBold
                             )
 
                             TextButton(onClick = { NowPlayingMoviesActivity.startActivity(context as Activity) }) {
                                 Text(
-                                    text = "See all",
+                                    text = stringResource(R.string.see_all),
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.SemiBold
                                 )
@@ -257,14 +258,14 @@ fun HomeScreen(modifier: Modifier = Modifier,
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                             Text(
-                                text = "Now Playing Series",
+                                text = stringResource(R.string.now_playing_series),
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.SemiBold
                             )
 
                             TextButton(onClick = { NowPlayingSeriesActivity.startActivity(context as Activity) }) {
                                 Text(
-                                    text = "See all",
+                                    text = stringResource(id = R.string.see_all),
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.SemiBold
                                 )

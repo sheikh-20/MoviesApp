@@ -33,4 +33,12 @@
     <string name="via_email">عبر البريد الالكتروني</string>
     <string name="password_reset_email_sent_successfully">تم إرسال البريد الإلكتروني لإعادة تعيين كلمة المرور بنجاح</string>
     <string name="continue_text">يكمل</string>
+    <string name="not_found">غير معثور عليه</string>
+    <string name="check_you_internet_connection">تحقق من اتصالك بالإنترنت</string>
+    <string name="go_to_downloads">انتقل إلى التنزيلات</string>
+    <string name="play">يلعب</string>
+    <string name="my_list">قائمتي</string>
+    <string name="now_playing_movies">يتم الآن تشغيل الأفلام</string>
+    <string name="see_all">اظهار الكل</string>
+    <string name="now_playing_series">تلعب الآن سلسلة</string>
 </resources>

@@ -6,14 +6,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Card
@@ -21,6 +24,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -33,6 +37,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
@@ -79,35 +85,6 @@ fun ExploreScreen(modifier: Modifier = Modifier,
         moviesDiscoverFlow.refresh()
     }
 
-//    when (moviesPopularFlow.loadState.refresh) {
-//        is LoadState.Loading -> {
-//            Column(modifier = modifier.fillMaxSize()) {
-//                CircularProgressIndicator(modifier = modifier
-//                    .fillMaxSize()
-//                    .wrapContentSize(align = Alignment.Center))
-//            }
-//        }
-//        is LoadState.Error -> {
-//            Column(modifier = modifier
-//                .fillMaxSize()
-//                .wrapContentSize(align = Alignment.Center),
-//                verticalArrangement = Arrangement.spacedBy(8.dp)) {
-//
-//                Text(text = "Not found",
-//                    style = MaterialTheme.typography.displayMedium,
-//                    color = MaterialTheme.colorScheme.primary,
-//                    fontWeight = FontWeight.SemiBold,
-//                    modifier = modifier.fillMaxWidth(),
-//                    textAlign = TextAlign.Center)
-//
-//                Text(text = "Check you internet connection",
-//                    style = MaterialTheme.typography.bodyLarge,
-//                    modifier = modifier.fillMaxWidth(),
-//                    textAlign = TextAlign.Center)
-//            }
-//        }
-//        else -> {
-
     Box(modifier = modifier
         .fillMaxSize()
         .padding(
@@ -115,45 +92,88 @@ fun ExploreScreen(modifier: Modifier = Modifier,
             bottom = bottomPadding.calculateBottomPadding()
         ).pullRefresh(pullRefreshState)) {
         Column {
-
-            if (searchClicked) {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    state = lazyGridState,
-                    contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp)
+            if (moviesDiscoverFlow.itemCount == 0) {
+                Column(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .wrapContentSize(align = Alignment.Center),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
 
-                    items(count = movieSearchFlow.itemCount) { index ->
-                        MovieImageCard(
-                            imageUrl = movieSearchFlow[index]?.posterPath ?: "",
-                            rating = movieSearchFlow[index]?.voteAverage.toString() ?: "",
-                            movieId = movieSearchFlow[index]?.id
+                    Text(
+                        text = "Not found",
+                        style = MaterialTheme.typography.displayMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+
+                    Text(
+                        text = "Check you internet connection",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+
+                    TextButton(
+                        onClick = { },
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .wrapContentWidth(align = Alignment.CenterHorizontally),
+                    ) {
+                        Text(
+                            text = "Go to Downloads",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.SemiBold
                         )
                     }
                 }
             } else {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    state = lazyGridState,
-                    contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp)
-                ) {
+                if (searchClicked) {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        state = lazyGridState,
+                        contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp)
+                    ) {
 
-                    items(count = moviesDiscoverFlow.itemCount) { index ->
-                        MovieImageCard(
-                            imageUrl = moviesDiscoverFlow[index]?.posterPath ?: "",
-                            rating = moviesDiscoverFlow[index]?.voteAverage.toString() ?: "",
-                            movieId = moviesDiscoverFlow[index]?.id
-                        )
+                        items(count = movieSearchFlow.itemCount) { index ->
+                            MovieImageCard(
+                                imageUrl = movieSearchFlow[index]?.posterPath ?: "",
+                                rating = movieSearchFlow[index]?.voteAverage.toString() ?: "",
+                                movieId = movieSearchFlow[index]?.id
+                            )
+                        }
+                    }
+                } else {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        state = lazyGridState,
+                        contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp)
+                    ) {
+
+                        items(count = moviesDiscoverFlow.itemCount) { index ->
+                            MovieImageCard(
+                                imageUrl = moviesDiscoverFlow[index]?.posterPath ?: "",
+                                rating = moviesDiscoverFlow[index]?.voteAverage.toString() ?: "",
+                                movieId = moviesDiscoverFlow[index]?.id
+                            )
+                        }
                     }
                 }
             }
-//            }
-//        }
         }
+
+        PullRefreshIndicator(
+            refreshing = isRefreshing,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
     }
 }
 
