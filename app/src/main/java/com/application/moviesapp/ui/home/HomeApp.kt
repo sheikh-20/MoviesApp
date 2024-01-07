@@ -360,7 +360,11 @@ fun HomeApp(modifier: Modifier = Modifier,
                     movieSearchFlow = moviesSearchFlowState,
                     lazyGridState = exploreScrollState,
                     bottomPadding = paddingValues,
-                    searchClicked = searchUiState.clicked)
+                    searchClicked = searchUiState.clicked,
+                    onGoToDownloadsClick = {
+                        navController.popBackStack()
+                        navController.navigate(BottomNavigationScreens.Download.route)
+                    })
             }
             composable(route = BottomNavigationScreens.MyList.route) {
                 MyListScreen(
@@ -480,7 +484,7 @@ private fun BottomSheetFilterContent(modifier: Modifier = Modifier,
             Column(modifier = modifier
                 .padding(vertical = 16.dp)
                 .systemBarsPadding(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Text(text = "Sort & Filter",
+                Text(text = stringResource(R.string.sort_filter),
                     style = MaterialTheme.typography.headlineSmall,
                     textAlign = TextAlign.Center,
                     modifier = modifier.fillMaxWidth(),
@@ -491,7 +495,7 @@ private fun BottomSheetFilterContent(modifier: Modifier = Modifier,
 
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 
-                    Text(text = "Categories",
+                    Text(text = stringResource(R.string.categories),
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Bold,
                         modifier = modifier.padding(horizontal = 16.dp))
@@ -519,7 +523,7 @@ private fun BottomSheetFilterContent(modifier: Modifier = Modifier,
                         }
                     }
 
-                    Text(text = "Genres",
+                    Text(text = stringResource(R.string.genres),
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Bold,
                         modifier = modifier.padding(horizontal = 16.dp))
@@ -545,7 +549,7 @@ private fun BottomSheetFilterContent(modifier: Modifier = Modifier,
                         }
                     }
 
-                    Text(text = "Sort",
+                    Text(text = stringResource(R.string.sort),
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Bold,
                         modifier = modifier.padding(horizontal = 16.dp))
@@ -567,7 +571,7 @@ private fun BottomSheetFilterContent(modifier: Modifier = Modifier,
                         }
                     }
 
-                    Text(text = "Include Adult",
+                    Text(text = stringResource(R.string.include_adult),
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Bold,
                         modifier = modifier.padding(horizontal = 16.dp))
@@ -578,13 +582,12 @@ private fun BottomSheetFilterContent(modifier: Modifier = Modifier,
                             .padding(horizontal = 16.dp),
                         selected = includeAdult,
                         onClick = { includeAdult = !includeAdult },
-                        label = { Text(text = "No", modifier = modifier.fillMaxWidth(), textAlign = TextAlign.Center) },
+                        label = { Text(text = stringResource(R.string.no), modifier = modifier.fillMaxWidth(), textAlign = TextAlign.Center) },
                         shape = RoundedCornerShape(50),
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = MaterialTheme.colorScheme.primary,
                             selectedLabelColor = Color.White)
                     )
-
                 }
 
                 Divider()
@@ -598,13 +601,13 @@ private fun BottomSheetFilterContent(modifier: Modifier = Modifier,
                     OutlinedButton(onClick = onNegativeClick, modifier = modifier
                         .weight(1f)
                         .requiredHeight(50.dp)) {
-                        Text(text = "Reset")
+                        Text(text = stringResource(R.string.reset))
                     }
 
                     Button(onClick = { onPositiveClick(readUserPreferences?.genreList?.map { MovieGenre.Genre(id = it.id, name = it.name) } ?: return@Button, selectedItemSort.second, includeAdult) }, modifier = modifier
                         .weight(1f)
                         .requiredHeight(50.dp)) {
-                        Text(text = "Apply")
+                        Text(text = stringResource(R.string.apply))
                     }
                 }
             }
@@ -786,7 +789,7 @@ private fun HomeTopAppbar(navController: NavHostController,
                             value = search,
                             onValueChange = exploreViewModel::updateSearchField,
                             label = {
-                                Text(text = "Search")
+                                Text(text = stringResource(R.string.search))
                             },
                             leadingIcon = {
                                 Icon(imageVector = Icons.Rounded.Search, contentDescription = null)

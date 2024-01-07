@@ -41,4 +41,13 @@
     <string name="now_playing_movies">يتم الآن تشغيل الأفلام</string>
     <string name="see_all">اظهار الكل</string>
     <string name="now_playing_series">تلعب الآن سلسلة</string>
+    <string name="search">يبحث</string>
+    <string name="sort_filter">فرز وتصفية</string>
+    <string name="categories">فئات</string>
+    <string name="genres">الأنواع</string>
+    <string name="sort">نوع</string>
+    <string name="include_adult">تشمل الكبار</string>
+    <string name="no">لا</string>
+    <string name="reset">إعادة ضبط</string>
+    <string name="apply">يتقدم</string>
 </resources>

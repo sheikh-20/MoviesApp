@@ -52,6 +52,15 @@
     <string name="now_playing_movies">Now Playing Movies</string>
     <string name="see_all">See all</string>
     <string name="now_playing_series">Now Playing Series</string>
+    <string name="search">Search</string>
+    <string name="sort_filter"><![CDATA[Sort & Filter]]></string>
+    <string name="categories">Categories</string>
+    <string name="genres">Genres</string>
+    <string name="sort">Sort</string>
+    <string name="include_adult">Include Adult</string>
+    <string name="no">No</string>
+    <string name="reset">Reset</string>
+    <string name="apply">Apply</string>
 
 
 </resources>
