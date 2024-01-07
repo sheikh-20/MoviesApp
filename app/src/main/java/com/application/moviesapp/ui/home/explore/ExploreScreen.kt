@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -64,7 +65,8 @@ fun ExploreScreen(modifier: Modifier = Modifier,
                   movieSearchFlow: LazyPagingItems<MovieSearch>,
                   searchClicked: Boolean = false,
                   lazyGridState: LazyGridState = LazyGridState(),
-                  bottomPadding: PaddingValues = PaddingValues()
+                  bottomPadding: PaddingValues = PaddingValues(),
+                  onGoToDownloadsClick: () -> Unit = {  }
 ) {
 
     val coroutineScope = rememberCoroutineScope()
@@ -90,7 +92,8 @@ fun ExploreScreen(modifier: Modifier = Modifier,
         .padding(
             top = bottomPadding.calculateTopPadding(),
             bottom = bottomPadding.calculateBottomPadding()
-        ).pullRefresh(pullRefreshState)) {
+        )
+        .pullRefresh(pullRefreshState)) {
         Column {
             if (moviesDiscoverFlow.itemCount == 0) {
                 Column(
@@ -101,7 +104,7 @@ fun ExploreScreen(modifier: Modifier = Modifier,
                 ) {
 
                     Text(
-                        text = "Not found",
+                        text = stringResource(id = R.string.not_found),
                         style = MaterialTheme.typography.displayMedium,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.SemiBold,
@@ -110,20 +113,20 @@ fun ExploreScreen(modifier: Modifier = Modifier,
                     )
 
                     Text(
-                        text = "Check you internet connection",
+                        text = stringResource(id = R.string.check_you_internet_connection),
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center
                     )
 
                     TextButton(
-                        onClick = { },
+                        onClick = onGoToDownloadsClick,
                         modifier = modifier
                             .fillMaxWidth()
                             .wrapContentWidth(align = Alignment.CenterHorizontally),
                     ) {
                         Text(
-                            text = "Go to Downloads",
+                            text = stringResource(id = R.string.go_to_downloads),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.SemiBold
