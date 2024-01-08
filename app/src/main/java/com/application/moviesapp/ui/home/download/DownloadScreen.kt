@@ -49,6 +49,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -98,13 +99,13 @@ fun DownloadScreen(modifier: Modifier = Modifier,
                     contentScale = ContentScale.Crop,
                 )
 
-                Text(text = "You Downloaded Nothing",
+                Text(text = stringResource(R.string.you_downloaded_nothing),
                     style = MaterialTheme.typography.titleLarge,
                     modifier = modifier
                         .fillMaxWidth()
                         .wrapContentWidth(align = Alignment.CenterHorizontally))
 
-                Text(text = "It seems you haven't downloaded any movies or series",
+                Text(text = stringResource(R.string.it_seems_you_haven_t_downloaded_any_movies_or_series),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = modifier

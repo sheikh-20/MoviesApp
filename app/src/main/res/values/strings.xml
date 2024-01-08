@@ -61,6 +61,14 @@
     <string name="no">No</string>
     <string name="reset">Reset</string>
     <string name="apply">Apply</string>
+    <string name="you_list_is_empty">You List is Empty</string>
+    <string name="it_seems_you_haven_t_listed_any_movies_or_series">It seems you haven\'t listed any movies or series</string>
+    <string name="you_downloaded_nothing">You Downloaded Nothing</string>
+    <string name="it_seems_you_haven_t_downloaded_any_movies_or_series">It seems you haven\'t downloaded any movies or series</string>
+    <string name="yes_delete">Yes, Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="are_you_sure_you_want_to_delete_this_downloaded_content">Are you sure you want to delete this downloaded content?</string>
+    <string name="delete">Delete</string>
 
 
 </resources>
