@@ -664,7 +664,7 @@ private fun BottomSheetContentDownloadDelete(modifier: Modifier = Modifier, onNe
     Column(modifier = modifier
         .padding(16.dp)
         .systemBarsPadding(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        Text(text = "Delete",
+        Text(text = stringResource(R.string.delete),
             style = MaterialTheme.typography.headlineSmall,
             textAlign = TextAlign.Center,
             modifier = modifier.fillMaxWidth(),
@@ -673,7 +673,7 @@ private fun BottomSheetContentDownloadDelete(modifier: Modifier = Modifier, onNe
 
         Divider()
 
-        Text(text = "Are you sure you want to delete this downloaded content?",
+        Text(text = stringResource(R.string.are_you_sure_you_want_to_delete_this_downloaded_content),
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
@@ -736,7 +736,7 @@ private fun BottomSheetContentDownloadDelete(modifier: Modifier = Modifier, onNe
             OutlinedButton(onClick = onNegativeClick, modifier = modifier
                 .weight(1f)
                 .requiredHeight(50.dp)) {
-                Text(text = "Cancel")
+                Text(text = stringResource(id = R.string.cancel))
             }
 
             Button(onClick = {
@@ -745,7 +745,7 @@ private fun BottomSheetContentDownloadDelete(modifier: Modifier = Modifier, onNe
             }, modifier = modifier
                 .weight(1f)
                 .requiredHeight(50.dp)) {
-                Text(text = "Yes, Delete")
+                Text(text = stringResource(R.string.yes_delete))
             }
         }
     }
@@ -826,7 +826,7 @@ private fun HomeTopAppbar(navController: NavHostController,
                 exit = slideOutVertically(animationSpec = tween(durationMillis = 200))) {
 
                 TopAppBar(
-                    title = { Text(text = "My List") },
+                    title = { Text(text = stringResource(id = R.string.my_list)) },
                     navigationIcon = {
                         IconButton(onClick = {   }) {
                             Icon(painter = painterResource(id = R.drawable.ic_movie),
@@ -865,7 +865,7 @@ private fun HomeTopAppbar(navController: NavHostController,
                 TopAppBar(
                     title = {
                         if (!onSearchClick) {
-                            Text(text = "Download")
+                            Text(text = stringResource(id = R.string.download))
                         } else {
                             OutlinedTextField(value = searchValue,
                                 onValueChange = onDownloadSearch,

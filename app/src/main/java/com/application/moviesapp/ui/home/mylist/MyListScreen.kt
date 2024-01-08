@@ -44,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -153,7 +154,7 @@ fun MyListScreen(modifier: Modifier = Modifier,
                                     )
 
                                     Text(
-                                        text = "You List is Empty",
+                                        text = stringResource(R.string.you_list_is_empty),
                                         style = MaterialTheme.typography.titleLarge,
                                         modifier = modifier
                                             .fillMaxWidth()
@@ -161,7 +162,7 @@ fun MyListScreen(modifier: Modifier = Modifier,
                                     )
 
                                     Text(
-                                        text = "It seems you haven't listed any movies or series",
+                                        text = stringResource(R.string.it_seems_you_haven_t_listed_any_movies_or_series),
                                         textAlign = TextAlign.Center,
                                         style = MaterialTheme.typography.bodyLarge,
                                         modifier = modifier

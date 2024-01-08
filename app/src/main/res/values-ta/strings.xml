@@ -51,4 +51,12 @@
     <string name="no">இல்லை</string>
     <string name="reset">மீட்டமை</string>
     <string name="apply">விண்ணப்பிக்கவும்</string>
+    <string name="you_list_is_empty">உங்கள் பட்டியல் காலியாக உள்ளது</string>
+    <string name="it_seems_you_haven_t_listed_any_movies_or_series">நீங்கள் எந்த திரைப்படங்களையும் தொடர்களையும் பட்டியலிடவில்லை எனத் தெரிகிறது</string>
+    <string name="you_downloaded_nothing">நீங்கள் எதையும் பதிவிறக்கம் செய்யவில்லை</string>
+    <string name="it_seems_you_haven_t_downloaded_any_movies_or_series">நீங்கள் எந்த திரைப்படத்தையும் தொடர்களையும் பதிவிறக்கம் செய்யவில்லை எனத் தெரிகிறது</string>
+    <string name="yes_delete">ஆம், நீக்கு</string>
+    <string name="cancel">ரத்து செய்</string>
+    <string name="are_you_sure_you_want_to_delete_this_downloaded_content">பதிவிறக்கம் செய்யப்பட்ட இந்த உள்ளடக்கத்தை நிச்சயமாக நீக்க விரும்புகிறீர்களா?</string>
+    <string name="delete">அழி</string>
 </resources>

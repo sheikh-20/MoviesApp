@@ -50,4 +50,12 @@
     <string name="no">لا</string>
     <string name="reset">إعادة ضبط</string>
     <string name="apply">يتقدم</string>
+    <string name="you_list_is_empty">قائمتك فارغة</string>
+    <string name="it_seems_you_haven_t_listed_any_movies_or_series">يبدو أنك لم تقم بإدراج أي أفلام أو مسلسلات</string>
+    <string name="you_downloaded_nothing">لقد قمت بتنزيل لا شيء</string>
+    <string name="it_seems_you_haven_t_downloaded_any_movies_or_series">يبدو أنك لم تقم بتنزيل أي أفلام أو مسلسلات</string>
+    <string name="yes_delete">نعم، احذف</string>
+    <string name="cancel">يلغي</string>
+    <string name="are_you_sure_you_want_to_delete_this_downloaded_content">هل أنت متأكد أنك تريد حذف هذا المحتوى الذي تم تنزيله؟</string>
+    <string name="delete">يمسح</string>
 </resources>
