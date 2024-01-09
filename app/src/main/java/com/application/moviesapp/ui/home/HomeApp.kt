@@ -621,7 +621,7 @@ private fun BottomSheetContent(modifier: Modifier = Modifier, onNegativeClick: (
     Column(modifier = modifier
         .padding(16.dp)
         .systemBarsPadding(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        Text(text = "Logout",
+        Text(text = stringResource(R.string.logout),
             style = MaterialTheme.typography.headlineSmall,
             textAlign = TextAlign.Center,
             modifier = modifier.fillMaxWidth(),
@@ -630,7 +630,7 @@ private fun BottomSheetContent(modifier: Modifier = Modifier, onNegativeClick: (
 
         Divider()
 
-        Text(text = "Are you sure you want to log out?",
+        Text(text = stringResource(R.string.are_you_sure_you_want_to_log_out),
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
@@ -643,13 +643,13 @@ private fun BottomSheetContent(modifier: Modifier = Modifier, onNegativeClick: (
             OutlinedButton(onClick = onNegativeClick, modifier = modifier
                 .weight(1f)
                 .requiredHeight(50.dp)) {
-                Text(text = "Cancel")
+                Text(text = stringResource(id = R.string.cancel))
             }
 
             Button(onClick = onPositiveClick, modifier = modifier
                 .weight(1f)
                 .requiredHeight(50.dp)) {
-                Text(text = "Yes, Logout")
+                Text(text = stringResource(R.string.yes_logout))
             }
         }
     }
@@ -911,7 +911,7 @@ private fun HomeTopAppbar(navController: NavHostController,
         }
         BottomNavigationScreens.Profile.route -> {
             TopAppBar(
-                title = { Text(text = "Profile") },
+                title = { Text(text = stringResource(id = R.string.profile)) },
                 navigationIcon = {
                     IconButton(onClick = {   }) {
                         Icon(painter = painterResource(id = R.drawable.ic_movie),

@@ -46,6 +46,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -143,7 +144,7 @@ fun ProfileScreen(modifier: Modifier = Modifier,
 
                 Spacer(modifier = modifier.width(10.dp))
 
-                Text(text = "Edit Profile", modifier = modifier.weight(1f))
+                Text(text = stringResource(R.string.edit_profile), modifier = modifier.weight(1f))
 
                 IconButton(onClick = { EditProfileActivity.startActivity((context as Activity)) }) {
                     Icon(imageVector = Icons.Rounded.ArrowForwardIos, contentDescription = null)
@@ -155,7 +156,7 @@ fun ProfileScreen(modifier: Modifier = Modifier,
 
                 Spacer(modifier = modifier.width(10.dp))
 
-                Text(text = "Notification", modifier = modifier.weight(1f))
+                Text(text = stringResource(R.string.notification), modifier = modifier.weight(1f))
 
                 IconButton(onClick = { NotificationActivity.startActivity(context as Activity) }) {
                     Icon(imageVector = Icons.Rounded.ArrowForwardIos, contentDescription = null)
@@ -167,7 +168,7 @@ fun ProfileScreen(modifier: Modifier = Modifier,
 
                 Spacer(modifier = modifier.width(10.dp))
 
-                Text(text = "Download", modifier = modifier.weight(1f))
+                Text(text = stringResource(id = R.string.download), modifier = modifier.weight(1f))
 
                 IconButton(onClick = { DownloadActivity.startActivity(context as Activity) }) {
                     Icon(imageVector = Icons.Rounded.ArrowForwardIos, contentDescription = null)
@@ -179,7 +180,7 @@ fun ProfileScreen(modifier: Modifier = Modifier,
 
                 Spacer(modifier = modifier.width(10.dp))
 
-                Text(text = "Security", modifier = modifier.weight(1f))
+                Text(text = stringResource(R.string.security), modifier = modifier.weight(1f))
 
                 IconButton(onClick = { SecurityActivity.startActivity(context as Activity) }) {
                     Icon(imageVector = Icons.Rounded.ArrowForwardIos, contentDescription = null)
@@ -191,7 +192,7 @@ fun ProfileScreen(modifier: Modifier = Modifier,
 
                 Spacer(modifier = modifier.width(10.dp))
 
-                Text(text = "Language", modifier = modifier.weight(1f))
+                Text(text = stringResource(R.string.language), modifier = modifier.weight(1f))
 
                 IconButton(onClick = { LanguageActivity.startActivity(context as Activity) }) {
                     Icon(imageVector = Icons.Rounded.ArrowForwardIos, contentDescription = null)
@@ -204,7 +205,9 @@ fun ProfileScreen(modifier: Modifier = Modifier,
 
                 Spacer(modifier = modifier.width(10.dp))
 
-                Text(text = if (darkModeUiState.data) "Dark Mode" else "Light Mode", modifier = modifier.weight(1f))
+                Text(text = if (darkModeUiState.data) stringResource(R.string.dark_mode) else stringResource(
+                    R.string.light_mode
+                ), modifier = modifier.weight(1f))
 
                 Switch(checked = darkModeUiState.data, onCheckedChange = onModeClick)
             }
@@ -214,7 +217,7 @@ fun ProfileScreen(modifier: Modifier = Modifier,
 
                 Spacer(modifier = modifier.width(10.dp))
 
-                Text(text = "Help Center", modifier = modifier.weight(1f))
+                Text(text = stringResource(R.string.help_center), modifier = modifier.weight(1f))
 
                 IconButton(onClick = { HelpCenterActivity.startActivity(context as Activity) }) {
                     Icon(imageVector = Icons.Rounded.ArrowForwardIos, contentDescription = null)
@@ -227,7 +230,7 @@ fun ProfileScreen(modifier: Modifier = Modifier,
 
                 Spacer(modifier = modifier.width(10.dp))
 
-                Text(text = "Privacy Policy", modifier = modifier.weight(1f))
+                Text(text = stringResource(R.string.privacy_policy), modifier = modifier.weight(1f))
 
                 IconButton(onClick = { PrivacyPolicyActivity.startActivity(context as Activity) }) {
                     Icon(imageVector = Icons.Rounded.ArrowForwardIos, contentDescription = null)
@@ -239,7 +242,7 @@ fun ProfileScreen(modifier: Modifier = Modifier,
 
                 Spacer(modifier = modifier.width(10.dp))
 
-                Text(text = "Logout", modifier = modifier.weight(1f))
+                Text(text = stringResource(id = R.string.logout), modifier = modifier.weight(1f))
 
                 IconButton(onClick = onSignOutClick) {
                     Icon(imageVector = Icons.Rounded.ArrowForwardIos, contentDescription = null)
