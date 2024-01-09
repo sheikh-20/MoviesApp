@@ -58,4 +58,15 @@
     <string name="cancel">يلغي</string>
     <string name="are_you_sure_you_want_to_delete_this_downloaded_content">هل أنت متأكد أنك تريد حذف هذا المحتوى الذي تم تنزيله؟</string>
     <string name="delete">يمسح</string>
+    <string name="logout">تسجيل خروج</string>
+    <string name="are_you_sure_you_want_to_log_out">هل أنت متأكد أنك تريد تسجيل الخروج؟</string>
+    <string name="yes_logout">نعم، تسجيل الخروج</string>
+    <string name="edit_profile">تعديل الملف الشخصي</string>
+    <string name="notification">إشعار</string>
+    <string name="security">حماية</string>
+    <string name="language">لغة</string>
+    <string name="dark_mode">الوضع المظلم</string>
+    <string name="light_mode">وضع الضوء</string>
+    <string name="help_center">مركز المساعدةr</string>
+    <string name="privacy_policy">سياسة الخصوصية</string>
 </resources>

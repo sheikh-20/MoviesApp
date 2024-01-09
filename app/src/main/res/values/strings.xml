@@ -69,6 +69,17 @@
     <string name="cancel">Cancel</string>
     <string name="are_you_sure_you_want_to_delete_this_downloaded_content">Are you sure you want to delete this downloaded content?</string>
     <string name="delete">Delete</string>
+    <string name="logout">Logout</string>
+    <string name="are_you_sure_you_want_to_log_out">Are you sure you want to log out?</string>
+    <string name="yes_logout">Yes, Logout</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="notification">Notification</string>
+    <string name="security">Security</string>
+    <string name="language">Language</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="light_mode">Light Mode</string>
+    <string name="help_center">Help Center</string>
+    <string name="privacy_policy">Privacy Policy</string>
 
 
 </resources>

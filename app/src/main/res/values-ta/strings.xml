@@ -59,4 +59,15 @@
     <string name="cancel">ரத்து செய்</string>
     <string name="are_you_sure_you_want_to_delete_this_downloaded_content">பதிவிறக்கம் செய்யப்பட்ட இந்த உள்ளடக்கத்தை நிச்சயமாக நீக்க விரும்புகிறீர்களா?</string>
     <string name="delete">அழி</string>
+    <string name="logout">வெளியேறு</string>
+    <string name="are_you_sure_you_want_to_log_out">நிச்சயமாக வெளியேற விரும்புகிறீர்களா?</string>
+    <string name="yes_logout">ஆம், வெளியேறு</string>
+    <string name="edit_profile">சுயவிவரத்தைத் திருத்து</string>
+    <string name="notification">அறிவிப்பு</string>
+    <string name="security">பாதுகாப்பு</string>
+    <string name="language">மொழி</string>
+    <string name="dark_mode">இருண்ட பயன்முறை</string>
+    <string name="light_mode">ஒளி முறை</string>
+    <string name="help_center">உதவி மையம்</string>
+    <string name="privacy_policy">தனியுரிமைக் கொள்கை</string>
 </resources>
