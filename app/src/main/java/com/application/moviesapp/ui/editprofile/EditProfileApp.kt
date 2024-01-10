@@ -21,7 +21,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.application.moviesapp.R
 import com.application.moviesapp.ui.accountsetup.AccountSetupScreen
 import com.application.moviesapp.ui.viewmodel.OnboardingViewModel
 
@@ -62,7 +64,7 @@ private fun EditProfileTopAppbar(modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
     TopAppBar(
-        title = { Text(text = "Edit Profile") },
+        title = { Text(text = stringResource(id = R.string.edit_profile)) },
         navigationIcon = {
             IconButton(onClick = { (context as Activity).finish() }) {
                 Icon(imageVector = Icons.Rounded.ArrowBack, contentDescription = null, tint = Color.White)

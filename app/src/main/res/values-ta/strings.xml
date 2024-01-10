@@ -70,4 +70,14 @@
     <string name="light_mode">ஒளி முறை</string>
     <string name="help_center">உதவி மையம்</string>
     <string name="privacy_policy">தனியுரிமைக் கொள்கை</string>
+    <string name="trailers">டிரெய்லர்கள்</string>
+    <string name="more_like_this">இது போன்ற மேலும்</string>
+    <string name="comments">கருத்துகள்</string>
+    <string name="genre">வகை: %1$s</string>
+    <string name="full_name">முழு பெயர்</string>
+    <string name="nick_name">புனைப்பெயர்</string>
+    <string name="phone_number">தொலைபேசி எண்</string>
+    <string name="gender">பாலினம்</string>
+    <string name="update">புதுப்பிக்கவும்</string>
+    <string name="profile_updated">சுயவிவரம் புதுப்பிக்கப்பட்டது!</string>
 </resources>

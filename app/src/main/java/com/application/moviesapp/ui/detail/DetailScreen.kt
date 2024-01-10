@@ -74,6 +74,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -140,9 +141,9 @@ fun DetailScreen(modifier: Modifier = Modifier,
     }
 
     val items = listOf(
-        HorizontalPagerContent("Trailers"),
-        HorizontalPagerContent("More Like This"),
-        HorizontalPagerContent("Comments"),
+        HorizontalPagerContent(stringResource(R.string.trailers)),
+        HorizontalPagerContent(stringResource(R.string.more_like_this)),
+        HorizontalPagerContent(stringResource(R.string.comments)),
         )
 
     val pager = rememberPagerState()
@@ -274,23 +275,25 @@ fun DetailScreen(modifier: Modifier = Modifier,
                             Button(onClick = {  }, modifier = modifier.weight(1f)) {
                                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                     Icon(imageVector = Icons.Rounded.PlayCircle, contentDescription = null)
-                                    Text(text = "Play")
+                                    Text(text = stringResource(id = R.string.play))
                                 }
                             }
 
                             OutlinedButton(onClick = { /*TODO*/ }, modifier = modifier.weight(1f)) {
                                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                     Icon(imageVector = Icons.Outlined.FileDownload, contentDescription = null)
-                                    Text(text = "Download")
+                                    Text(text = stringResource(id = R.string.download))
                                 }
                             }
                         }
 
-                        Text(text = "Genre: ${movieUIState.data.genres}",
+                        Text(
+                            text = stringResource(R.string.genre, movieUIState.data.genres.toString()),
                             style = MaterialTheme.typography.bodySmall,
                             modifier = modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp),)
+                                .padding(horizontal = 16.dp),
+                        )
 
                         if ((movieUIState.data.overview?.length ?: 0) >= 200) {
                             if (isViewMore) {
@@ -573,19 +576,19 @@ fun DetailScreen(modifier: Modifier = Modifier,
                             Button(onClick = {  }, modifier = modifier.weight(1f)) {
                                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                     Icon(imageVector = Icons.Rounded.PlayCircle, contentDescription = null)
-                                    Text(text = "Play")
+                                    Text(text = stringResource(id = R.string.play))
                                 }
                             }
 
                             OutlinedButton(onClick = { /*TODO*/ }, modifier = modifier.weight(1f)) {
                                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                     Icon(imageVector = Icons.Outlined.FileDownload, contentDescription = null)
-                                    Text(text = "Download")
+                                    Text(text = stringResource(id = R.string.download))
                                 }
                             }
                         }
 
-                        Text(text = "Genre: ${tvSeriesUIState.data.genres}",
+                        Text(text = stringResource(R.string.genre, tvSeriesUIState.data.genres.toString()),
                             style = MaterialTheme.typography.bodySmall,
                             modifier = modifier
                                 .fillMaxWidth()
