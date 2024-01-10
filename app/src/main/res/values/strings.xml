@@ -80,6 +80,16 @@
     <string name="light_mode">Light Mode</string>
     <string name="help_center">Help Center</string>
     <string name="privacy_policy">Privacy Policy</string>
+    <string name="trailers">Trailers</string>
+    <string name="more_like_this">More Like This</string>
+    <string name="comments">Comments</string>
+    <string name="genre">Genre: %1$s</string>
+    <string name="full_name">Full Name</string>
+    <string name="nick_name">Nick Name</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="gender">Gender</string>
+    <string name="update">Update</string>
+    <string name="profile_updated">Profile updated!</string>
 
 
 </resources>

@@ -48,6 +48,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -73,6 +74,7 @@ fun EditProfileScreen(modifier: Modifier = Modifier,
                       userDetailUIState: Resource<Member> = Resource.Loading,
                       snackbarHostState: SnackbarHostState = SnackbarHostState()) {
 
+    val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val coroutineScope = rememberCoroutineScope()
 
@@ -170,7 +172,7 @@ fun EditProfileScreen(modifier: Modifier = Modifier,
                     OutlinedTextField(
                         value = fullName,
                         onValueChange = { fullName = it },
-                        label = { Text(text = "Full Name") },
+                        label = { Text(text = stringResource(R.string.full_name)) },
                         modifier = modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(30),
                         keyboardOptions = KeyboardOptions.Default.copy(
@@ -184,7 +186,7 @@ fun EditProfileScreen(modifier: Modifier = Modifier,
                     OutlinedTextField(
                         value = nickName,
                         onValueChange = { nickName = it },
-                        label = { Text(text = "Nick Name") },
+                        label = { Text(text = stringResource(R.string.nick_name)) },
                         modifier = modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(30),
                         keyboardOptions = KeyboardOptions.Default.copy(
@@ -198,7 +200,7 @@ fun EditProfileScreen(modifier: Modifier = Modifier,
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
-                        label = { Text(text = "Email") },
+                        label = { Text(text = stringResource(id = R.string.email)) },
                         trailingIcon = { Icon(imageVector = Icons.Rounded.Email, contentDescription = null) },
                         modifier = modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(30),
@@ -213,7 +215,7 @@ fun EditProfileScreen(modifier: Modifier = Modifier,
                     OutlinedTextField(
                         value = phoneNumber,
                         onValueChange = { phoneNumber = it },
-                        label = { Text(text = "Phone Number") },
+                        label = { Text(text = stringResource(R.string.phone_number)) },
                         modifier = modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(30),
                         keyboardOptions = KeyboardOptions.Default.copy(
@@ -228,7 +230,7 @@ fun EditProfileScreen(modifier: Modifier = Modifier,
                         OutlinedTextField(
                             value = gender,
                             onValueChange = {  },
-                            label = { Text(text = "Gender") },
+                            label = { Text(text = stringResource(R.string.gender)) },
                             trailingIcon = { Icon(
                                 imageVector = Icons.Rounded.ArrowDropDown,
                                 contentDescription = null
@@ -268,7 +270,7 @@ fun EditProfileScreen(modifier: Modifier = Modifier,
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     Button(onClick = { onContinueClick(UserProfile(fullName, nickName, email, phoneNumber.toLongOrNull() ?: 0L, gender)) }, modifier = modifier.weight(1f)) {
-                        Text(text = "Update")
+                        Text(text = stringResource(R.string.update))
                     }
                 }
             }
@@ -341,7 +343,7 @@ fun EditProfileScreen(modifier: Modifier = Modifier,
                     OutlinedTextField(
                         value = fullName,
                         onValueChange = { fullName = it },
-                        label = { Text(text = "Full Name") },
+                        label = { Text(text = stringResource(id = R.string.full_name)) },
                         modifier = modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(30),
                         keyboardOptions = KeyboardOptions.Default.copy(
@@ -355,7 +357,7 @@ fun EditProfileScreen(modifier: Modifier = Modifier,
                     OutlinedTextField(
                         value = nickName,
                         onValueChange = { nickName = it },
-                        label = { Text(text = "Nick Name") },
+                        label = { Text(text = stringResource(id = R.string.nick_name)) },
                         modifier = modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(30),
                         keyboardOptions = KeyboardOptions.Default.copy(
@@ -369,7 +371,7 @@ fun EditProfileScreen(modifier: Modifier = Modifier,
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
-                        label = { Text(text = "Email") },
+                        label = { Text(text = stringResource(id = R.string.email)) },
                         trailingIcon = { Icon(imageVector = Icons.Rounded.Email, contentDescription = null) },
                         modifier = modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(30),
@@ -384,7 +386,7 @@ fun EditProfileScreen(modifier: Modifier = Modifier,
                     OutlinedTextField(
                         value = phoneNumber,
                         onValueChange = { phoneNumber = it },
-                        label = { Text(text = "Phone Number") },
+                        label = { Text(text = stringResource(id = R.string.phone_number)) },
                         modifier = modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(30),
                         keyboardOptions = KeyboardOptions.Default.copy(
@@ -399,7 +401,7 @@ fun EditProfileScreen(modifier: Modifier = Modifier,
                         OutlinedTextField(
                             value = gender,
                             onValueChange = {  },
-                            label = { Text(text = "Gender") },
+                            label = { Text(text = stringResource(id = R.string.gender)) },
                             trailingIcon = { Icon(
                                 imageVector = Icons.Rounded.ArrowDropDown,
                                 contentDescription = null
@@ -441,14 +443,14 @@ fun EditProfileScreen(modifier: Modifier = Modifier,
                     Button(onClick = {
                         onContinueClick(UserProfile(fullName, nickName, email, phoneNumber.toLongOrNull() ?: 0L, gender))
                         coroutineScope.launch {
-                            snackbarHostState.showSnackbar(message = "Profile updated!", duration = SnackbarDuration.Short)
+                            snackbarHostState.showSnackbar(message = context.getString(R.string.profile_updated), duration = SnackbarDuration.Short)
                             focusManager.clearFocus()
                             onProfileUpdated()
                         }
                                      },
                         modifier = modifier.weight(1f)
                     ) {
-                        Text(text = "Update")
+                        Text(text = stringResource(id = R.string.update))
                     }
                 }
             }

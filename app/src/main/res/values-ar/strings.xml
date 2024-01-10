@@ -69,4 +69,14 @@
     <string name="light_mode">وضع الضوء</string>
     <string name="help_center">مركز المساعدةr</string>
     <string name="privacy_policy">سياسة الخصوصية</string>
+    <string name="trailers">مقطورات</string>
+    <string name="more_like_this">المزيد مثل هذا</string>
+    <string name="comments">تعليقات</string>
+    <string name="genre">النوع: %1$s</string>
+    <string name="full_name">الاسم الكامل</string>
+    <string name="nick_name">كنية</string>
+    <string name="phone_number">رقم التليفون</string>
+    <string name="gender">جنس</string>
+    <string name="update">تحديث</string>
+    <string name="profile_updated">تحديث الملف الشخصي!</string>
 </resources>
