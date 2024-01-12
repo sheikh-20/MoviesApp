@@ -55,6 +55,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -138,7 +139,7 @@ fun FillYourProfileScreen(modifier: Modifier = Modifier,
             OutlinedTextField(
                 value = fullName,
                 onValueChange = { fullName = it },
-                label = { Text(text = "Full Name") },
+                label = { Text(text = stringResource(id = R.string.full_name)) },
                 modifier = modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(30),
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -151,7 +152,7 @@ fun FillYourProfileScreen(modifier: Modifier = Modifier,
             OutlinedTextField(
                 value = nickName,
                 onValueChange = { nickName = it },
-                label = { Text(text = "Nick Name") },
+                label = { Text(text = stringResource(id = R.string.nick_name)) },
                 modifier = modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(30),
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -164,7 +165,7 @@ fun FillYourProfileScreen(modifier: Modifier = Modifier,
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text(text = "Email") },
+                label = { Text(text = stringResource(id = R.string.email)) },
                 trailingIcon = { Icon(imageVector = Icons.Rounded.Email, contentDescription = null) },
                 modifier = modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(30),
@@ -178,7 +179,7 @@ fun FillYourProfileScreen(modifier: Modifier = Modifier,
             OutlinedTextField(
                 value = phoneNumber,
                 onValueChange = { phoneNumber = it },
-                label = { Text(text = "Phone Number") },
+                label = { Text(text = stringResource(id = R.string.phone_number)) },
                 modifier = modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(30),
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -192,7 +193,7 @@ fun FillYourProfileScreen(modifier: Modifier = Modifier,
                 OutlinedTextField(
                     value = gender,
                     onValueChange = {  },
-                    label = { Text(text = "Gender") },
+                    label = { Text(text = stringResource(id = R.string.gender)) },
                     trailingIcon = { Icon(
                         imageVector = Icons.Rounded.ArrowDropDown,
                         contentDescription = null
@@ -231,7 +232,7 @@ fun FillYourProfileScreen(modifier: Modifier = Modifier,
         Row(modifier = modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            OutlinedButton(onClick = { /*TODO*/ }, modifier =  modifier
+            OutlinedButton(onClick = { /*TODO*/ }, modifier = modifier
                 .shadow(
                     elevation = 4.dp,
                     ambientColor = MaterialTheme.colorScheme.outlineVariant,
@@ -239,17 +240,18 @@ fun FillYourProfileScreen(modifier: Modifier = Modifier,
                     shape = RoundedCornerShape(50)
                 )
                 .weight(1f)) {
-                Text(text = "Skip",  modifier = modifier.padding(4.dp))
+                Text(text = stringResource(id = R.string.skip),  modifier = modifier.padding(4.dp))
             }
             Button(onClick = { onContinueClick(UserProfile(fullName, nickName, email, phoneNumber.toLongOrNull() ?: 0L, gender)) },
-                modifier =  modifier
+                modifier = modifier
                     .shadow(
                         elevation = 4.dp,
                         ambientColor = MaterialTheme.colorScheme.outlineVariant,
                         spotColor = MaterialTheme.colorScheme.outlineVariant,
                         shape = RoundedCornerShape(50)
-                    ).weight(1f)) {
-                Text(text = "Continue",  modifier = modifier.padding(4.dp))
+                    )
+                    .weight(1f)) {
+                Text(text = stringResource(id = R.string.continue_text),  modifier = modifier.padding(4.dp))
             }
         }
     }

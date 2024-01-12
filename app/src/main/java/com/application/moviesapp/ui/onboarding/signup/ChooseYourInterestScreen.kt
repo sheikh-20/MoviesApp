@@ -89,23 +89,25 @@ fun ChooseYourInterestScreen(modifier: Modifier = Modifier,
                 Row(modifier = modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    OutlinedButton(onClick = { /*TODO*/ }, modifier =  modifier
+                    OutlinedButton(onClick = { /*TODO*/ }, modifier = modifier
                         .shadow(
                             elevation = 4.dp,
                             ambientColor = MaterialTheme.colorScheme.outlineVariant,
                             spotColor = MaterialTheme.colorScheme.outlineVariant,
                             shape = RoundedCornerShape(50)
-                        ).weight(1f)) {
-                        Text(text = "Skip",  modifier = modifier.padding(4.dp))
+                        )
+                        .weight(1f)) {
+                        Text(text = stringResource(id = R.string.skip),  modifier = modifier.padding(4.dp))
                     }
-                    Button(onClick = onContinueClick, modifier =  modifier
+                    Button(onClick = onContinueClick, modifier = modifier
                         .shadow(
                             elevation = 4.dp,
                             ambientColor = MaterialTheme.colorScheme.outlineVariant,
                             spotColor = MaterialTheme.colorScheme.outlineVariant,
                             shape = RoundedCornerShape(50)
-                        ).weight(1f)) {
-                        Text(text = "Continue", modifier = modifier.padding(4.dp))
+                        )
+                        .weight(1f)) {
+                        Text(text = stringResource(id = R.string.continue_text), modifier = modifier.padding(4.dp))
                     }
                 }
             }

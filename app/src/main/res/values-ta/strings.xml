@@ -80,4 +80,9 @@
     <string name="gender">பாலினம்</string>
     <string name="update">புதுப்பிக்கவும்</string>
     <string name="profile_updated">சுயவிவரம் புதுப்பிக்கப்பட்டது!</string>
+    <string name="choose_your_interest">உங்கள் ஆர்வத்தைத் தேர்ந்தெடுக்கவும்</string>
+    <string name="fill_your_profile">உங்கள் சுயவிவரத்தை நிரப்பவும்</string>
+    <string name="skip">தவிர்க்கவும்</string>
+    <string name="congratulations">வாழ்த்துகள்</string>
+    <string name="your_account_is_ready_to_use_you_will_be_redirected_to_the_home_page_in_a_few_seconds">உங்கள் கணக்கு பயன்படுத்த தயாராக உள்ளது. சில நொடிகளில் முகப்புப் பக்கத்திற்குத் திருப்பி விடப்படுவீர்கள்.</string>
 </resources>

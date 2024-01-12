@@ -90,6 +90,11 @@
     <string name="gender">Gender</string>
     <string name="update">Update</string>
     <string name="profile_updated">Profile updated!</string>
+    <string name="choose_your_interest">Choose Your Interest</string>
+    <string name="fill_your_profile">Fill Your Profile</string>
+    <string name="skip">Skip</string>
+    <string name="congratulations">Congratulations</string>
+    <string name="your_account_is_ready_to_use_you_will_be_redirected_to_the_home_page_in_a_few_seconds">Your account is ready to use. You will be redirected to the Home page in a few seconds.</string>
 
 
 </resources>
