@@ -79,4 +79,9 @@
     <string name="gender">جنس</string>
     <string name="update">تحديث</string>
     <string name="profile_updated">تحديث الملف الشخصي!</string>
+    <string name="choose_your_interest">اختر اهتمامك</string>
+    <string name="fill_your_profile">املأ ملفك الشخصي</string>
+    <string name="skip">يتخطى</string>
+    <string name="congratulations">تهانينا</string>
+    <string name="your_account_is_ready_to_use_you_will_be_redirected_to_the_home_page_in_a_few_seconds">حسابك جاهز للاستخدام. ستتم إعادة توجيهك إلى الصفحة الرئيسية خلال بضع ثوانٍ.</string>
 </resources>

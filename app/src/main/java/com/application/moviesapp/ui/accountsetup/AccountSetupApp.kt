@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,6 +45,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.application.moviesapp.R
 import com.application.moviesapp.ui.home.HomeActivity
 import com.application.moviesapp.ui.onboarding.signup.ChooseYourInterestScreen
 import com.application.moviesapp.ui.onboarding.signup.CreateNewPinScreen
@@ -138,8 +140,14 @@ fun AccountSetupApp(modifier: Modifier = Modifier,
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountSetupAppBar(currentScreen: String, onNavigateUp: () -> Unit) {
+
+    val screen = when (currentScreen) {
+        AccountSetupScreen.ChooseYourInterest.title -> stringResource(R.string.choose_your_interest)
+        else -> stringResource(R.string.fill_your_profile)
+    }
+
     TopAppBar(
-        title = { Text(text = currentScreen, fontWeight = FontWeight.Bold) },
+        title = { Text(text = screen, fontWeight = FontWeight.Bold) },
         navigationIcon = {
             IconButton(onClick = onNavigateUp) {
                 Icon(imageVector = Icons.Outlined.ArrowBack,
@@ -165,12 +173,12 @@ private fun AccountSetupCompleteDialog() {
                 Icon(imageVector = Icons.Rounded.AccountCircle, contentDescription = null, modifier = Modifier.size(150.dp), tint = MaterialTheme.colorScheme.primary)
             }
 
-            Text(text = "Congratulations",
+            Text(text = stringResource(R.string.congratulations),
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.SemiBold)
 
-            Text(text = "Your account is ready to use. You will be redirected to the Home page in a few seconds.",
+            Text(text = stringResource(R.string.your_account_is_ready_to_use_you_will_be_redirected_to_the_home_page_in_a_few_seconds),
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center)
 
