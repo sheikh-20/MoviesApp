@@ -820,28 +820,67 @@ private fun HomeTopAppbar(navController: NavHostController,
         }
         BottomNavigationScreens.MyList.route -> {
 
+            val focusManager = LocalFocusManager.current
+            val interactionSource = remember { MutableInteractionSource() }
+            var onSearchClick by remember { mutableStateOf(false) }
+
+            val focusRequest = remember { FocusRequester() }
+
+            if (!interactionSource.collectIsFocusedAsState().value) {
+                onSearchClick = false
+
+            }
+
             AnimatedVisibility(
                 visible = mylistHideTopAppBar,
                 enter = slideInVertically(animationSpec = tween(durationMillis = 200)),
                 exit = slideOutVertically(animationSpec = tween(durationMillis = 200))) {
 
                 TopAppBar(
-                    title = { Text(text = stringResource(id = R.string.my_list)) },
+                    title = {
+                        if (!onSearchClick) {
+                            Text(text = stringResource(id = R.string.my_list))
+                        } else {
+                            OutlinedTextField(value = searchValue,
+                                onValueChange = onDownloadSearch,
+                                modifier = Modifier
+                                    .height(64.dp)
+                                    .fillMaxWidth()
+                                    .padding(start = 0.dp, top = 8.dp, end = 16.dp, bottom = 8.dp)
+                                    .focusRequester(focusRequest),
+                                interactionSource = interactionSource,
+                                shape = RoundedCornerShape(30),
+                                textStyle = TextStyle(fontSize = MaterialTheme.typography.bodyLarge.fontSize, lineHeight = MaterialTheme.typography.bodyLarge.lineHeight),
+                                trailingIcon = { Icon(imageVector = Icons.Rounded.Search, contentDescription = null) },
+                                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+                                keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() })
+                            )
+
+                            SideEffect {
+                                focusRequest.requestFocus()
+                            }
+                        }
+                            },
                     navigationIcon = {
-                        IconButton(onClick = {   }) {
-                            Icon(painter = painterResource(id = R.drawable.ic_movie),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary)
+                        if (!onSearchClick) {
+                            IconButton(onClick = {   }) {
+                                Icon(painter = painterResource(id = R.drawable.ic_movie),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary)
+                            }
                         }
                     },
                     actions = {
-                        IconButton(onClick = {}) {
-                            Icon(imageVector = Icons.Rounded.Search, contentDescription = null)
+                        if (!onSearchClick) {
+                            IconButton(onClick = {
+                                onSearchClick = true
+                            }) {
+                                Icon(imageVector = Icons.Rounded.Search, contentDescription = null)
+                            }
                         }
                     },
                     colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent)
                 )
-
             }
         }
         BottomNavigationScreens.Download.route -> {
