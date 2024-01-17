@@ -20,10 +20,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.application.moviesapp.domain.model.AppUpdatesPreference
+import com.application.moviesapp.domain.model.GeneralNotificationPreference
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 
 @Composable
-fun NotificationScreen(modifier: Modifier = Modifier, paddingValues: PaddingValues = PaddingValues()) {
+fun NotificationScreen(modifier: Modifier = Modifier,
+                       paddingValues: PaddingValues = PaddingValues(),
+                       generalNotificationPreference: GeneralNotificationPreference = GeneralNotificationPreference(false),
+                       appUpdatesPreference: AppUpdatesPreference = AppUpdatesPreference(false),
+                       onGeneralNotificationChange: (Boolean) -> Unit = { _ -> },
+                       onAppUpdateChange: (Boolean) -> Unit = { _ -> }
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -36,37 +44,7 @@ fun NotificationScreen(modifier: Modifier = Modifier, paddingValues: PaddingValu
 
             Text(text = "General Notification", modifier = modifier.weight(1f))
 
-            Switch(checked = false, onCheckedChange = { })
-        }
-
-        Row(
-            modifier = modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            Text(text = "New Arrival", modifier = modifier.weight(1f))
-
-            Switch(checked = false, onCheckedChange = { })
-        }
-
-        Row(
-            modifier = modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            Text(text = "New Service Available", modifier = modifier.weight(1f))
-
-            Switch(checked = false, onCheckedChange = { })
-        }
-
-        Row(
-            modifier = modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            Text(text = "New Releases Movie", modifier = modifier.weight(1f))
-
-            Switch(checked = false, onCheckedChange = { })
+            Switch(checked = generalNotificationPreference.data, onCheckedChange = onGeneralNotificationChange)
         }
 
         Row(
@@ -76,17 +54,7 @@ fun NotificationScreen(modifier: Modifier = Modifier, paddingValues: PaddingValu
 
             Text(text = "App Updates", modifier = modifier.weight(1f))
 
-            Switch(checked = false, onCheckedChange = { })
-        }
-
-        Row(
-            modifier = modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            Text(text = "Subscription", modifier = modifier.weight(1f))
-
-            Switch(checked = false, onCheckedChange = { })
+            Switch(checked = appUpdatesPreference.data, onCheckedChange = onAppUpdateChange)
         }
     }
 }

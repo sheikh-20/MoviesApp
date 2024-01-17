@@ -14,6 +14,8 @@ import com.application.moviesapp.data.repository.LanguagePreferenceImpl
 import com.application.moviesapp.data.repository.LanguagePreferenceRepository
 import com.application.moviesapp.data.repository.MoviesRepository
 import com.application.moviesapp.data.repository.MoviesRepositoryImpl
+import com.application.moviesapp.data.repository.NotificationPreferencePreferenceImpl
+import com.application.moviesapp.data.repository.NotificationPreferenceRepository
 import com.application.moviesapp.data.repository.PasswordResetRepository
 import com.application.moviesapp.data.repository.PasswordResetRepositoryImpl
 import com.application.moviesapp.data.repository.SettingsPreferenceImpl
@@ -24,7 +26,6 @@ import com.application.moviesapp.data.repository.UserPreferenceRepoImpl
 import com.application.moviesapp.data.repository.UserPreferenceRepository
 import com.application.moviesapp.data.repository.YoutubeRepository
 import com.application.moviesapp.data.repository.YoutubeRepositoryImpl
-import com.application.moviesapp.domain.model.SettingsPreference
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -84,4 +85,7 @@ abstract class RepositoryModule {
 
     @Binds
     abstract fun providesLanguageRepositoryImpl(languagePreferenceImpl: LanguagePreferenceImpl): LanguagePreferenceRepository
+
+    @Binds
+    abstract fun providesNotificationRepositoryImpl(notificationPreferenceImpl: NotificationPreferencePreferenceImpl): NotificationPreferenceRepository
 }

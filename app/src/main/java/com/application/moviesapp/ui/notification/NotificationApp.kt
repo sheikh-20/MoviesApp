@@ -11,16 +11,32 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.application.moviesapp.domain.model.AppUpdatesPreference
+import com.application.moviesapp.domain.model.GeneralNotificationPreference
+import com.application.moviesapp.ui.viewmodel.ProfileViewModel
 
 @Composable
-fun NotificationApp(modifier: Modifier = Modifier) {
+fun NotificationApp(modifier: Modifier = Modifier, profileViewModel: ProfileViewModel = hiltViewModel()) {
+
+    val generalNotificationUIState by profileViewModel.isGeneralNotification.collectAsState(initial = GeneralNotificationPreference(false))
+    val appUpdatesUIState by profileViewModel.isAppUpdates.collectAsState(initial = AppUpdatesPreference(false))
+
     Scaffold(
         topBar = {  NotificationTopAppbar() }
     ) { paddingValues ->
-        NotificationScreen(paddingValues = paddingValues)
+
+        NotificationScreen(
+            paddingValues = paddingValues,
+            generalNotificationPreference = generalNotificationUIState,
+            appUpdatesPreference = appUpdatesUIState,
+            onGeneralNotificationChange = profileViewModel::updateGeneraNotification,
+            onAppUpdateChange = profileViewModel::updateAppUpdates)
     }
 }
 
