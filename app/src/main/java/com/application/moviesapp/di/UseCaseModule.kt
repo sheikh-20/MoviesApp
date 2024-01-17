@@ -5,6 +5,7 @@ import com.application.moviesapp.data.repository.AccountSetupRepository
 import com.application.moviesapp.data.repository.AuthRepository
 import com.application.moviesapp.data.repository.LanguagePreferenceRepository
 import com.application.moviesapp.data.repository.MoviesRepository
+import com.application.moviesapp.data.repository.NotificationPreferenceRepository
 import com.application.moviesapp.data.repository.PasswordResetRepository
 import com.application.moviesapp.data.repository.SettingsPreferenceRepository
 import com.application.moviesapp.data.repository.UserPreferenceRepository
@@ -30,6 +31,7 @@ import com.application.moviesapp.domain.usecase.GetMovieGenreInteractor
 import com.application.moviesapp.domain.usecase.GetMovieNowPlayingInteractor
 import com.application.moviesapp.domain.usecase.GetMovieSearchInteractor
 import com.application.moviesapp.domain.usecase.GetMovieWithTvSeriesInteractor
+import com.application.moviesapp.domain.usecase.GetNotificationInteractor
 import com.application.moviesapp.domain.usecase.GetPasswordResetInteractors
 import com.application.moviesapp.domain.usecase.GetSettingsInteractor
 import com.application.moviesapp.domain.usecase.GetTvSeriesDetailsInteractor
@@ -47,6 +49,7 @@ import com.application.moviesapp.domain.usecase.MovieTrailerUseCase
 import com.application.moviesapp.domain.usecase.MovieUpdateFavouriteInteractor
 import com.application.moviesapp.domain.usecase.MovieUpdateFavouriteUseCase
 import com.application.moviesapp.domain.usecase.MovieWithTvSeriesUseCase
+import com.application.moviesapp.domain.usecase.NotificationUseCase
 import com.application.moviesapp.domain.usecase.PasswordResetUseCase
 import com.application.moviesapp.domain.usecase.SettingsUseCase
 import com.application.moviesapp.domain.usecase.SignInEmailInteractor
@@ -262,6 +265,12 @@ class UseCaseModule {
     @Singleton
     fun providesLanguageUseCase(languagePreferenceRepository: LanguagePreferenceRepository): LanguageUseCase {
         return GetLanguageInteractor(languagePreferenceRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesNotificationUseCase(notificationPreferenceRepository: NotificationPreferenceRepository): NotificationUseCase {
+        return GetNotificationInteractor(notificationPreferenceRepository)
     }
 }
 
