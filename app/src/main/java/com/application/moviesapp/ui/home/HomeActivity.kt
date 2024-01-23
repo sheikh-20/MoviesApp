@@ -37,6 +37,9 @@ import com.application.moviesapp.ui.viewmodel.ProfileViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -47,6 +50,8 @@ class HomeActivity : BaseActivity() {
     private val homeViewModel: HomeViewModel by viewModels()
     private val exploreViewModel: ExploreViewModel by viewModels()
     private val profileViewModel: ProfileViewModel by viewModels()
+
+    private lateinit var analytics: FirebaseAnalytics
 
     companion object {
         fun startActivity(activity: Activity?) {
@@ -67,6 +72,8 @@ class HomeActivity : BaseActivity() {
         }
         setTransparentStatusBar()
 
+
+        analytics = Firebase.analytics
         homeViewModel.getMovieWithTvSeries()
 //        exploreViewModel.getTrendingMovies()
 
