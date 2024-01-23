@@ -17,6 +17,17 @@
         android:theme="@style/Theme.MoviesApp.Splash"
         tools:targetApi="31">
 
+        <service
+            android:name=".service.PushNotificationService"
+            android:exported="false">
+            <intent-filter>
+                <action
+                    android:name="com.google.firebase.MESSAGING_EVENT">
+                </action>
+            </intent-filter>
+        </service>
+
+
         <activity
             android:name=".ui.privacypolicy.PrivacyPolicyActivity"
             android:exported="false"
