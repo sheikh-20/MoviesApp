@@ -10,11 +10,30 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.datastore.core.DataStore
+import com.application.moviesapp.data.repository.NotificationPreferenceRepository
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class PushNotificationService: FirebaseMessagingService() {
+
+    @Inject
+    lateinit var  repository: NotificationPreferenceRepository
+
+    @Inject
+    lateinit var coroutineScope: CoroutineScope
+
+    companion object {
+        enum class CHANNEL_ID {
+            GENERAL_NOTIFICATION, APP_UPDATES
+        }
+    }
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
@@ -26,15 +45,33 @@ class PushNotificationService: FirebaseMessagingService() {
         val title: String = message.notification?.title ?: ""
         val text: String = message.notification?.body ?: ""
 
-        val CHANNEL_ID = "HEADS_UP_NOTIFICATION"
+        coroutineScope.launch {
+            repository.readGeneralNotificationPreference.collect {
+                if (it.data) {
+                    showNotification(channelId = CHANNEL_ID.GENERAL_NOTIFICATION.name, title = title, text = text, notificationId = 1)
+                }
+            }
+
+            repository.readAppUpdatesPreference.collect {
+                if (it.data) {
+                    showNotification(channelId = CHANNEL_ID.APP_UPDATES.name, title = title, text = text, notificationId = 2)
+                }
+            }
+        }
+
+        super.onMessageReceived(message)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun showNotification(channelId: String, title: String = "", text: String = "", notificationId: Int) {
 
         val channel = NotificationChannel(
-            CHANNEL_ID,
+            channelId,
             "Heads Up Notification",
             NotificationManager.IMPORTANCE_HIGH
         )
 
-        val notification: Notification.Builder = Notification.Builder(this, CHANNEL_ID)
+        val notification: Notification.Builder = Notification.Builder(this, channelId)
             .setContentTitle(title)
             .setContentText(text)
             .setSmallIcon(com.application.moviesapp.R.drawable.ic_launcher_foreground)
@@ -54,8 +91,6 @@ class PushNotificationService: FirebaseMessagingService() {
             // for ActivityCompat#requestPermissions for more details.
             return
         }
-        NotificationManagerCompat.from(this).notify(1, notification.build())
-
-        super.onMessageReceived(message)
+        NotificationManagerCompat.from(this).notify(notificationId, notification.build())
     }
 }
