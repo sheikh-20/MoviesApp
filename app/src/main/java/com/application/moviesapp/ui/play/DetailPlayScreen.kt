@@ -62,6 +62,7 @@ import androidx.media3.common.Player
 import androidx.media3.ui.PlayerView
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.utility.formatMinSec
+import com.application.moviesapp.ui.viewmodel.DownloadUiState
 import com.application.moviesapp.ui.viewmodel.PlayerStreamUIState
 import com.application.moviesapp.ui.viewmodel.PlayerUIState
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
@@ -83,6 +84,7 @@ fun DetailPlayScreen(modifier: Modifier = Modifier,
                      onSeekForward: () -> Unit = {  },
                      onSeekBackward: () -> Unit = {  },
                      onPlaybackSpeedClick: () -> Unit = {  },
+                     onDownloadClick: () -> Unit = { },
 ) {
     val context = LocalContext.current
 
@@ -138,7 +140,8 @@ fun DetailPlayScreen(modifier: Modifier = Modifier,
                 onSeekTo = onSeekTo,
                 onSeekForward = onSeekForward,
                 onSeekBackward = onSeekBackward,
-                onPlaybackSpeedClick = onPlaybackSpeedClick
+                onPlaybackSpeedClick = onPlaybackSpeedClick,
+                onDownloadClick = onDownloadClick
             )
         }
     }
