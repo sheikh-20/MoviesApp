@@ -921,40 +921,40 @@ private fun MovieTrailerCard(modifier: Modifier = Modifier,
 
                     Spacer(modifier = modifier.weight(1f))
 
-                    when (downloaderUiState) {
-                        is DownloadUiState.Default -> {
-                            Timber.tag(TAG).d("Video Downloader")
-                        }
-                        is DownloadUiState.Loading -> {
-                            Timber.tag(TAG).d("Downloader Loading")
-                            CircularProgressIndicator(modifier = modifier.size(28.dp), strokeWidth = 4.dp, strokeCap = StrokeCap.Round)
-                        }
-                        is DownloadUiState.Complete -> {
-                            Timber.tag(TAG).d(downloaderUiState.toString())
+//                    when (downloaderUiState) {
+//                        is DownloadUiState.Default -> {
+//                            Timber.tag(TAG).d("Video Downloader")
+//                        }
+//                        is DownloadUiState.Loading -> {
+//                            Timber.tag(TAG).d("Downloader Loading")
+//                            CircularProgressIndicator(modifier = modifier.size(28.dp), strokeWidth = 4.dp, strokeCap = StrokeCap.Round)
+//                        }
+//                        is DownloadUiState.Complete -> {
+//                            Timber.tag(TAG).d(downloaderUiState.toString())
+//
+//                            AssistChip(
+//                                onClick = {
+//                                    onTrailerDownloadClick(movieTrailerWithYoutube.id ?: return@AssistChip,
+//                                        downloaderUiState.videoStreams.first(),
+//                                        downloaderUiState.audioStreams ?: return@AssistChip,
+//                                        MovieDownloadEntity(
+//                                            backdropPath = movieTrailerWithYoutube.thumbnail,
+//                                            runtime = movieTrailerWithYoutube.duration?.toYoutubeDuration ?: "",
+//                                            title = movieTrailerWithYoutube.title,
+//                                            filePath = movieTrailerWithYoutube.title?.replace(":", "_") + ".mp4"
+//                                        ))
+//                                },
+//                                label = {
+//                                    Text(text = downloaderUiState.videoStreams.first().resolution.removeSurrounding("\""), color = MaterialTheme.colorScheme.primary)
+//                                },
+//                                shape = RoundedCornerShape(50)
+//                            )
+//                        }
+//                    }
 
-                            AssistChip(
-                                onClick = {
-                                    onTrailerDownloadClick(movieTrailerWithYoutube.id ?: return@AssistChip,
-                                        downloaderUiState.videoStreams.first(),
-                                        downloaderUiState.audioStreams ?: return@AssistChip,
-                                        MovieDownloadEntity(
-                                            backdropPath = movieTrailerWithYoutube.thumbnail,
-                                            runtime = movieTrailerWithYoutube.duration?.toYoutubeDuration ?: "",
-                                            title = movieTrailerWithYoutube.title,
-                                            filePath = movieTrailerWithYoutube.title?.replace(":", "_") + ".mp4"
-                                        ))
-                                },
-                                label = {
-                                    Text(text = downloaderUiState.videoStreams.first().resolution.removeSurrounding("\""), color = MaterialTheme.colorScheme.primary)
-                                },
-                                shape = RoundedCornerShape(50)
-                            )
-                        }
-                    }
-
-                    IconButton(onClick = { onTrailerClick(movieTrailerWithYoutube.id ?: return@IconButton) }) {
-                        Icon(imageVector = Icons.Rounded.Settings, contentDescription = null)
-                    }
+//                    IconButton(onClick = { onTrailerClick(movieTrailerWithYoutube.id ?: return@IconButton) }) {
+//                        Icon(imageVector = Icons.Rounded.Settings, contentDescription = null)
+//                    }
                 }
             }
         }
@@ -1017,40 +1017,40 @@ private fun TvSeriesTrailerCard(modifier: Modifier = Modifier,
 
                     Spacer(modifier = modifier.weight(1f))
 
-                    when (downloaderUiState) {
-                        is DownloadUiState.Default -> {
-                            Timber.tag(TAG).d("Video Downloader")
-                        }
-                        is DownloadUiState.Loading -> {
-                            Timber.tag(TAG).d("Downloader Loading")
-                            CircularProgressIndicator(modifier = modifier.size(28.dp), strokeWidth = 4.dp, strokeCap = StrokeCap.Round)
-                        }
-                        is DownloadUiState.Complete -> {
-                            Timber.tag(TAG).d(downloaderUiState.toString())
-
-                            AssistChip(
-                                onClick = {
-                                    onTrailerDownloadClick(tvSeriesTrailerWithYoutube.id ?: return@AssistChip,
-                                        downloaderUiState.videoStreams.first(),
-                                        downloaderUiState.audioStreams ?: return@AssistChip,
-                                        MovieDownloadEntity(
-                                            backdropPath = tvSeriesTrailerWithYoutube.thumbnail,
-                                            runtime = tvSeriesTrailerWithYoutube.duration?.toYoutubeDuration ?: "",
-                                            title = tvSeriesTrailerWithYoutube.title,
-                                            filePath = tvSeriesTrailerWithYoutube.title?.replace(":", "_") + ".mp4"
-                                        ))
-                                },
-                                label = {
-                                    Text(text = downloaderUiState.videoStreams.first().resolution.removeSurrounding("\""), color = MaterialTheme.colorScheme.primary)
-                                },
-                                shape = RoundedCornerShape(50)
-                            )
-                        }
-                    }
-
-                    IconButton(onClick = { onTrailerClick(tvSeriesTrailerWithYoutube.id ?: return@IconButton) }) {
-                        Icon(imageVector = Icons.Rounded.Settings, contentDescription = null)
-                    }
+//                    when (downloaderUiState) {
+//                        is DownloadUiState.Default -> {
+//                            Timber.tag(TAG).d("Video Downloader")
+//                        }
+//                        is DownloadUiState.Loading -> {
+//                            Timber.tag(TAG).d("Downloader Loading")
+//                            CircularProgressIndicator(modifier = modifier.size(28.dp), strokeWidth = 4.dp, strokeCap = StrokeCap.Round)
+//                        }
+//                        is DownloadUiState.Complete -> {
+//                            Timber.tag(TAG).d(downloaderUiState.toString())
+//
+//                            AssistChip(
+//                                onClick = {
+//                                    onTrailerDownloadClick(tvSeriesTrailerWithYoutube.id ?: return@AssistChip,
+//                                        downloaderUiState.videoStreams.first(),
+//                                        downloaderUiState.audioStreams ?: return@AssistChip,
+//                                        MovieDownloadEntity(
+//                                            backdropPath = tvSeriesTrailerWithYoutube.thumbnail,
+//                                            runtime = tvSeriesTrailerWithYoutube.duration?.toYoutubeDuration ?: "",
+//                                            title = tvSeriesTrailerWithYoutube.title,
+//                                            filePath = tvSeriesTrailerWithYoutube.title?.replace(":", "_") + ".mp4"
+//                                        ))
+//                                },
+//                                label = {
+//                                    Text(text = downloaderUiState.videoStreams.first().resolution.removeSurrounding("\""), color = MaterialTheme.colorScheme.primary)
+//                                },
+//                                shape = RoundedCornerShape(50)
+//                            )
+//                        }
+//                    }
+//
+//                    IconButton(onClick = { onTrailerClick(tvSeriesTrailerWithYoutube.id ?: return@IconButton) }) {
+//                        Icon(imageVector = Icons.Rounded.Settings, contentDescription = null)
+//                    }
                 }
             }
         }
