@@ -39,12 +39,22 @@ android {
     namespace = "com.application.moviesapp"
     compileSdk = 33
 
+    signingConfigs {
+        create("config") {
+            keyAlias = "moviesapp"
+            keyPassword = "Sheikh"
+            storeFile = file("/media/sheikh/hdd/AndroidStudioProjects/AndroidStudioProjects/MoviesApp/app/keystore.jks")
+            storePassword = "Sheikh"
+            enableV4Signing = true
+        }
+    }
+
     defaultConfig {
         applicationId = "com.application.moviesapp"
         minSdk = 24
         targetSdk = 33
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -61,8 +71,10 @@ android {
         buildConfig = true
     }
     buildTypes {
-        debug {
+        getByName("debug") {
             isDebuggable = true
+            isMinifyEnabled = false
+
             val TEST_API_KEY: String by project
             val FACEBOOK_APP_ID: String by project
             val YOUTUBE_API_KEY: String by project
@@ -75,10 +87,11 @@ android {
             resValue("string", "FACEBOOK_APP_ID", FACEBOOK_APP_ID)
 
         }
-        release {
-
+        getByName("release") {
             isDebuggable = false
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -93,6 +106,8 @@ android {
             buildConfigField(type = "String", name = "YOUTUBE_API_KEY", value = YOUTUBE_API_KEY)
             buildConfigField(type = "String", name = "YOUTUBE_BASE_URL", value = "\"https://youtube.googleapis.com/\"")
             resValue("string", "FACEBOOK_APP_ID", FACEBOOK_APP_ID)
+
+            signingConfig = signingConfigs.getByName("config")
         }
     }
     compileOptions {
@@ -111,19 +126,23 @@ android {
         }
     }
 
-    flavorDimensions += "pyVersion"
-    productFlavors {
-        create("py310") { dimension = "pyVersion" }
-        create("py311") { dimension = "pyVersion" }
-    }
+//    flavorDimensions += "pyVersion"
+//    productFlavors {
+//        create("py310") { dimension = "pyVersion" }
+//        create("py311") { dimension = "pyVersion" }
+//    }
 }
 
 dependencies {
-    implementation("com.google.firebase:firebase-crashlytics:18.6.0")
-    implementation("com.google.firebase:firebase-analytics:21.5.0")
-    implementation("com.google.firebase:firebase-database:20.3.0")
-    implementation("com.google.firebase:firebase-storage:20.3.0")
-    implementation("com.google.firebase:firebase-messaging:23.4.0")
+
+    // core
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(platform(libs.compose.bom))
+    implementation(libs.bundles.compose)
+
     val lifecycle_version = "2.6.1"
     val timber_version = "5.0.1"
     val lottie_version = "6.1.0"
@@ -131,46 +150,42 @@ dependencies {
     val room_version = "2.5.2"
     val firebase_version = "22.1.1"
 
-    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
-    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
-    androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
-    androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
-    implementation("androidx.core:core-ktx:1.9.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
+    // material3
+    implementation(libs.compose.material3)
 
-    // Lifecycle
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
-    implementation("androidx.activity:activity-compose:1.7.2")
-    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3:1.2.0-alpha05")
+    // test
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.compose.bom))
+    androidTestImplementation(libs.compose.junit)
+    debugImplementation(libs.compose.ui.tooling)
+    debugImplementation(libs.compose.test.manifest)
 
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    // firebase
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.database)
+    implementation(libs.firebase.storage)
+    implementation(libs.firebase.messaging)
 
-    implementation("androidx.core:core-splashscreen:1.1.0-alpha01")
+    // splash
+    implementation(libs.androidx.core.splashscreen)
 
     // Dagger - Hilt
-    implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-android-compiler:2.44")
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+    implementation(libs.dagger.hilt)
+    kapt(libs.dagger.hilt.compiler)
+    implementation(libs.dagger.nav.compose)
 
     // ViewModel with ktx
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
     // Compose viewmodel utility
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version")
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
 
     // Timber for log
-    implementation("com.jakewharton.timber:timber:$timber_version")
+    implementation(libs.timber)
 
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")

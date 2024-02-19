@@ -1,9 +1,9 @@
 [versions]
+activity-compose = "1.8.2"
 accompanist-flowlayout = "0.32.0"
 accompanist-pager = "0.28.0"
 accompanist-permissions = "0.23.1"
 accompanist-systemuicontroller = "0.31.6-rc"
-activity-compose = "1.8.2"
 androidx-junit = "1.1.5"
 androidx-media3-ui = "1.2.0-rc01"
 coil-compose = "2.4.0"
@@ -51,6 +51,7 @@ chaquopy-version = "15.0.0"
 protobuf-version = "0.9.1"
 crashlytics = "2.9.9"
 gradle-tool = "7.3.1"
+material3-version = "1.2.0-alpha05"
 
 [libraries]
 accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "accompanist-flowlayout" }
@@ -107,7 +108,7 @@ timber = { module = "com.jakewharton.timber:timber", version.ref = "timber_versi
 
 dagger-hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt-version" }
 dagger-hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt-version" }
-nav_compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "nav_compose_version"}
+dagger_nav_compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "nav_compose_version"}
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "nav_compose_version" }
 androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "nav_compose_version" }
 
@@ -116,7 +117,7 @@ compose-bom = { module = "androidx.compose:compose-bom", version.ref = "bom" }
 compose-ui = { module = "androidx.compose.ui:ui" }
 compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
 compose-ui-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
-compose-material3 = { module = "androidx.compose.ui:ui-tooling-preview" }
+compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3-version" }
 
 #test
 junit = { module = "junit:junit", version.ref = "junit" }
@@ -129,7 +130,7 @@ compose-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 gradle =  { module = "com.android.tools.build:gradle", version.ref = "gradle-tool" }
 
 [bundles]
-compose = [ "compose-ui", "compose-ui-graphics", "compose-ui-preview", "compose-material3" ]
+compose = [ "compose-ui", "compose-ui-graphics", "compose-ui-preview" ]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-gradle" }
