@@ -582,7 +582,7 @@ private fun BottomSheetFilterContent(modifier: Modifier = Modifier,
                             .padding(horizontal = 16.dp),
                         selected = includeAdult,
                         onClick = { includeAdult = !includeAdult },
-                        label = { Text(text = stringResource(R.string.no), modifier = modifier.fillMaxWidth(), textAlign = TextAlign.Center) },
+                        label = { Text(text = stringResource(R.string.no), modifier = modifier, textAlign = TextAlign.Center) },
                         shape = RoundedCornerShape(50),
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = MaterialTheme.colorScheme.primary,

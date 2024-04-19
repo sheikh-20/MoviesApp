@@ -119,10 +119,9 @@ private fun TopMoviesTopAppbar(upcomingHideTopAppBar: Boolean) {
             },
             navigationIcon = {
                 if (!onSearchClick) {
-                    IconButton(onClick = {   }) {
-                        Icon(painter = painterResource(id = R.drawable.ic_movie),
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary)
+                    IconButton(onClick = { (context as Activity).finish() }) {
+                        Icon(imageVector = Icons.Rounded.ArrowBack,
+                            contentDescription = null)
                     }
                 }
             },
