@@ -38,7 +38,7 @@ class NotificationPreferencePreferenceImpl @Inject constructor(private val datas
                 }
             }
             .map {  preference ->
-                val isGeneralNotification = preference[PreferenceKeys.IS_GENERAL_NOTIFICATION] ?: false
+                val isGeneralNotification = preference[PreferenceKeys.IS_GENERAL_NOTIFICATION] ?: true
                 GeneralNotificationPreference(isGeneralNotification)
             }
     override val readAppUpdatesPreference: Flow<AppUpdatesPreference>
@@ -51,7 +51,7 @@ class NotificationPreferencePreferenceImpl @Inject constructor(private val datas
                 }
             }
             .map {  preference ->
-                val isAppUpdates = preference[PreferenceKeys.IS_APP_UPDATES] ?: false
+                val isAppUpdates = preference[PreferenceKeys.IS_APP_UPDATES] ?: true
                 AppUpdatesPreference(isAppUpdates)
             }
     override suspend fun updateGeneralNotificationPreference(value: Boolean) {

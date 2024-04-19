@@ -85,4 +85,6 @@
     <string name="skip">தவிர்க்கவும்</string>
     <string name="congratulations">வாழ்த்துகள்</string>
     <string name="your_account_is_ready_to_use_you_will_be_redirected_to_the_home_page_in_a_few_seconds">உங்கள் கணக்கு பயன்படுத்த தயாராக உள்ளது. சில நொடிகளில் முகப்புப் பக்கத்திற்குத் திருப்பி விடப்படுவீர்கள்.</string>
+    <string name="empty">காலியாக</string>
+    <string name="you_did_not_receive_any_notification">நீங்கள் எந்த அறிவிப்பையும் பெறவில்லை</string>
 </resources>
