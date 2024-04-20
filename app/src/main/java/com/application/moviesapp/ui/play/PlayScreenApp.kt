@@ -375,11 +375,15 @@ private fun DownloadSideSheet(modifier: Modifier = Modifier,
                             downloaderUiState.audioStreams ?: return@clickable,
                             MovieDownloadEntity(
                                 backdropPath = downloaderUiState.videoThumbnail,
-                                runtime = "",
+                                runtime = null,
                                 title = downloaderUiState.videoTitle,
                                 filePath = downloaderUiState.videoTitle?.replace(":", "_") + ".mp4"
                             )
                         )
+
+                                Toast.makeText(context, "Video downloading..", Toast.LENGTH_SHORT).show()
+                                onDismiss()
+
                                       },
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
