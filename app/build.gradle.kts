@@ -188,17 +188,17 @@ dependencies {
     implementation(libs.timber)
 
     // Retrofit
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.3")
+    implementation(libs.retrofit2)
+    implementation(libs.okhttp)
 
     // Retrofit with Scalar Converter
-    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
+    implementation(libs.scalar.converter)
 
     // Kotlin Serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+    implementation(libs.kotlin.serialization)
 
     // Retrofit with Jakewharton Converter
-    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
+    implementation(libs.jakewharton.converter)
 
     // Lottie
     implementation("com.airbnb.android:lottie:$lottie_version")
