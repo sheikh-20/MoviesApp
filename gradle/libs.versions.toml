@@ -33,12 +33,9 @@ media3-exoplayer = "1.2.0-rc01"
 media3-ui = "1.2.1"
 nav_compose_version = "1.1.0"
 lifecycle-viewmodel-ktx = "2.7.0"
-okhttp = "5.0.0-alpha.3"
 paging-runtime-ktx = "3.2.1"
 play-services-auth = "20.7.0"
 protobuf-javalite = "3.21.9"
-retrofit = "2.9.0"
-retrofit2-kotlinx-serialization-converter = "1.0.0"
 room-runtime = "2.6.1"
 startup-runtime = "1.1.1"
 timber_version = "5.0.1"
@@ -52,6 +49,11 @@ protobuf-version = "0.9.1"
 crashlytics = "2.9.9"
 gradle-tool = "7.3.1"
 material3-version = "1.2.0-alpha05"
+retrofit-version = "2.9.0"
+okhttp-version = "5.0.0-alpha.3"
+scalar-converter-version = "2.9.0"
+kotlin-serialization-version = "1.5.1"
+jakewharton-convertor-version = "1.0.0"
 
 [libraries]
 accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "accompanist-flowlayout" }
@@ -84,7 +86,6 @@ androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "
 androidx-startup-runtime = { module = "androidx.startup:startup-runtime", version.ref = "startup-runtime" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work-runtime-ktx" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose" }
-converter-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "retrofit" }
 core = { module = "com.pierfrancescosoffritti.androidyoutubeplayer:core", version.ref = "core" }
 facebook-android-sdk = { module = "com.facebook.android:facebook-android-sdk", version.ref = "facebook-android-sdk" }
 facebook-login = { module = "com.facebook.android:facebook-login", version.ref = "facebook-login" }
@@ -98,13 +99,16 @@ hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", ve
 kotlin-youtubeExtractor = { module = "com.github.maxrave-dev:kotlin-youtubeExtractor", version.ref = "kotlin-youtubeExtractor" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie" }
-okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "play-services-auth" }
 protobuf-javalite = { module = "com.google.protobuf:protobuf-javalite", version.ref = "protobuf-javalite" }
 protobuf-kotlin-lite = { module = "com.google.protobuf:protobuf-kotlin-lite", version.ref = "protobuf-javalite" }
-retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
-retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2-kotlinx-serialization-converter" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber_version" }
+
+retrofit2 = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit-version" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp-version" }
+scalar-converter = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "scalar-converter-version" }
+kotlin-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlin-serialization-version" }
+jakewharton-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "jakewharton-convertor-version" }
 
 dagger-hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt-version" }
 dagger-hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt-version" }
@@ -118,6 +122,7 @@ compose-ui = { module = "androidx.compose.ui:ui" }
 compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
 compose-ui-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3-version" }
+
 
 #test
 junit = { module = "junit:junit", version.ref = "junit" }

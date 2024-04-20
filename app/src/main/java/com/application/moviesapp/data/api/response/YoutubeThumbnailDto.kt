@@ -6,59 +6,59 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class YoutubeThumbnailDto(
     @SerialName("etag")
-    val etag: String?,
+    val etag: String? = null,
 
     @SerialName("items")
-    val items: List<Item?>?,
+    val items: List<Item?>? = null,
 
     @SerialName("kind")
-    val kind: String?,
+    val kind: String? = null,
 
     @SerialName("pageInfo")
-    val pageInfo: PageInfo?
+    val pageInfo: PageInfo? = null
 ) {
 
     @Serializable
     data class Item(
         @SerialName("contentDetails")
-        val contentDetails: ContentDetails?,
+        val contentDetails: ContentDetails? = null,
 
         @SerialName("etag")
-        val etag: String?,
+        val etag: String? = null,
 
         @SerialName("id")
-        val id: String?,
+        val id: String? = null,
 
         @SerialName("kind")
-        val kind: String?,
+        val kind: String? = null,
 
         @SerialName("snippet")
-        val snippet: Snippet?
+        val snippet: Snippet? = null
     ) {
 
         @Serializable
         data class ContentDetails(
 
             @SerialName("caption")
-            val caption: String?,
+            val caption: String? = null,
 
             @SerialName("contentRating")
-            val contentRating: ContentRating?,
+            val contentRating: ContentRating? = null,
 
             @SerialName("definition")
-            val definition: String?,
+            val definition: String? = null,
 
             @SerialName("dimension")
-            val dimension: String?,
+            val dimension: String? = null,
 
             @SerialName("duration")
-            val duration: String?,
+            val duration: String? = null,
 
             @SerialName("licensedContent")
-            val licensedContent: Boolean?,
+            val licensedContent: Boolean? = null,
 
             @SerialName("projection")
-            val projection: String?
+            val projection: String? = null
         ) {
 
             @Serializable
@@ -68,120 +68,120 @@ data class YoutubeThumbnailDto(
         @Serializable
         data class Snippet(
             @SerialName("categoryId")
-            val categoryId: String?,
+            val categoryId: String? = null,
 
             @SerialName("channelId")
-            val channelId: String?,
+            val channelId: String? = null,
 
             @SerialName("channelTitle")
-            val channelTitle: String?,
+            val channelTitle: String? = null,
 
             @SerialName("description")
-            val description: String?,
+            val description: String? = null,
 
             @SerialName("liveBroadcastContent")
-            val livebroadcastContent: String?,
+            val livebroadcastContent: String? = null,
 
             @SerialName("localized")
-            val localized: Localized?,
+            val localized: Localized? = null,
 
             @SerialName("publishedAt")
-            val publishedAt: String?,
+            val publishedAt: String? = null,
 
             @SerialName("thumbnails")
-            val thumbnails: Thumbnails?,
+            val thumbnails: Thumbnails? = null,
 
             @SerialName("title")
-            val title: String?
+            val title: String? = null
         ) {
 
             @Serializable
             data class Localized(
 
                 @SerialName("description")
-                val description: String?,
+                val description: String? = null,
 
                 @SerialName("title")
-                val title: String?
+                val title: String? = null
             )
 
             @Serializable
             data class Thumbnails(
 
                 @SerialName("default")
-                val default: Default?,
+                val default: Default? = null,
 
                 @SerialName("high")
-                val high: High?,
+                val high: High? = null,
 
                 @SerialName("maxres")
-                val maxres: Maxres?,
+                val maxres: Maxres? = null,
 
                 @SerialName("medium")
-                val medium: Medium?,
+                val medium: Medium? = null,
 
                 @SerialName("standard")
-                val standard: Standard?
+                val standard: Standard? = null
             ) {
 
                 @Serializable
                 data class Default(
                     @SerialName("height")
-                    val height: Int?,
+                    val height: Int? = null,
 
                     @SerialName("url")
-                    val url: String?,
+                    val url: String? = null,
 
                     @SerialName("width")
-                    val width: Int?
+                    val width: Int? = null
                 )
 
                 @Serializable
                 data class High(
                     @SerialName("height")
-                    val height: Int?,
+                    val height: Int? = null,
 
                     @SerialName("url")
-                    val url: String?,
+                    val url: String? = null,
 
                     @SerialName("width")
-                    val width: Int?
+                    val width: Int? = null
                 )
 
                 @Serializable
                 data class Maxres(
                     @SerialName("height")
-                    val height: Int?,
+                    val height: Int? = null,
 
                     @SerialName("url")
-                    val url: String?,
+                    val url: String? = null,
 
                     @SerialName("width")
-                    val width: Int?
+                    val width: Int? = null
                 )
 
                 @Serializable
                 data class Medium(
                     @SerialName("height")
-                    val height: Int?,
+                    val height: Int? = null,
 
                     @SerialName("url")
-                    val url: String?,
+                    val url: String? = null,
 
                     @SerialName("width")
-                    val width: Int?
+                    val width: Int? = null
                 )
 
                 @Serializable
                 data class Standard(
                     @SerialName("height")
-                    val height: Int?,
+                    val height: Int? = null,
 
                     @SerialName("url")
-                    val url: String?,
+                    val url: String? = null,
 
                     @SerialName("width")
-                    val width: Int?
+                    val width: Int? = null
                 )
             }
         }
@@ -190,9 +190,9 @@ data class YoutubeThumbnailDto(
     @Serializable
     data class PageInfo(
         @SerialName("resultsPerPage")
-        val resultsPerPage: Int?,
+        val resultsPerPage: Int? = null,
 
         @SerialName("totalResults")
-        val totalResults: Int?
+        val totalResults: Int? = null
     )
 }
