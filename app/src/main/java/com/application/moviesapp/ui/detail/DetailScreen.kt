@@ -2,6 +2,7 @@ package com.application.moviesapp.ui.detail
 
 import android.app.Activity
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -392,7 +393,11 @@ fun DetailScreen(modifier: Modifier = Modifier,
                             TabRow(selectedTabIndex = pager.currentPage) {
                                 items.forEachIndexed { index, horizontalPagerContent ->
                                     Tab(selected = pager.currentPage == index,
-                                        onClick = { /*TODO*/ },
+                                        onClick = {
+                                            coroutineScope.launch {
+                                                pager.animateScrollToPage(page = index)
+                                            }
+                                        },
                                         text = {
                                             Text(text = items[index].title)
                                         })
@@ -769,7 +774,11 @@ fun DetailScreen(modifier: Modifier = Modifier,
                             TabRow(selectedTabIndex = pager.currentPage) {
                                 items.forEachIndexed { index, horizontalPagerContent ->
                                     Tab(selected = pager.currentPage == index,
-                                        onClick = { /*TODO*/ },
+                                        onClick = {
+                                            coroutineScope.launch {
+                                                pager.animateScrollToPage(page = index)
+                                            }
+                                        },
                                         text = {
                                             Text(text = items[index].title)
                                         })

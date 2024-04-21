@@ -62,6 +62,7 @@ import com.application.moviesapp.ui.play.PlayActivity
 import com.application.moviesapp.ui.play.Screen
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.utility.getFileSize
+import com.application.moviesapp.ui.utility.getVideoDuration
 import com.application.moviesapp.ui.utility.toImageUrl
 import com.application.moviesapp.ui.utility.toYoutubeDuration
 import com.application.moviesapp.ui.viewmodel.DownloadUiState
@@ -171,7 +172,7 @@ private fun DownloadCard(modifier: Modifier = Modifier,
                 )
 
                 Text(
-                    text = movie?.runtime.toString() ?: "",
+                    text = movie?.runtime ?: movie?.filePath?.getVideoDuration(context as Activity) ?: "",
                     style = MaterialTheme.typography.bodyMedium
                 )
 
@@ -192,9 +193,7 @@ private fun DownloadCard(modifier: Modifier = Modifier,
                 }
             }
         }
-
     }
-
 }
 
 @Preview(showBackground = true, showSystemUi = true)

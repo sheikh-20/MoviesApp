@@ -331,11 +331,7 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
                     Row(verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)) {
 
-                        IconButton(onClick = onDownloadClick) {
-                            Icon(imageVector = Icons.Outlined.FileDownload,
-                                contentDescription = null,
-                                modifier = modifier.size(24.dp), tint = MaterialTheme.colorScheme.onPrimary)
-                        }
+
                         IconButton(onClick = { onFullScreenModeClicked(isFullScreen.not()) }) {
                             Icon(imageVector = if (isFullScreen) Icons.Rounded.FullscreenExit else Icons.Rounded.Fullscreen,
                                 contentDescription = null,
