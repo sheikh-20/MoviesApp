@@ -3,6 +3,7 @@ package com.application.moviesapp.ui.utility
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.media.MediaMetadataRetriever
 import android.os.Build
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
@@ -13,6 +14,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.application.moviesapp.BuildConfig
 import com.application.moviesapp.R
 import com.application.moviesapp.domain.model.Stream
+import timber.log.Timber
 import java.io.File
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -143,4 +145,22 @@ fun SetLanguage(language: String = "English (US)") {
     val resources = LocalContext.current.resources
     resources.updateConfiguration(configuration, resources.displayMetrics)
 
+}
+
+fun String.getVideoDuration(context: Context): String {
+
+    Timber.tag("MoviesApp").d(this)
+
+    val retriever = MediaMetadataRetriever()
+    retriever.setDataSource(File(context.filesDir, "output/$this").path)
+    val durationString = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+    retriever.release()
+
+    return if (durationString?.toLong() != null) {
+        val seconds = durationString.toLong().div(1000)
+        val minutes = seconds / 60
+        val remainingSeconds = seconds % 60
+        println("Video duration: $minutes minutes and $remainingSeconds seconds")
+        "${minutes}m ${remainingSeconds}s"
+    } else ""
 }
