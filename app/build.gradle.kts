@@ -143,13 +143,6 @@ dependencies {
     implementation(platform(libs.compose.bom))
     implementation(libs.bundles.compose)
 
-    val lifecycle_version = "2.6.1"
-    val timber_version = "5.0.1"
-    val lottie_version = "6.1.0"
-    val paging_version = "3.2.1"
-    val room_version = "2.5.2"
-    val firebase_version = "22.1.1"
-
     // material3
     implementation(libs.compose.material3)
 
@@ -201,79 +194,74 @@ dependencies {
     implementation(libs.jakewharton.converter)
 
     // Lottie
-    implementation("com.airbnb.android:lottie:$lottie_version")
+    implementation(libs.lottie)
 
-    implementation("com.google.accompanist:accompanist-systemuicontroller:0.31.6-rc")
+    implementation(libs.accompanist.systemuicontroller)
 
     // Material icon extended
-    implementation("androidx.compose.material:material-icons-extended:1.6.0-alpha02")
+    implementation(libs.androidx.material.icons.extended)
 
     // Coil
-    implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation(libs.coil.compose)
 
     // Paging 3
-    implementation("androidx.paging:paging-runtime-ktx:$paging_version")
-    implementation("androidx.paging:paging-compose:$paging_version")
+    implementation(libs.androidx.paging.runtime.ktx)
+    implementation(libs.androidx.paging.compose)
 
     // Room
-    implementation("androidx.room:room-runtime:$room_version")
-    kapt("androidx.room:room-compiler:$room_version")
-    implementation("androidx.room:room-ktx:$room_version")
-    implementation("androidx.room:room-paging:$room_version")
+    implementation(libs.androidx.room.runtime)
+    kapt(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.paging)
 
-    implementation("com.google.firebase:firebase-auth-ktx:$firebase_version")
-    implementation("com.google.android.gms:play-services-auth:20.6.0")
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.play.services.auth)
 
-    implementation("com.facebook.android:facebook-android-sdk:12.1.0")
-    implementation ("com.facebook.android:facebook-login:14.1.0")
+    implementation(libs.facebook.android.sdk )
+    implementation(libs.facebook.login)
 
     // Pager
-    implementation("com.google.accompanist:accompanist-pager:0.23.1")
-    implementation("com.google.accompanist:accompanist-pager-indicators:0.23.1")
+    implementation(libs.accompanist.pager)
+    implementation(libs.accompanist.pager.indicators)
 
     // Media 3
-    implementation("androidx.media3:media3-ui:1.2.0-alpha01")
-    implementation("androidx.media3:media3-exoplayer:1.2.0-alpha01")
-    implementation("androidx.media3:media3-session:1.2.0-alpha01")
+    implementation(libs.androidx.media3.ui)
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.session)
 
     // Flow layout
-    implementation("com.google.accompanist:accompanist-flowlayout:0.32.0")
+    implementation(libs.accompanist.flowlayout)
 
     // Proto datastore
-    implementation("androidx.datastore:datastore:1.0.0")
-    implementation("com.google.protobuf:protobuf-javalite:3.21.9")
-    implementation("com.google.protobuf:protobuf-kotlin-lite:3.21.9")
+    implementation(libs.androidx.datastore)
+    implementation(libs.protobuf.javalite)
+    implementation(libs.protobuf.kotlin.lite)
 
     // Preferences datastore
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation(libs.androidx.datastore.preferences)
 
     //Work Manager
-    implementation("androidx.work:work-runtime-ktx:2.8.1")
+    implementation(libs.androidx.work.runtime.ktx)
 
     //Work Manager + Hilt
-    implementation("androidx.hilt:hilt-work:1.0.0")
-    kapt("com.google.dagger:hilt-android-compiler:2.44")
-    kapt("androidx.hilt:hilt-compiler:1.0.0")
-
+    implementation(libs.androidx.hilt.work)
+    kapt(libs.dagger.hilt.compiler)
+    kapt(libs.androidx.hilt.compiler)
 
     //app start up
-    implementation("androidx.startup:startup-runtime:1.1.1")
-
-    //Media3 Exoplayer
-    implementation("androidx.media3:media3-exoplayer:1.2.0-rc01")
-    implementation("androidx.media3:media3-ui:1.2.0-rc01")
+    implementation(libs.androidx.startup.runtime)
 
     //Permission
-    implementation("com.google.accompanist:accompanist-permissions:0.21.1-beta")
+    implementation(libs.accompanist.permissions)
 
     //Constaint Layout
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+    implementation(libs.androidx.constraintlayout.compose)
 
     //Youtube Player
-    implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:12.1.0")
+    implementation(libs.youtube.player.core)
 
     //Youtube Url Extracter
-    implementation("com.github.maxrave-dev:kotlin-youtubeExtractor:0.0.7")
+    implementation(libs.kotlin.youtubeExtractor)
 }
 
 protobuf {

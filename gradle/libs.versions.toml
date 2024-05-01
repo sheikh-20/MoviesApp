@@ -8,7 +8,7 @@ androidx-junit = "1.1.5"
 androidx-media3-ui = "1.2.0-rc01"
 coil-compose = "2.4.0"
 constraintlayout-compose = "1.0.1"
-core = "12.1.0"
+youtube-player-core-version = "12.1.0"
 core-ktx = "1.12.0"
 core-splashscreen = "1.1.0-alpha02"
 datastore = "1.0.0"
@@ -27,19 +27,21 @@ kotlinx-serialization-json = "1.5.1"
 lifecycle-runtime-ktx = "2.7.0"
 bom = "2024.02.00"
 hilt-version = "2.48"
+hilt-compiler-version  ="2.44"
 lottie = "6.1.0"
 material-icons-extended = "1.6.1"
 media3-exoplayer = "1.2.0-rc01"
 media3-ui = "1.2.1"
 nav_compose_version = "1.1.0"
+hilt-work-version = "1.0.0"
 lifecycle-viewmodel-ktx = "2.7.0"
 paging-runtime-ktx = "3.2.1"
 play-services-auth = "20.7.0"
 protobuf-javalite = "3.21.9"
-room-runtime = "2.6.1"
+room-runtime = "2.5.0"
 startup-runtime = "1.1.1"
 timber_version = "5.0.1"
-work-runtime-ktx = "2.9.0"
+work-runtime-ktx = "2.8.1"
 android-gradle = "8.2.2"
 koltin = "1.9.10"
 kotlin-serialize = "1.9.21"
@@ -86,7 +88,7 @@ androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "
 androidx-startup-runtime = { module = "androidx.startup:startup-runtime", version.ref = "startup-runtime" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work-runtime-ktx" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose" }
-core = { module = "com.pierfrancescosoffritti.androidyoutubeplayer:core", version.ref = "core" }
+youtube-player-core = { module = "com.pierfrancescosoffritti.androidyoutubeplayer:core", version.ref = "youtube-player-core-version" }
 facebook-android-sdk = { module = "com.facebook.android:facebook-android-sdk", version.ref = "facebook-android-sdk" }
 facebook-login = { module = "com.facebook.android:facebook-login", version.ref = "facebook-login" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics", version.ref = "firebase-analytics" }
@@ -111,10 +113,10 @@ kotlin-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-j
 jakewharton-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "jakewharton-convertor-version" }
 
 dagger-hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt-version" }
-dagger-hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt-version" }
+dagger-hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt-compiler-version" }
 dagger_nav_compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "nav_compose_version"}
-androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "nav_compose_version" }
-androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "nav_compose_version" }
+androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hilt-work-version" }
+androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "hilt-work-version" }
 
 
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "bom" }
