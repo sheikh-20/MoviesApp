@@ -12,4 +12,5 @@ plugins {
     id("org.jetbrains.kotlin.android") version "1.8.10" apply false
     id("com.google.dagger.hilt.android") version "2.44" apply false
     id ("com.chaquo.python") version "15.0.0" apply false
+    alias(libs.plugins.google.service) apply false
 }
