@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,13 +31,16 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.LocalContentAlpha
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.rounded.ArrowForwardIos
 import androidx.compose.material.icons.rounded.Bookmark
 import androidx.compose.material.icons.rounded.BookmarkBorder
+import androidx.compose.material.icons.rounded.Comment
 import androidx.compose.material.icons.rounded.ExpandMore
+import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.PlayCircle
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Share
@@ -90,6 +94,8 @@ import coil.request.ImageRequest
 import com.application.moviesapp.R
 import com.application.moviesapp.data.common.Resource
 import com.application.moviesapp.data.local.entity.MovieDownloadEntity
+import com.application.moviesapp.domain.model.Comment
+import com.application.moviesapp.domain.model.CommentRepository
 import com.application.moviesapp.domain.model.MovieNowPlaying
 import com.application.moviesapp.domain.model.MovieState
 import com.application.moviesapp.domain.model.MovieTrailerWithYoutube
@@ -441,7 +447,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                                         }
                                     }
                                     2 -> {
-                                        Text(text = "Comments")
+                                         CommentsCompose()
                                     }
                                 }
                             }
@@ -822,7 +828,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                                         }
                                     }
                                     2 -> {
-                                        Text(text = "Comments")
+                                        CommentsCompose()
                                     }
                                 }
                             }
@@ -1061,6 +1067,92 @@ private fun TvSeriesTrailerCard(modifier: Modifier = Modifier,
 //                        Icon(imageVector = Icons.Rounded.Settings, contentDescription = null)
 //                    }
                 }
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun CommentsCompose(modifier: Modifier = Modifier) {
+    Column(modifier = modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Row(modifier = modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween) {
+
+            Text(text = "24.6K Comments",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold)
+
+            Text(text = "See all",
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold)
+        }
+
+        LazyColumn(
+            modifier = modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(CommentRepository.getComments().size) {
+                CommentsPeopleCompose(comment = CommentRepository.getComments()[it])
+            }
+        }
+    }
+}
+
+@Composable
+private fun CommentsPeopleCompose(modifier: Modifier = Modifier, comment: Comment = Comment()) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            AsyncImage(
+                model = ImageRequest.Builder(context = LocalContext.current)
+                    .data(comment.imageUrl)
+                    .crossfade(true)
+                    .build(),
+                error = painterResource(id = R.drawable.ic_broken_image),
+                placeholder = painterResource(id = R.drawable.ic_image_placeholder),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = modifier
+                    .size(height = 50.dp, width = 50.dp)
+                    .clip(RoundedCornerShape(50)),
+            )
+
+            Text(text = comment.userName ?: "", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+
+            Spacer(modifier = modifier.weight(1f))
+
+            IconButton(onClick = { /*TODO*/ }) {
+                Icon(imageVector = Icons.Rounded.Comment, contentDescription = null)
+            }
+        }
+
+        Text(text = comment.comment ?: "", style = MaterialTheme.typography.bodyLarge, maxLines = 2, overflow = TextOverflow.Ellipsis)
+
+        Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            IconButton(onClick = { /*TODO*/ }, modifier = modifier.then(modifier.size(24.dp))) {
+                Icon(imageVector = Icons.Rounded.Favorite, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+            }
+
+            Spacer(modifier = modifier.width(4.dp))
+
+            Text(text = "${comment.likes ?: 0}", style = MaterialTheme.typography.bodyMedium)
+
+            Spacer(modifier = modifier.width(16.dp))
+
+            Text(text = comment.postedDate ?: "", style = MaterialTheme.typography.bodyMedium)
+
+            Spacer(modifier = modifier.width(16.dp))
+
+            TextButton(onClick = { /*TODO*/ }) {
+                Text(text = "Reply")
             }
         }
     }
