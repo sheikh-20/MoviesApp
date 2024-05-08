@@ -839,7 +839,7 @@ private fun HomeTopAppbar(navController: NavHostController,
                 TopAppBar(
                     title = {
                         if (!onSearchClick) {
-                            Text(text = stringResource(id = R.string.my_list))
+                            Text(text = stringResource(id = R.string.my_list), fontWeight = FontWeight.SemiBold)
                         } else {
                             OutlinedTextField(value = searchValue,
                                 onValueChange = onDownloadSearch,
@@ -904,7 +904,7 @@ private fun HomeTopAppbar(navController: NavHostController,
                 TopAppBar(
                     title = {
                         if (!onSearchClick) {
-                            Text(text = stringResource(id = R.string.download))
+                            Text(text = stringResource(id = R.string.download), fontWeight = FontWeight.SemiBold)
                         } else {
                             OutlinedTextField(value = searchValue,
                                 onValueChange = onDownloadSearch,
@@ -950,7 +950,7 @@ private fun HomeTopAppbar(navController: NavHostController,
         }
         BottomNavigationScreens.Profile.route -> {
             TopAppBar(
-                title = { Text(text = stringResource(id = R.string.profile)) },
+                title = { Text(text = stringResource(id = R.string.profile), fontWeight = FontWeight.SemiBold) },
                 navigationIcon = {
                     IconButton(onClick = {   }) {
                         Icon(painter = painterResource(id = R.drawable.ic_movie),
