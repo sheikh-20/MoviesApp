@@ -43,6 +43,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -95,7 +96,7 @@ private fun TopMoviesTopAppbar(upcomingHideTopAppBar: Boolean) {
         TopAppBar(
             title = {
                 if (!onSearchClick) {
-                    Text(text = stringResource(id = R.string.now_playing_movies))
+                    Text(text = stringResource(id = R.string.now_playing_movies), fontWeight = FontWeight.SemiBold)
                 } else {
                     OutlinedTextField(value = "",
                         onValueChange = {  },

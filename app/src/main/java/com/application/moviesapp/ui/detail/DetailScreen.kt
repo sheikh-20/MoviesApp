@@ -263,7 +263,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                             OutlinedButton(
                                 onClick = { /*TODO*/ },
                                 modifier = modifier.requiredHeight(30.dp)) {
-                                Text(text = "United States",  style = MaterialTheme.typography.bodySmall)
+                                Text(text = movieUIState.data.productionCountries?.get(0)?.name ?: "",  style = MaterialTheme.typography.bodySmall)
                             }
 
                             OutlinedButton(
@@ -296,7 +296,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
 
                         Text(
                             text = stringResource(R.string.genre, movieUIState.data.genres.toString()),
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.bodyMedium,
                             modifier = modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp),
@@ -368,6 +368,8 @@ fun DetailScreen(modifier: Modifier = Modifier,
                                     .fillMaxWidth()
                                     .padding(horizontal = 16.dp),)
                         }
+                        
+                        Spacer(modifier = modifier.height(4.dp))
 
                         LazyRow(modifier = modifier.fillMaxWidth(),
                             contentPadding = PaddingValues(horizontal = 16.dp),
@@ -388,7 +390,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                                         contentScale = ContentScale.Crop)
 
                                     Column {
-                                        Text(text = movieUIState.data.cast?.get(index)?.name ?: "", style = MaterialTheme.typography.bodySmall)
+                                        Text(text = movieUIState.data.cast?.get(index)?.name ?: "", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.SemiBold)
                                         Text(text = movieUIState.data.cast?.get(index)?.character ?: "", style = MaterialTheme.typography.bodySmall)
                                     }
                                 }
@@ -420,7 +422,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                                                 LazyColumn(
                                                     modifier = modifier.fillMaxSize(),
                                                     verticalArrangement = Arrangement.spacedBy(8.dp),
-                                                    contentPadding = PaddingValues(horizontal = 16.dp)
+                                                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp)
                                                 ) {
                                                     items(moviesTrailerUiState.data) { trailer ->
                                                         MovieTrailerCard(
@@ -555,7 +557,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                                     tint = MaterialTheme.colorScheme.primary)
                             }
 
-
+//
 //                            Text(text = tvSeriesUIState.data.releaseDate?.split("-")?.get(0) ?: "", style = MaterialTheme.typography.bodyMedium)
 
                             OutlinedButton(
@@ -568,7 +570,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                             OutlinedButton(
                                 onClick = { /*TODO*/ },
                                 modifier = modifier.requiredHeight(30.dp)) {
-                                Text(text = "United States",  style = MaterialTheme.typography.bodySmall)
+                                Text(text = tvSeriesUIState.data.productionCountries?.get(0)?.name ?: "",  style = MaterialTheme.typography.bodySmall)
                             }
 
                             OutlinedButton(
@@ -600,7 +602,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                         }
 
                         Text(text = stringResource(R.string.genre, tvSeriesUIState.data.genres.toString()),
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.bodyMedium,
                             modifier = modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp),)
@@ -672,6 +674,8 @@ fun DetailScreen(modifier: Modifier = Modifier,
                                     .padding(horizontal = 16.dp),)
                         }
 
+                        Spacer(modifier = modifier.height(4.dp))
+
                         LazyRow(modifier = modifier.fillMaxWidth(),
                             contentPadding = PaddingValues(horizontal = 16.dp),
                             horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -698,82 +702,88 @@ fun DetailScreen(modifier: Modifier = Modifier,
                             }
                         }
 
-                        Row(modifier = modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text(text = "Episodes",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold)
-
-                            Row(modifier = modifier.clickable(onClick = onSeasonClick)) {
-                                Text(text = "Season ${tvSeriesUIState.data.seasons?.get(0)?.seasonNumber?.inc()}",
+                        Column(
+                            modifier = modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Row(modifier = modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween) {
+                                Text(text = "Episodes",
                                     style = MaterialTheme.typography.titleMedium,
-                                    color = MaterialTheme.colorScheme.primary)
-                                Icon(imageVector = Icons.Rounded.ExpandMore,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary)
+                                    fontWeight = FontWeight.Bold)
+
+                                Row(modifier = modifier.clickable(onClick = onSeasonClick)) {
+                                    Text(text = "Season ${tvSeriesUIState.data.seasons?.get(0)?.seasonNumber?.inc()}",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = MaterialTheme.colorScheme.primary)
+                                    Icon(imageVector = Icons.Rounded.ExpandMore,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary)
+                                }
                             }
-                        }
 
-                        LaunchedEffect(key1 = null) {
-                            onTvSeriesEpisode(tvSeriesUIState.data.id ?: 0, 1)
-                        }
-
-                        when (tvSeriesEpisodesUIState) {
-                            is Resource.Loading -> {
-                                CircularProgressIndicator(modifier = modifier
-                                    .fillMaxWidth()
-                                    .wrapContentWidth(align = Alignment.CenterHorizontally))
+                            LaunchedEffect(key1 = null) {
+                                onTvSeriesEpisode(tvSeriesUIState.data.id ?: 0, 1)
                             }
-                            is Resource.Success -> {
-                                LazyRow(modifier = modifier.fillMaxWidth(),
-                                    contentPadding = PaddingValues(horizontal = 16.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(16.dp)) {
 
-                                    items(count = tvSeriesEpisodesUIState.data.episodes?.size ?: 0) { index ->
-                                        Card(onClick = { },
-                                            shape = RoundedCornerShape(10),
-                                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
-                                        ) {
-                                            Card(
-                                                modifier = modifier.size(height = 100.dp, width = 140.dp),
-                                                shape = RoundedCornerShape(20)
+                            when (tvSeriesEpisodesUIState) {
+                                is Resource.Loading -> {
+                                    CircularProgressIndicator(modifier = modifier
+                                        .fillMaxWidth()
+                                        .wrapContentWidth(align = Alignment.CenterHorizontally))
+                                }
+                                is Resource.Success -> {
+                                    LazyRow(modifier = modifier.fillMaxWidth(),
+                                        contentPadding = PaddingValues(horizontal = 16.dp),
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+
+                                        items(count = tvSeriesEpisodesUIState.data.episodes?.size ?: 0) { index ->
+                                            Card(onClick = { },
+                                                shape = RoundedCornerShape(10),
+                                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
                                             ) {
-                                                Box(contentAlignment = Alignment.Center) {
-                                                    AsyncImage(
-                                                        model = ImageRequest.Builder(context = LocalContext.current)
-                                                            .data(tvSeriesEpisodesUIState.data.episodes?.get(index)?.stillPath?.toImageUrl ?: "")
-                                                            .crossfade(true)
-                                                            .build(),
-                                                        placeholder = painterResource(id = R.drawable.ic_image_placeholder),
-                                                        contentDescription = null,
-                                                        modifier = modifier
-                                                            .fillMaxSize(),
-                                                        contentScale = ContentScale.Crop
-                                                    )
-                                                    Icon(
-                                                        imageVector = Icons.Rounded.PlayCircle,
-                                                        contentDescription = null,
-                                                        tint = Color.White
-                                                    )
+                                                Card(
+                                                    modifier = modifier.size(height = 100.dp, width = 140.dp),
+                                                    shape = RoundedCornerShape(20)
+                                                ) {
+                                                    Box(contentAlignment = Alignment.Center) {
+                                                        AsyncImage(
+                                                            model = ImageRequest.Builder(context = LocalContext.current)
+                                                                .data(tvSeriesEpisodesUIState.data.episodes?.get(index)?.stillPath?.toImageUrl ?: "")
+                                                                .crossfade(true)
+                                                                .build(),
+                                                            placeholder = painterResource(id = R.drawable.ic_image_placeholder),
+                                                            contentDescription = null,
+                                                            modifier = modifier
+                                                                .fillMaxSize(),
+                                                            contentScale = ContentScale.Crop
+                                                        )
+                                                        Icon(
+                                                            imageVector = Icons.Rounded.PlayCircle,
+                                                            contentDescription = null,
+                                                            tint = Color.White
+                                                        )
 
-                                                    Text(
-                                                        text = "Episode ${tvSeriesEpisodesUIState.data.episodes?.get(index)?.episodeNumber}",
-                                                        modifier = modifier
-                                                            .fillMaxSize()
-                                                            .wrapContentSize(align = Alignment.BottomStart)
-                                                            .padding(10.dp),
-                                                        style = MaterialTheme.typography.bodyMedium
-                                                    )
+                                                        Text(
+                                                            text = "Episode ${tvSeriesEpisodesUIState.data.episodes?.get(index)?.episodeNumber}",
+                                                            modifier = modifier
+                                                                .fillMaxSize()
+                                                                .wrapContentSize(align = Alignment.BottomStart)
+                                                                .padding(10.dp),
+                                                            style = MaterialTheme.typography.bodyMedium,
+                                                            fontWeight = FontWeight.SemiBold
+                                                        )
+                                                    }
                                                 }
                                             }
                                         }
                                     }
                                 }
+                                is Resource.Failure -> { Text(text = "Failure") }
                             }
-                            is Resource.Failure -> { Text(text = "Failure") }
                         }
 
                         Column(modifier = modifier.height(200.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -920,7 +930,10 @@ private fun MovieTrailerCard(modifier: Modifier = Modifier,
                 }
             }
 
-            Column(modifier = modifier.weight(1f), verticalArrangement = Arrangement.SpaceEvenly) {
+            Column(modifier = modifier
+                .weight(1f)
+                .requiredHeight(100.dp)
+                .padding(vertical = 16.dp), verticalArrangement = Arrangement.SpaceBetween) {
                 Text(
                     text = movieTrailerWithYoutube.title ?: "",
                     style = MaterialTheme.typography.titleSmall,
@@ -928,49 +941,10 @@ private fun MovieTrailerCard(modifier: Modifier = Modifier,
                     overflow = TextOverflow.Ellipsis
                 )
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = movieTrailerWithYoutube.duration?.toYoutubeDuration ?: "",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-
-                    Spacer(modifier = modifier.weight(1f))
-
-//                    when (downloaderUiState) {
-//                        is DownloadUiState.Default -> {
-//                            Timber.tag(TAG).d("Video Downloader")
-//                        }
-//                        is DownloadUiState.Loading -> {
-//                            Timber.tag(TAG).d("Downloader Loading")
-//                            CircularProgressIndicator(modifier = modifier.size(28.dp), strokeWidth = 4.dp, strokeCap = StrokeCap.Round)
-//                        }
-//                        is DownloadUiState.Complete -> {
-//                            Timber.tag(TAG).d(downloaderUiState.toString())
-//
-//                            AssistChip(
-//                                onClick = {
-//                                    onTrailerDownloadClick(movieTrailerWithYoutube.id ?: return@AssistChip,
-//                                        downloaderUiState.videoStreams.first(),
-//                                        downloaderUiState.audioStreams ?: return@AssistChip,
-//                                        MovieDownloadEntity(
-//                                            backdropPath = movieTrailerWithYoutube.thumbnail,
-//                                            runtime = movieTrailerWithYoutube.duration?.toYoutubeDuration ?: "",
-//                                            title = movieTrailerWithYoutube.title,
-//                                            filePath = movieTrailerWithYoutube.title?.replace(":", "_") + ".mp4"
-//                                        ))
-//                                },
-//                                label = {
-//                                    Text(text = downloaderUiState.videoStreams.first().resolution.removeSurrounding("\""), color = MaterialTheme.colorScheme.primary)
-//                                },
-//                                shape = RoundedCornerShape(50)
-//                            )
-//                        }
-//                    }
-
-//                    IconButton(onClick = { onTrailerClick(movieTrailerWithYoutube.id ?: return@IconButton) }) {
-//                        Icon(imageVector = Icons.Rounded.Settings, contentDescription = null)
-//                    }
-                }
+                Text(
+                    text = movieTrailerWithYoutube.duration?.toYoutubeDuration ?: "",
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         }
     }
@@ -1016,7 +990,7 @@ private fun TvSeriesTrailerCard(modifier: Modifier = Modifier,
                 }
             }
 
-            Column(modifier = modifier.weight(1f), verticalArrangement = Arrangement.SpaceEvenly) {
+            Column(modifier = modifier.weight(1f).requiredHeight(100.dp).padding(vertical = 16.dp), verticalArrangement = Arrangement.SpaceBetween) {
                 Text(
                     text = tvSeriesTrailerWithYoutube.title ?: "",
                     style = MaterialTheme.typography.titleSmall,
@@ -1024,49 +998,11 @@ private fun TvSeriesTrailerCard(modifier: Modifier = Modifier,
                     overflow = TextOverflow.Ellipsis
                 )
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = tvSeriesTrailerWithYoutube.duration?.toYoutubeDuration ?: "",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
+                Text(
+                    text = tvSeriesTrailerWithYoutube.duration?.toYoutubeDuration ?: "",
+                    style = MaterialTheme.typography.bodyMedium
+                )
 
-                    Spacer(modifier = modifier.weight(1f))
-
-//                    when (downloaderUiState) {
-//                        is DownloadUiState.Default -> {
-//                            Timber.tag(TAG).d("Video Downloader")
-//                        }
-//                        is DownloadUiState.Loading -> {
-//                            Timber.tag(TAG).d("Downloader Loading")
-//                            CircularProgressIndicator(modifier = modifier.size(28.dp), strokeWidth = 4.dp, strokeCap = StrokeCap.Round)
-//                        }
-//                        is DownloadUiState.Complete -> {
-//                            Timber.tag(TAG).d(downloaderUiState.toString())
-//
-//                            AssistChip(
-//                                onClick = {
-//                                    onTrailerDownloadClick(tvSeriesTrailerWithYoutube.id ?: return@AssistChip,
-//                                        downloaderUiState.videoStreams.first(),
-//                                        downloaderUiState.audioStreams ?: return@AssistChip,
-//                                        MovieDownloadEntity(
-//                                            backdropPath = tvSeriesTrailerWithYoutube.thumbnail,
-//                                            runtime = tvSeriesTrailerWithYoutube.duration?.toYoutubeDuration ?: "",
-//                                            title = tvSeriesTrailerWithYoutube.title,
-//                                            filePath = tvSeriesTrailerWithYoutube.title?.replace(":", "_") + ".mp4"
-//                                        ))
-//                                },
-//                                label = {
-//                                    Text(text = downloaderUiState.videoStreams.first().resolution.removeSurrounding("\""), color = MaterialTheme.colorScheme.primary)
-//                                },
-//                                shape = RoundedCornerShape(50)
-//                            )
-//                        }
-//                    }
-//
-//                    IconButton(onClick = { onTrailerClick(tvSeriesTrailerWithYoutube.id ?: return@IconButton) }) {
-//                        Icon(imageVector = Icons.Rounded.Settings, contentDescription = null)
-//                    }
-                }
             }
         }
     }
