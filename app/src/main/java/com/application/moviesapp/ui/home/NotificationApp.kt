@@ -16,6 +16,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,7 +37,7 @@ private fun NotificationTopAppbar() {
     val context = LocalContext.current
 
     TopAppBar(
-        title = { Text(text = "Notification") },
+        title = { Text(text = "Notification", fontWeight = FontWeight.SemiBold) },
         navigationIcon = {
             IconButton(onClick = { (context as Activity).finish() }) {
                 Icon(imageVector = Icons.Rounded.ArrowBack, contentDescription = null)
