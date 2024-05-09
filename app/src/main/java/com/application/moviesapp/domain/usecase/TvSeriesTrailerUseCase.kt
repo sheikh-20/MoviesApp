@@ -1,12 +1,9 @@
 package com.application.moviesapp.domain.usecase
 
 import com.application.moviesapp.data.common.Resource
-import com.application.moviesapp.data.mappers.toMovies
 import com.application.moviesapp.data.mappers.toTvSeries
 import com.application.moviesapp.data.repository.MoviesRepository
 import com.application.moviesapp.data.repository.YoutubeRepository
-import com.application.moviesapp.domain.model.MovieTrailer
-import com.application.moviesapp.domain.model.MovieTrailerWithYoutube
 import com.application.moviesapp.domain.model.TvSeriesTrailer
 import com.application.moviesapp.domain.model.TvSeriesTrailerWithYoutube
 import timber.log.Timber

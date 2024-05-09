@@ -48,8 +48,10 @@ import coil.request.ImageRequest
 import com.application.moviesapp.R
 import com.application.moviesapp.domain.model.MovieSearch
 import com.application.moviesapp.domain.model.MoviesDiscover
+import com.application.moviesapp.domain.model.TvSeriesDiscover
 import com.application.moviesapp.ui.detail.DetailActivity
 import com.application.moviesapp.ui.detail.IS_TYPE
+import com.application.moviesapp.ui.home.Categories
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.utility.toImageUrl
 import com.application.moviesapp.ui.utility.toOneDecimal
@@ -61,7 +63,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun ExploreScreen(modifier: Modifier = Modifier,
                   uiState: ExploreUiState = ExploreUiState.Loading,
+                  categories: Categories = Categories.Movies,
                   moviesDiscoverFlow: LazyPagingItems<MoviesDiscover>,
+                  tvSeriesDiscoverFlow: LazyPagingItems<TvSeriesDiscover>,
                   movieSearchFlow: LazyPagingItems<MovieSearch>,
                   searchClicked: Boolean = false,
                   lazyGridState: LazyGridState = LazyGridState(),
@@ -160,12 +164,22 @@ fun ExploreScreen(modifier: Modifier = Modifier,
                         contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp)
                     ) {
 
-                        items(count = moviesDiscoverFlow.itemCount) { index ->
-                            MovieImageCard(
-                                imageUrl = moviesDiscoverFlow[index]?.posterPath ?: "",
-                                rating = moviesDiscoverFlow[index]?.voteAverage.toString() ?: "",
-                                movieId = moviesDiscoverFlow[index]?.id
-                            )
+                        if (categories == Categories.Movies) {
+                            items(count = moviesDiscoverFlow.itemCount) { index ->
+                                MovieImageCard(
+                                    imageUrl = moviesDiscoverFlow[index]?.posterPath ?: "",
+                                    rating = moviesDiscoverFlow[index]?.voteAverage.toString() ?: "",
+                                    movieId = moviesDiscoverFlow[index]?.id
+                                )
+                            }
+                        } else {
+                            items(count = tvSeriesDiscoverFlow.itemCount) { index ->
+                                MovieImageCard(
+                                    imageUrl = tvSeriesDiscoverFlow[index]?.posterPath ?: "",
+                                    rating = tvSeriesDiscoverFlow[index]?.voteAverage.toString() ?: "",
+                                    movieId = tvSeriesDiscoverFlow[index]?.id
+                                )
+                            }
                         }
                     }
                 }

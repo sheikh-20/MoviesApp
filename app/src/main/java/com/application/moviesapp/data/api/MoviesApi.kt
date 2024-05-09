@@ -15,6 +15,7 @@ import com.application.moviesapp.data.api.response.MovieTrailerDto
 import com.application.moviesapp.data.api.response.MovieUpdateFavouriteDto
 import com.application.moviesapp.data.api.response.TvSeriesDetailsCastDto
 import com.application.moviesapp.data.api.response.TvSeriesDetailsDto
+import com.application.moviesapp.data.api.response.TvSeriesDiscoverDto
 import com.application.moviesapp.data.api.response.TvSeriesEpisodesDto
 import com.application.moviesapp.data.api.response.TvSeriesNowPlayingDto
 import com.application.moviesapp.data.api.response.TvSeriesTrailerDto
@@ -32,6 +33,10 @@ import retrofit2.http.Query
 interface MoviesApi {
     @GET("/3/discover/movie")
     suspend fun getDiscoverMoviesList(@Query("language") language: String = "en-US", @Query("page") page: Int = 1, @Query("with_genres") genres: String = "", @Query("sort_by") sortBy: String = SORT_BY.POPULARITY.title, @Query("include_adult") includeAdult: Boolean = false): Response<MoviesDiscoverDto>
+
+    @GET("/3/discover/tv")
+    suspend fun getDiscoverTvSeriesList(@Query("language") language: String = "en-US", @Query("page") page: Int = 1, @Query("with_genres") genres: String = "", @Query("sort_by") sortBy: String = SORT_BY.POPULARITY.title, @Query("include_adult") includeAdult: Boolean = false): Response<TvSeriesDiscoverDto>
+
 
     @GET("/3/genre/movie/list")
     suspend fun getMoviesGenreList(): MovieGenreResponse

@@ -33,6 +33,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
+import androidx.compose.material.Snackbar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.rounded.Bookmark
@@ -128,6 +129,7 @@ import com.application.moviesapp.ui.language.language
 import com.application.moviesapp.ui.onboarding.OnboardingActivity
 import com.application.moviesapp.ui.utility.SetLanguage
 import com.application.moviesapp.ui.utility.getFileSize
+import com.application.moviesapp.ui.viewmodel.DetailsViewModel
 import com.application.moviesapp.ui.viewmodel.DownloadViewModel
 import com.application.moviesapp.ui.viewmodel.ExploreUiState
 import com.application.moviesapp.ui.viewmodel.ExploreViewModel
@@ -151,7 +153,8 @@ fun HomeApp(modifier: Modifier = Modifier,
             myListViewModel: MyListViewModel = hiltViewModel(),
             profileViewModel: ProfileViewModel = hiltViewModel(),
             downloadViewModel: DownloadViewModel = hiltViewModel(),
-            onboardingViewModel: OnboardingViewModel = hiltViewModel()
+            onboardingViewModel: OnboardingViewModel = hiltViewModel(),
+            detailsViewModel: DetailsViewModel = hiltViewModel(),
 ) {
 
     val searchUiState by exploreViewModel.searchInputUiState.collectAsState()
@@ -178,6 +181,12 @@ fun HomeApp(modifier: Modifier = Modifier,
         includeAdult = sortAndFilterUiState.includeAdult
     ).collectAsLazyPagingItems()
 
+    val tvSeriesFlowState = exploreViewModel.tvSeriesPagingFlow(
+        genres = sortAndFilterUiState.genre,
+        sortBy = sortAndFilterUiState.sortBy,
+        includeAdult = sortAndFilterUiState.includeAdult
+    ).collectAsLazyPagingItems()
+
     val moviesSearchFlowState = exploreViewModel.getMovieBySearch(searchUiState.search).collectAsLazyPagingItems()
 
     val myListFlowState = myListViewModel.getMovieFavouritePagingFlow.collectAsLazyPagingItems()
@@ -190,6 +199,7 @@ fun HomeApp(modifier: Modifier = Modifier,
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
 
+
     val permissionState = rememberMultiplePermissionsState(permissions = listOf(Manifest.permission.POST_NOTIFICATIONS))
 
     val profileUIState by onboardingViewModel.profilePhotoUIState.collectAsState()
@@ -197,6 +207,8 @@ fun HomeApp(modifier: Modifier = Modifier,
     val languageUIState by profileViewModel.selectLanguage.collectAsState(initial = LanguagePreference(
         language[0].language[0])
     )
+
+    var selectedCategories by remember { mutableStateOf<Categories>(Categories.Movies) }
 
     SetLanguage(languageUIState.language)
 
@@ -242,8 +254,9 @@ fun HomeApp(modifier: Modifier = Modifier,
                     BottomSheetFilterContent(
                         onNegativeClick = onNegativeClick,
                         onPositiveClick = {
-                                genres, sortBy, includeAdult ->
+                                categories, genres, sortBy, includeAdult ->
                             exploreViewModel.setSortAndFilter(genre = genres, sortBy = sortBy, includeAdult = includeAdult)
+                            selectedCategories = categories
                             onPositiveClick()
                                           },
                         onFilterCalled = { exploreViewModel.getGenre(it) },
@@ -334,7 +347,14 @@ fun HomeApp(modifier: Modifier = Modifier,
         bottomBar = {
             HomeBottomBarNavigation(navController)
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackbarHostState) {
+            androidx.compose.material3.Snackbar(
+                containerColor = MaterialTheme.colorScheme.background,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ) {
+                Text(text = it.visuals.message, fontWeight = FontWeight.SemiBold)
+            }
+        } }
     ) { paddingValues ->
         NavHost(
             navController = navController, startDestination = BottomNavigationScreens.Home.route) {
@@ -347,8 +367,11 @@ fun HomeApp(modifier: Modifier = Modifier,
                         navController.popBackStack()
                         navController.navigate(BottomNavigationScreens.Download.route)
                     },
-                    goToMyListClick = {
-                    },
+                    goToMyListClick = {  movieType: String, movieId: Int, isFavorite ->
+                        coroutineScope.launch {
+                            detailsViewModel.updateMovieFavourite(movieType, movieId, isFavorite)
+                            snackbarHostState.showSnackbar(message = "Movie added to list", duration = SnackbarDuration.Short)
+                        } },
                     onMovieWithTvSeries = homeViewModel::getMovieWithTvSeries
                 )
             }
@@ -356,7 +379,9 @@ fun HomeApp(modifier: Modifier = Modifier,
                 ExploreScreen(
                     modifier = modifier,
                     uiState = exploreUiState,
+                    categories = selectedCategories,
                     moviesDiscoverFlow = moviesFlowState,
+                    tvSeriesDiscoverFlow = tvSeriesFlowState,
                     movieSearchFlow = moviesSearchFlowState,
                     lazyGridState = exploreScrollState,
                     bottomPadding = paddingValues,
@@ -436,7 +461,7 @@ private fun BottomSheet(modifier: Modifier = Modifier,
 @Composable
 private fun BottomSheetFilterContent(modifier: Modifier = Modifier,
                                      onNegativeClick: () -> Unit = { },
-                                     onPositiveClick: (genres: List<MovieGenre.Genre>, sortBy: SORT_BY, includeAdult: Boolean) -> Unit = { _, _, _ ->  },
+                                     onPositiveClick: (categories: Categories, genres: List<MovieGenre.Genre>, sortBy: SORT_BY, includeAdult: Boolean) -> Unit = { _, _, _, _ ->  },
                                      onFilterCalled: (Categories) -> Unit = { _ -> },
                                      uiState: Resource<MovieGenre> = Resource.Loading,
                                      readUserPreferences: UserPreferences? = null,
@@ -604,7 +629,7 @@ private fun BottomSheetFilterContent(modifier: Modifier = Modifier,
                         Text(text = stringResource(R.string.reset))
                     }
 
-                    Button(onClick = { onPositiveClick(readUserPreferences?.genreList?.map { MovieGenre.Genre(id = it.id, name = it.name) } ?: return@Button, selectedItemSort.second, includeAdult) }, modifier = modifier
+                    Button(onClick = { onPositiveClick(selectedItemCategories, readUserPreferences?.genreList?.map { MovieGenre.Genre(id = it.id, name = it.name) } ?: return@Button, selectedItemSort.second, includeAdult) }, modifier = modifier
                         .weight(1f)
                         .requiredHeight(50.dp)) {
                         Text(text = stringResource(R.string.apply))

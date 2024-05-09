@@ -19,6 +19,7 @@ import com.application.moviesapp.data.api.response.MovieTrailerDto
 import com.application.moviesapp.data.api.response.MovieUpdateFavouriteDto
 import com.application.moviesapp.data.api.response.TvSeriesDetailsCastDto
 import com.application.moviesapp.data.api.response.TvSeriesDetailsDto
+import com.application.moviesapp.data.api.response.TvSeriesDiscoverDto
 import com.application.moviesapp.data.api.response.TvSeriesEpisodesDto
 import com.application.moviesapp.data.api.response.TvSeriesNowPlayingDto
 import com.application.moviesapp.data.api.response.TvSeriesTrailerDto
@@ -31,6 +32,7 @@ import com.application.moviesapp.data.remote.MovieSearchPagingSource
 import com.application.moviesapp.data.remote.MovieUpcomingDto
 import com.application.moviesapp.data.remote.MoviesDiscoverDto
 import com.application.moviesapp.data.remote.MoviesDiscoverPagingSource
+import com.application.moviesapp.data.remote.TvSeriesDiscoverPagingSource
 import com.application.moviesapp.data.remote.TvSeriesNowPlayingPagingSource
 import kotlinx.coroutines.flow.Flow
 import okhttp3.RequestBody
@@ -53,6 +55,8 @@ interface MoviesRepository {
     suspend fun getSearchResults(query: String): MovieSimpleResponse
 
     fun getDiscoverMoviesPagingFlow(genre: String = "", sortBy: String = "", includeAdult: Boolean = false): Flow<PagingData<MoviesDiscoverDto.Result>>
+
+    fun getDiscoverTvSeriesPagingFlow(genre: String = "", sortBy: String = "", includeAdult: Boolean = false): Flow<PagingData<TvSeriesDiscoverDto.Result>>
 
     fun getMoviesNowPlayingPagingFlow(): Flow<PagingData<MovieNowPlayingDto.Result>>
 
@@ -118,6 +122,13 @@ class MoviesRepositoryImpl @Inject constructor(private val movies: MoviesApi,
         config = PagingConfig(pageSize = 20),
         pagingSourceFactory = {
             MoviesDiscoverPagingSource(moviesApi = movies, genre = genre, sortBy = sortBy, includeAdult = includeAdult)
+        }
+    ).flow
+
+    override fun getDiscoverTvSeriesPagingFlow(genre: String, sortBy: String, includeAdult: Boolean): Flow<PagingData<TvSeriesDiscoverDto.Result>> = Pager(
+        config = PagingConfig(pageSize = 20),
+        pagingSourceFactory = {
+            TvSeriesDiscoverPagingSource(moviesApi = movies, genre = genre, sortBy = sortBy, includeAdult = includeAdult)
         }
     ).flow
 

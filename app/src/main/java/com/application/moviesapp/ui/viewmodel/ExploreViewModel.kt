@@ -11,6 +11,7 @@ import com.application.moviesapp.data.repository.MoviesRepository
 import com.application.moviesapp.domain.MoviesDiscoverUseCase
 import com.application.moviesapp.domain.MoviesSortUseCase
 import com.application.moviesapp.domain.MoviesWithSort
+import com.application.moviesapp.domain.TvSeriesDiscoverUseCase
 import com.application.moviesapp.domain.model.MovieGenre
 import com.application.moviesapp.domain.model.MoviesDetail
 import com.application.moviesapp.domain.usecase.AccountSetupUseCase
@@ -47,6 +48,7 @@ data class SortAndFilterUiState(val genre: String = "",
 class ExploreViewModel @Inject constructor(private val useCase: MoviesSortUseCase,
                                            private val repository: MoviesRepository,
                                            private val moviesDiscoverUseCase: MoviesDiscoverUseCase,
+                                           private val tvSeriesDiscoverUseCase: TvSeriesDiscoverUseCase,
                                            private val movieGenresUseCase: MovieGenresUseCase,
                                            private val tvSeriesGenreUseCase: TvSeriesGenreUseCase,
                                            private val movieSearchUseCase: MovieSearchUseCase,
@@ -80,6 +82,14 @@ class ExploreViewModel @Inject constructor(private val useCase: MoviesSortUseCas
                          includeAdult: Boolean = false) =
         moviesDiscoverUseCase(
             genre = genres,
+            sortBy = sortBy,
+            includeAdult = includeAdult).cachedIn(viewModelScope)
+
+    fun tvSeriesPagingFlow(genres: String = "",
+                         sortBy: String = SORT_BY.POPULARITY.title,
+                         includeAdult: Boolean = false) =
+        tvSeriesDiscoverUseCase(
+            genre = "",
             sortBy = sortBy,
             includeAdult = includeAdult).cachedIn(viewModelScope)
 
