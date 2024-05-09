@@ -3,6 +3,7 @@ package com.application.moviesapp.data.mappers
 import com.application.moviesapp.data.remote.MovieFavouriteDto
 import com.application.moviesapp.data.api.response.MovieStateDto
 import com.application.moviesapp.data.api.response.MovieTrailerDto
+import com.application.moviesapp.data.api.response.TvSeriesDiscoverDto
 import com.application.moviesapp.data.local.entity.MovieNowPlayingEntity
 import com.application.moviesapp.data.local.entity.MovieUpcomingEntity
 import com.application.moviesapp.data.local.entity.MoviesEntity
@@ -15,6 +16,7 @@ import com.application.moviesapp.domain.model.MovieNowPlaying
 import com.application.moviesapp.domain.model.MovieState
 import com.application.moviesapp.domain.model.MovieTrailer
 import com.application.moviesapp.domain.model.MovieUpcoming
+import com.application.moviesapp.domain.model.TvSeriesDiscover
 
 fun MoviesDiscoverDto.Result.toMoviesEntity(): MoviesEntity {
     return MoviesEntity(
@@ -46,6 +48,22 @@ fun MoviesDiscoverDto.Result.toMovies(): MoviesDiscover {
         releaseDate = releaseDate,
         title = title,
         video = video,
+        voteAverage = voteAverage,
+        voteCount = voteCount)
+}
+
+fun TvSeriesDiscoverDto.Result.toTvSeries(): TvSeriesDiscover {
+    return TvSeriesDiscover(
+        adult = adult,
+        backdropPath = backdropPath,
+        id = id,
+        originalLanguage = originalLanguage,
+        originalName = originalName,
+        overview = overview,
+        popularity = popularity,
+        posterPath = posterPath,
+        firstAirDate = firstAirDate,
+        name = name,
         voteAverage = voteAverage,
         voteCount = voteCount)
 }

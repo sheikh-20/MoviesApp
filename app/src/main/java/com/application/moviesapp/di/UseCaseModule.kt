@@ -16,6 +16,8 @@ import com.application.moviesapp.domain.MoviesNowPlayingUseCase
 import com.application.moviesapp.domain.MoviesDiscoverInteractor
 import com.application.moviesapp.domain.MoviesDiscoverUseCase
 import com.application.moviesapp.domain.MoviesSortUseCase
+import com.application.moviesapp.domain.TvSeriesDiscoverInteractor
+import com.application.moviesapp.domain.TvSeriesDiscoverUseCase
 import com.application.moviesapp.domain.usecase.GetMovieDetailInteractor
 import com.application.moviesapp.domain.usecase.GetMovieFavouriteInteractor
 import com.application.moviesapp.domain.usecase.GetAccountSetupInteractor
@@ -101,6 +103,12 @@ class UseCaseModule {
     @Singleton
     fun providesMoviesPopularUseCase(moviesRepository: MoviesRepository): MoviesDiscoverUseCase {
         return MoviesDiscoverInteractor(moviesRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesTvSeriesDiscoverUseCase(moviesRepository: MoviesRepository): TvSeriesDiscoverUseCase {
+        return TvSeriesDiscoverInteractor(moviesRepository)
     }
 
     @Provides

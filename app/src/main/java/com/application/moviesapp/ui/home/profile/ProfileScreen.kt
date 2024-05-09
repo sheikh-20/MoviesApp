@@ -6,6 +6,8 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,6 +42,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -237,16 +240,12 @@ fun ProfileScreen(modifier: Modifier = Modifier,
                 }
             }
 
-            Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Icon(imageVector = Icons.Outlined.Logout, contentDescription = null)
+            Row(modifier = modifier.fillMaxWidth().padding(vertical = 8.dp).clickable(onClick = { onSignOutClick() }, interactionSource = remember { MutableInteractionSource() }, indication = null), verticalAlignment = Alignment.CenterVertically) {
+                Icon(imageVector = Icons.Outlined.Logout, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
 
                 Spacer(modifier = modifier.width(10.dp))
 
-                Text(text = stringResource(id = R.string.logout), modifier = modifier.weight(1f))
-
-                IconButton(onClick = onSignOutClick) {
-                    Icon(imageVector = Icons.Rounded.ArrowForwardIos, contentDescription = null)
-                }
+                Text(text = stringResource(id = R.string.logout), color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
             }
         }
     }
