@@ -84,8 +84,8 @@ fun HomeScreen(modifier: Modifier = Modifier,
                uiState: Resource<MovieWithTvSeries> = Resource.Loading,
                bottomPadding: PaddingValues = PaddingValues(),
                goToDownloadClick: () -> Unit = {  }, 
-               goToMyListClick: () -> Unit = {   },
-               onMovieWithTvSeries: () -> Unit = {  }
+               goToMyListClick: (String, Int, Boolean) -> Unit = { _, _, _ ->  },
+               onMovieWithTvSeries: () -> Unit = {  },
 ) {
 
     val context = LocalContext.current
@@ -221,7 +221,7 @@ fun HomeScreen(modifier: Modifier = Modifier,
                                         )
                                         Text(text = stringResource(R.string.play))
                                     }
-                                    OutlinedButton(onClick = goToMyListClick) {
+                                    OutlinedButton(onClick = { goToMyListClick("movie", titleImage?.id ?: 0, true) }) {
                                         Icon(imageVector = Icons.Rounded.Add, contentDescription = null)
                                         Text(text = stringResource(R.string.my_list))
                                     }
