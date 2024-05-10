@@ -80,7 +80,12 @@ fun ExploreScreen(modifier: Modifier = Modifier,
         onRefresh = {
             coroutineScope.launch {
                 isRefreshing = !isRefreshing
-                moviesDiscoverFlow.refresh()
+
+                if (categories == Categories.Movies) {
+                    moviesDiscoverFlow.refresh()
+                } else {
+                    tvSeriesDiscoverFlow.refresh()
+                }
 
                 delay(1_000L)
                 isRefreshing = !isRefreshing
@@ -88,7 +93,11 @@ fun ExploreScreen(modifier: Modifier = Modifier,
         })
 
     LaunchedEffect(key1 = Unit) {
-        moviesDiscoverFlow.refresh()
+        if (categories == Categories.Movies) {
+            moviesDiscoverFlow.refresh()
+        } else {
+            tvSeriesDiscoverFlow.refresh()
+        }
     }
 
     Box(modifier = modifier
