@@ -2,6 +2,8 @@ package com.application.moviesapp.ui.download
 
 import android.app.Activity
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,18 +27,27 @@ import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconToggleButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.application.moviesapp.domain.model.SettingsPreference
 import com.application.moviesapp.ui.editprofile.EditProfileActivity
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 
 @Composable
-fun DownloadScreen(modifier: Modifier = Modifier, paddingValues: PaddingValues = PaddingValues()) {
+fun DownloadScreen(modifier: Modifier = Modifier,
+                   paddingValues: PaddingValues = PaddingValues(),
+                   wifiRequired: SettingsPreference = SettingsPreference(true),
+                   updateWifiPreference: (Boolean) -> Unit = { _ -> },
+                   onDeleteDownloads: () -> Unit = { },
+                   onDeleteCache: () -> Unit = { }) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -52,7 +63,7 @@ fun DownloadScreen(modifier: Modifier = Modifier, paddingValues: PaddingValues =
 
             Text(text = "Wifi only", modifier = modifier.weight(1f))
 
-            Switch(checked = false, onCheckedChange = {  })
+            Switch(checked = wifiRequired.data, onCheckedChange = updateWifiPreference)
         }
 
         Row(
@@ -101,33 +112,25 @@ fun DownloadScreen(modifier: Modifier = Modifier, paddingValues: PaddingValues =
         }
 
         Row(
-            modifier = modifier.fillMaxWidth(),
+            modifier = modifier.fillMaxWidth().clickable(onClick = onDeleteDownloads, interactionSource = remember { MutableInteractionSource() }, indication = null).padding(vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(imageVector = Icons.Rounded.Delete, contentDescription = null)
+            Icon(imageVector = Icons.Rounded.Delete, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
 
             Spacer(modifier = modifier.width(10.dp))
 
-            Text(text = "Delete All Downloads", modifier = modifier.weight(1f))
-
-            IconButton(onClick = {  }) {
-
-            }
+            Text(text = "Delete All Downloads", modifier = modifier.weight(1f), color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
         }
 
         Row(
-            modifier = modifier.fillMaxWidth(),
+            modifier = modifier.fillMaxWidth().clickable(onClick = onDeleteCache, interactionSource = remember { MutableInteractionSource() }, indication = null).padding(vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(imageVector = Icons.Rounded.Delete, contentDescription = null)
+            Icon(imageVector = Icons.Rounded.Delete, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
 
             Spacer(modifier = modifier.width(10.dp))
 
-            Text(text = "Delete Cache", modifier = modifier.weight(1f))
-
-            IconButton(onClick = {  }) {
-
-            }
+            Text(text = "Delete Cache", modifier = modifier.weight(1f), color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
         }
 
     }
