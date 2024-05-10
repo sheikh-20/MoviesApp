@@ -9,6 +9,7 @@ import com.application.moviesapp.domain.model.SettingsPreference
 import com.application.moviesapp.domain.usecase.LanguageUseCase
 import com.application.moviesapp.domain.usecase.NotificationUseCase
 import com.application.moviesapp.domain.usecase.SettingsUseCase
+import com.application.moviesapp.domain.usecase.WifiUseCase
 import com.application.moviesapp.ui.language.language
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -21,12 +22,13 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(private val settingsUseCase: SettingsUseCase,
                                            private val languageUseCase: LanguageUseCase,
-                                           private val notificationUseCase: NotificationUseCase): ViewModel() {
+                                           private val notificationUseCase: NotificationUseCase,
+                                           private val wifiUseCase: WifiUseCase): ViewModel() {
 
     val isDarkMode: Flow<SettingsPreference> = settingsUseCase.readFlow.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000L),
-        initialValue = SettingsPreference(false)
+        initialValue = SettingsPreference(true)
     )
 
     fun updateMode(value: Boolean) = viewModelScope.launch(Dispatchers.IO) {
@@ -63,4 +65,17 @@ class ProfileViewModel @Inject constructor(private val settingsUseCase: Settings
     fun updateAppUpdates(value: Boolean) = viewModelScope.launch(Dispatchers.IO) {
         notificationUseCase.updateAppUpdatesPreference(value)
     }
+
+
+
+    val isWifiRequired: Flow<SettingsPreference> = wifiUseCase.readFlow.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000L),
+        initialValue = SettingsPreference(true)
+    )
+
+    fun updateWifiPreference(value: Boolean) = viewModelScope.launch(Dispatchers.IO) {
+        wifiUseCase.updatePreference(value)
+    }
+
 }

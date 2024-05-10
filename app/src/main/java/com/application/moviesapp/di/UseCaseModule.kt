@@ -41,6 +41,7 @@ import com.application.moviesapp.domain.usecase.GetTvSeriesEpisodesUseCase
 import com.application.moviesapp.domain.usecase.GetTvSeriesGenreInteractor
 import com.application.moviesapp.domain.usecase.GetTvSeriesNowPlayingInteractor
 import com.application.moviesapp.domain.usecase.GetTvSeriesTrailerInteractor
+import com.application.moviesapp.domain.usecase.GetWifiInteractor
 import com.application.moviesapp.domain.usecase.LanguageUseCase
 import com.application.moviesapp.domain.usecase.MovieDownloadUseCase
 import com.application.moviesapp.domain.usecase.MovieGenresUseCase
@@ -68,6 +69,7 @@ import com.application.moviesapp.domain.usecase.TvSeriesEpisodesUseCase
 import com.application.moviesapp.domain.usecase.TvSeriesGenreUseCase
 import com.application.moviesapp.domain.usecase.TvSeriesNowPlayingUseCase
 import com.application.moviesapp.domain.usecase.TvSeriesTrailerUseCase
+import com.application.moviesapp.domain.usecase.WifiUseCase
 import com.application.moviesapp.domain.usecase.YoutubeThumbnailInteractor
 import com.application.moviesapp.domain.usecase.YoutubeThumbnailUseCase
 import com.application.moviesapp.domain.usecase.worker.DownloadUseCase
@@ -217,8 +219,14 @@ class UseCaseModule {
 
     @Provides
     @Singleton
-    fun providesSettingsUseCase(settingsPreferenceRepository: SettingsPreferenceRepository): SettingsUseCase {
+    fun providesSettingsUseCase(@Named("DarkModeRepo") settingsPreferenceRepository: SettingsPreferenceRepository): SettingsUseCase {
         return GetSettingsInteractor(settingsPreferenceRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesWifiUseCase(@Named("WifiRepo") settingsPreferenceRepository: SettingsPreferenceRepository): WifiUseCase {
+        return GetWifiInteractor(settingsPreferenceRepository)
     }
 
     @Provides

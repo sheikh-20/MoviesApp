@@ -1,6 +1,5 @@
 package com.application.moviesapp.data.repository
 
-import android.nfc.tech.IsoDep
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -13,14 +12,9 @@ import kotlinx.coroutines.flow.map
 import java.io.IOException
 import javax.inject.Inject
 
-interface SettingsPreferenceRepository {
-    val readPreference: Flow<SettingsPreference>
-    suspend fun updatePreference(value: Boolean)
-}
-
-class SettingsPreferenceImpl @Inject constructor(private val datastore: DataStore<Preferences>): SettingsPreferenceRepository {
+class WifiPreferenceImpl @Inject constructor(private val datastore: DataStore<Preferences>): SettingsPreferenceRepository {
     private object PreferenceKeys {
-        val IS_DARK_MODE = booleanPreferencesKey("is_dark_mode")
+        val IS_WIFI = booleanPreferencesKey("is_wifi")
     }
 
     override val readPreference: Flow<SettingsPreference>
@@ -33,13 +27,13 @@ class SettingsPreferenceImpl @Inject constructor(private val datastore: DataStor
                 }
             }
             .map {  preference ->
-                val isDarkMode = preference[PreferenceKeys.IS_DARK_MODE] ?: true
-                SettingsPreference(isDarkMode)
+                val isWifiEnabled = preference[PreferenceKeys.IS_WIFI] ?: false
+                SettingsPreference(isWifiEnabled)
             }
 
     override suspend fun updatePreference(value: Boolean) {
         datastore.edit { preference ->
-            preference[PreferenceKeys.IS_DARK_MODE] = value
+            preference[PreferenceKeys.IS_WIFI] = value
         }
     }
 }

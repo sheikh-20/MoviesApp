@@ -24,6 +24,7 @@ import com.application.moviesapp.data.repository.SignInEmailRepositoryImpl
 import com.application.moviesapp.data.repository.SignUpEmailRepositoryImpl
 import com.application.moviesapp.data.repository.UserPreferenceRepoImpl
 import com.application.moviesapp.data.repository.UserPreferenceRepository
+import com.application.moviesapp.data.repository.WifiPreferenceImpl
 import com.application.moviesapp.data.repository.YoutubeRepository
 import com.application.moviesapp.data.repository.YoutubeRepositoryImpl
 import dagger.Binds
@@ -69,7 +70,12 @@ abstract class RepositoryModule {
     abstract fun providesYoutubeRepositoryImpl(youtubeRepositoryImpl: YoutubeRepositoryImpl): YoutubeRepository
 
     @Binds
+    @Named("DarkModeRepo")
     abstract fun providesSettingsRepositoryImpl(settingPreferenceRepoImpl: SettingsPreferenceImpl): SettingsPreferenceRepository
+
+    @Binds
+    @Named("WifiRepo")
+    abstract fun providesWifiRepositoryImpl(wifiPreferenceImpl: WifiPreferenceImpl): SettingsPreferenceRepository
 
     @Binds
     abstract fun providesDownloaderRepositoryImpl(downloaderRepositoryImpl: DownloaderRepositoryImpl): DownloaderRepository
