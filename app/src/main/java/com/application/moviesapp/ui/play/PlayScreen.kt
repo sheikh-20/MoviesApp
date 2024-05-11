@@ -10,6 +10,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.OptIn
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.foundation.gestures.rememberTransformableState
+import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -51,12 +54,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -80,7 +86,8 @@ import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
 import java.io.File
 
-@OptIn(UnstableApi::class) @Composable
+private const val TAG = "PlayScreen"
+@Composable
 fun PlayScreen(modifier: Modifier = Modifier,
                player: Player? = null,
                onPlayOrPause: () -> Unit = { },
@@ -104,6 +111,9 @@ fun PlayScreen(modifier: Modifier = Modifier,
         mutableStateOf(false)
     }
 
+    var scaleFactor by remember { mutableFloatStateOf(0f) }
+    Timber.tag(TAG).d("Pinch to zoom called! $scaleFactor")
+
     val modifierOriginalScreen = modifier
         .fillMaxSize()
         .clickable(
@@ -121,7 +131,13 @@ fun PlayScreen(modifier: Modifier = Modifier,
             indication = null
         )
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()
+        .pointerInput(Unit) {
+            detectTransformGestures { _, pan, zoom, _ ->
+                scaleFactor = if (zoom >= 1f) 1f else 0f
+                fullScreenMode = if (scaleFactor >= 1f) true else false
+            }
+        }) {
 
         AndroidView(
             factory = { context ->
