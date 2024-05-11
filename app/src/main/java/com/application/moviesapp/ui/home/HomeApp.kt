@@ -129,6 +129,7 @@ import com.application.moviesapp.ui.language.language
 import com.application.moviesapp.ui.onboarding.OnboardingActivity
 import com.application.moviesapp.ui.utility.SetLanguage
 import com.application.moviesapp.ui.utility.getFileSize
+import com.application.moviesapp.ui.utility.getVideoDuration
 import com.application.moviesapp.ui.viewmodel.DetailsViewModel
 import com.application.moviesapp.ui.viewmodel.DownloadViewModel
 import com.application.moviesapp.ui.viewmodel.ExploreUiState
@@ -738,7 +739,7 @@ private fun BottomSheetContentDownloadDelete(modifier: Modifier = Modifier, onNe
                 )
 
                 Text(
-                    text = movieDownloadEntity?.runtime.toString() ?: "",
+                    text = movieDownloadEntity?.runtime ?: movieDownloadEntity?.filePath?.getVideoDuration(context as Activity) ?: "",
                     style = MaterialTheme.typography.bodyMedium
                 )
 

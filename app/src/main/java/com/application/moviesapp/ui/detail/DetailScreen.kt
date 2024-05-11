@@ -5,6 +5,7 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -134,7 +135,8 @@ fun DetailScreen(modifier: Modifier = Modifier,
                  onTrailerDownloadClick: (String, Stream, Stream, MovieDownloadEntity) -> Unit = { _, _, _, _ -> },
                  tvSeriesEpisodesUIState: Resource<TvSeriesEpisodes> = Resource.Loading,
                  onTvSeriesEpisode: (Int, Int) -> Unit = { _, _ -> },
-                 onSeasonClick: () -> Unit = {  }
+                 onSeasonClick: () -> Unit = {  },
+                 onCastClick: () -> Unit = {  }
 ) {
 
     val coroutineScope = rememberCoroutineScope()
@@ -377,7 +379,8 @@ fun DetailScreen(modifier: Modifier = Modifier,
 
                             items(count = movieUIState.data.cast?.size ?: 0) { index ->
 
-                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Row(modifier = modifier.clickable(onClick = onCastClick, interactionSource = remember { MutableInteractionSource() }, indication = null),
+                                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                     AsyncImage(model = ImageRequest.Builder(context = LocalContext.current)
                                         .data(movieUIState.data.cast?.get(index)?.profilePath?.toImageUrl ?: "")
                                         .crossfade(true)
