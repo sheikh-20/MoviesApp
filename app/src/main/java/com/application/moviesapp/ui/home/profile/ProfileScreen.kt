@@ -178,17 +178,6 @@ fun ProfileScreen(modifier: Modifier = Modifier,
                 }
             }
 
-            Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Icon(imageVector = Icons.Outlined.Security, contentDescription = null)
-
-                Spacer(modifier = modifier.width(10.dp))
-
-                Text(text = stringResource(R.string.security), modifier = modifier.weight(1f))
-
-                IconButton(onClick = { SecurityActivity.startActivity(context as Activity) }) {
-                    Icon(imageVector = Icons.Rounded.ArrowForwardIos, contentDescription = null)
-                }
-            }
 
             Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Icon(imageVector = Icons.Outlined.Language, contentDescription = null)

@@ -45,6 +45,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.application.moviesapp.R
 import com.application.moviesapp.data.common.Resource
@@ -56,6 +61,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun DetailScreenApp(modifier: Modifier = Modifier,
+                    navController: NavHostController = rememberNavController(),
                     viewModel: DetailsViewModel = hiltViewModel(),
                     homeViewModel: HomeViewModel = hiltViewModel()) {
 
@@ -91,26 +97,43 @@ fun DetailScreenApp(modifier: Modifier = Modifier,
         containerColor = Color.Transparent,
         snackbarHost = { SnackbarHost(snackbarHostState) }
         ) { paddingValues ->
-        DetailScreen(modifier = modifier,
-            movieUIState = moviesDetailsUiState,
-            tvSeriesUIState = tvSeriesDetailsUiState,
-            moviesTrailerUiState = movieTrailerUiState,
-            tvSeriesTrailerUiState = tvSeriesTrailerUiState,
-            moviesFlow = moviesFlow,
-            onBookmarkClicked = { movieType: String, movieId: Int, isFavorite ->
-                viewModel.updateMovieFavourite(movieType, movieId, isFavorite)
+
+        NavHost(navController = navController, startDestination = DetailScreen.Detail.name) {
+            composable(route = DetailScreen.Detail.name) {
+                DetailScreen(modifier = modifier,
+                    movieUIState = moviesDetailsUiState,
+                    tvSeriesUIState = tvSeriesDetailsUiState,
+                    moviesTrailerUiState = movieTrailerUiState,
+                    tvSeriesTrailerUiState = tvSeriesTrailerUiState,
+                    moviesFlow = moviesFlow,
+                    onBookmarkClicked = { movieType: String, movieId: Int, isFavorite ->
+                        viewModel.updateMovieFavourite(movieType, movieId, isFavorite)
 //                viewModel.getMovieState(movieId)
-                                },
-            snackbarHostState = snackbarHostState,
-            bookmarkUiState = bookmarkUiState,
-            onTrailerClick = viewModel::getVideoInfo,
-            downloaderUiState = downloaderUiState,
-            onTrailerDownloadClick = viewModel::videoDownload,
-            tvSeriesEpisodesUIState = tvSeriesEpisodesUiState,
-            onTvSeriesEpisode = viewModel::getTvSeriesEpisodes,
-            onSeasonClick = { bottomSheetEnabled = true }
-            )
+                    },
+                    snackbarHostState = snackbarHostState,
+                    bookmarkUiState = bookmarkUiState,
+                    onTrailerClick = viewModel::getVideoInfo,
+                    downloaderUiState = downloaderUiState,
+                    onTrailerDownloadClick = viewModel::videoDownload,
+                    tvSeriesEpisodesUIState = tvSeriesEpisodesUiState,
+                    onTvSeriesEpisode = viewModel::getTvSeriesEpisodes,
+                    onSeasonClick = { bottomSheetEnabled = true },
+                    onCastClick = { navController.navigate(DetailScreen.Cast.name) }
+                )
+            }
+
+            composable(route = DetailScreen.Cast.name) {
+                CastScreen(
+                    modifier = modifier,
+                    paddingValues = paddingValues
+                )
+            }
+        }
     }
+}
+
+enum class DetailScreen {
+    Detail, Cast
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -184,7 +207,11 @@ private fun BottomSheet(modifier: Modifier = Modifier,
                             Row(modifier = modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp)
-                                .clickable(onClick = { onSeasonClick(tvSeriesDetailUiState.data.id ?: 0, index) }),
+                                .clickable(onClick = {
+                                    onSeasonClick(
+                                        tvSeriesDetailUiState.data.id ?: 0, index
+                                    )
+                                }),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween) {
                                 Text(
