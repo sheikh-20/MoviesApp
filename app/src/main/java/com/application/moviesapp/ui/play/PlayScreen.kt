@@ -24,7 +24,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.Chip
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Cast
@@ -45,6 +48,9 @@ import androidx.compose.material.icons.rounded.Subtitles
 import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material.icons.rounded.VolumeOff
 import androidx.compose.material.icons.rounded.VolumeUp
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -80,6 +86,7 @@ import androidx.media3.ui.PlayerView
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.utility.formatMinSec
 import com.application.moviesapp.ui.viewmodel.PlayerUIState
+import com.application.moviesapp.worker.saveMediaToStorage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -131,7 +138,8 @@ fun PlayScreen(modifier: Modifier = Modifier,
             indication = null
         )
 
-    Box(modifier = modifier.fillMaxSize()
+    Box(modifier = modifier
+        .fillMaxSize()
         .pointerInput(Unit) {
             detectTransformGestures { _, pan, zoom, _ ->
                 scaleFactor = if (zoom >= 1f) 1f else 0f
@@ -178,6 +186,7 @@ fun PlayScreen(modifier: Modifier = Modifier,
     }
 }
 
+@kotlin.OptIn(ExperimentalMaterialApi::class)
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun CustomPlayerUI(modifier: Modifier = Modifier,
@@ -198,6 +207,10 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
                            onPlaybackSpeedClick: () -> Unit = {  }) {
 
     val context = LocalContext.current
+
+    var saveToAlbum by remember {
+        mutableStateOf(false)
+    }
 
     Column(modifier = modifier
         .fillMaxSize()
@@ -347,6 +360,38 @@ private fun CustomPlayerUI(modifier: Modifier = Modifier,
                     Row(verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)) {
 
+                        FilterChip(
+                            selected = saveToAlbum,
+                            onClick = {
+                                saveToAlbum = true
+
+                                saveMediaToStorage(
+                                    context = context,
+                                    filePath = File(context.filesDir, "/output/${playerUIState.movieDownload.filePath}").path,
+                                    isVideo = true,
+                                    fileName = playerUIState.movieDownload.filePath
+                                )
+                                      },
+                            label = {
+                                Text(text = if (saveToAlbum) "Saved To Album" else "Save To Album", style = MaterialTheme.typography.bodySmall)
+                            },
+                            leadingIcon = if (saveToAlbum) {
+                                {
+                                    Icon(
+                                        imageVector = Icons.Filled.Done,
+                                        contentDescription = "Done icon",
+                                        modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                    )
+                                }
+                            } else {
+                                null
+                            },
+                        )
+//                        IconButton(onClick = onDownloadClick) {
+//                            Icon(imageVector = Icons.Outlined.FileDownload,
+//                                contentDescription = null,
+//                                modifier = modifier.size(24.dp), tint = MaterialTheme.colorScheme.onPrimary)
+//                        }
 
                         IconButton(onClick = { onFullScreenModeClicked(isFullScreen.not()) }) {
                             Icon(imageVector = if (isFullScreen) Icons.Rounded.FullscreenExit else Icons.Rounded.Fullscreen,
