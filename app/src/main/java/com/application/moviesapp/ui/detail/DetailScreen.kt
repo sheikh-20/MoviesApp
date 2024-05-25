@@ -253,7 +253,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                                     tint = MaterialTheme.colorScheme.primary)
                             }
 
-                            Text(text = movieUIState.data.releaseDate?.split("-")?.get(0) ?: "", style = MaterialTheme.typography.bodyMedium)
+                            Text(text = movieUIState.data.releaseDate?.split("-")?.firstOrNull() ?: "", style = MaterialTheme.typography.bodyMedium)
 
                             OutlinedButton(
                                 onClick = { },
@@ -265,7 +265,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                             OutlinedButton(
                                 onClick = { /*TODO*/ },
                                 modifier = modifier.requiredHeight(30.dp)) {
-                                Text(text = movieUIState.data.productionCountries?.get(0)?.name ?: "",  style = MaterialTheme.typography.bodySmall)
+                                Text(text = movieUIState.data.productionCountries?.firstOrNull()?.name ?: "",  style = MaterialTheme.typography.bodySmall)
                             }
 
                             OutlinedButton(
@@ -573,7 +573,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                             OutlinedButton(
                                 onClick = { /*TODO*/ },
                                 modifier = modifier.requiredHeight(30.dp)) {
-                                Text(text = tvSeriesUIState.data.productionCountries?.get(0)?.name ?: "",  style = MaterialTheme.typography.bodySmall)
+                                Text(text = tvSeriesUIState.data.productionCountries?.firstOrNull()?.name ?: "",  style = MaterialTheme.typography.bodySmall)
                             }
 
                             OutlinedButton(
@@ -719,7 +719,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                                     fontWeight = FontWeight.Bold)
 
                                 Row(modifier = modifier.clickable(onClick = onSeasonClick)) {
-                                    Text(text = "Season ${tvSeriesUIState.data.seasons?.get(0)?.seasonNumber?.inc()}",
+                                    Text(text = "Season ${tvSeriesUIState.data.seasons?.firstOrNull()?.seasonNumber?.inc()}",
                                         style = MaterialTheme.typography.titleMedium,
                                         color = MaterialTheme.colorScheme.primary)
                                     Icon(imageVector = Icons.Rounded.ExpandMore,

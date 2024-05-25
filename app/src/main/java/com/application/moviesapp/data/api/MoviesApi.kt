@@ -37,7 +37,6 @@ interface MoviesApi {
     @GET("/3/discover/tv")
     suspend fun getDiscoverTvSeriesList(@Query("language") language: String = "en-US", @Query("page") page: Int = 1, @Query("with_genres") genres: String = "", @Query("sort_by") sortBy: String = SORT_BY.POPULARITY.title, @Query("include_adult") includeAdult: Boolean = false): Response<TvSeriesDiscoverDto>
 
-
     @GET("/3/genre/movie/list")
     suspend fun getMoviesGenreList(): MovieGenreResponse
 
