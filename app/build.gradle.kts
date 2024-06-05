@@ -53,8 +53,8 @@ android {
         applicationId = "com.application.moviesapp"
         minSdk = 24
         targetSdk = 33
-        versionCode = 3
-        versionName = "1.0.2"
+        versionCode = 5
+        versionName = "1.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
