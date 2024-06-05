@@ -2,13 +2,8 @@ package com.application.moviesapp.data.repository
 
 import android.net.Uri
 import com.application.moviesapp.data.common.Resource
-import com.application.moviesapp.domain.model.Member
-import com.application.moviesapp.domain.model.MemberPhoto
-import com.application.moviesapp.domain.usecase.GetAccountSetupInteractor
-import com.application.moviesapp.domain.usecase.GetMovieDetailInteractor
-import com.google.android.gms.tasks.Task
+import com.application.moviesapp.data.api.request.Member
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.values
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
 import com.google.gson.Gson

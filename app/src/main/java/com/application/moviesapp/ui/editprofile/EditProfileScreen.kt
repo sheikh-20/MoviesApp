@@ -6,7 +6,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,7 +29,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
@@ -57,7 +55,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.application.moviesapp.R
 import com.application.moviesapp.data.common.Resource
-import com.application.moviesapp.domain.model.Member
+import com.application.moviesapp.data.api.request.Member
 import com.application.moviesapp.ui.accountsetup.UserProfile
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import kotlinx.coroutines.launch

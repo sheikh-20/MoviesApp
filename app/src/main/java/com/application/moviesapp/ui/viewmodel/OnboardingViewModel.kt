@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.application.moviesapp.UserPreferences
 import com.application.moviesapp.data.common.Resource
-import com.application.moviesapp.domain.model.Member
+import com.application.moviesapp.data.api.request.Member
 import com.application.moviesapp.domain.model.MovieGenre
 import com.application.moviesapp.domain.model.MoviesDetail
 import com.application.moviesapp.domain.usecase.AccountSetupUseCase
