@@ -4,18 +4,11 @@ import android.net.Uri
 import com.application.moviesapp.UserPreferences
 import com.application.moviesapp.data.common.Resource
 import com.application.moviesapp.data.repository.AccountSetupRepository
-import com.application.moviesapp.data.repository.AccountSetupRepositoryImpl
 import com.application.moviesapp.data.repository.UserPreferenceRepository
-import com.application.moviesapp.domain.model.Member
-import com.application.moviesapp.domain.model.MemberPhoto
+import com.application.moviesapp.data.api.request.Member
 import com.application.moviesapp.domain.model.MoviesDetail
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.UploadTask
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.tasks.await
-import timber.log.Timber
 import javax.inject.Inject
 
 interface AccountSetupUseCase {
