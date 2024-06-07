@@ -9,6 +9,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -34,6 +35,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
 import androidx.compose.material.Snackbar
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.rounded.Bookmark
@@ -68,6 +70,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -141,9 +144,10 @@ import com.application.moviesapp.ui.viewmodel.ProfileViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.io.File
 
-
+private const val TAG = "HomeApp"
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
@@ -353,7 +357,23 @@ fun HomeApp(modifier: Modifier = Modifier,
                 containerColor = MaterialTheme.colorScheme.background,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
-                Text(text = it.visuals.message, fontWeight = FontWeight.SemiBold)
+                Row(horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text(text = it.visuals.message, fontWeight = FontWeight.SemiBold)
+
+                    Spacer(modifier = modifier.weight(1f))
+
+
+                    Text(
+                        text = it.visuals.actionLabel ?: "",
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = modifier.clickable(
+                            onClick = { it.performAction() },
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        )
+                    )
+                }
             }
         } }
     ) { paddingValues ->
@@ -371,7 +391,14 @@ fun HomeApp(modifier: Modifier = Modifier,
                     goToMyListClick = {  movieType: String, movieId: Int, isFavorite ->
                         coroutineScope.launch {
                             detailsViewModel.updateMovieFavourite(movieType, movieId, isFavorite)
-                            snackbarHostState.showSnackbar(message = "Movie added to list", duration = SnackbarDuration.Short)
+                            val result = snackbarHostState.showSnackbar(message = "Movie added to list!", duration = SnackbarDuration.Short, actionLabel = "View List")
+
+                            when (result) {
+                                SnackbarResult.ActionPerformed -> {
+                                    navController.popBackStack()
+                                    navController.navigate(BottomNavigationScreens.MyList.route) }
+                                else -> { }
+                            }
                         } },
                     onMovieWithTvSeries = homeViewModel::getMovieWithTvSeries
                 )

@@ -136,7 +136,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                  tvSeriesEpisodesUIState: Resource<TvSeriesEpisodes> = Resource.Loading,
                  onTvSeriesEpisode: (Int, Int) -> Unit = { _, _ -> },
                  onSeasonClick: () -> Unit = {  },
-                 onCastClick: () -> Unit = {  }
+                 onCastClick: (Int) -> Unit = { _ ->  }
 ) {
 
     val coroutineScope = rememberCoroutineScope()
@@ -379,7 +379,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
 
                             items(count = movieUIState.data.cast?.size ?: 0) { index ->
 
-                                Row(modifier = modifier.clickable(onClick = onCastClick, interactionSource = remember { MutableInteractionSource() }, indication = null),
+                                Row(modifier = modifier.clickable(onClick = { onCastClick(movieUIState.data.cast?.get(index)?.id ?: return@clickable) }, interactionSource = remember { MutableInteractionSource() }, indication = null),
                                     verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                     AsyncImage(model = ImageRequest.Builder(context = LocalContext.current)
                                         .data(movieUIState.data.cast?.get(index)?.profilePath?.toImageUrl ?: "")
