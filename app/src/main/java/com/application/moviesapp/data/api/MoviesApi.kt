@@ -1,6 +1,8 @@
 package com.application.moviesapp.data.api
 
 import com.application.moviesapp.data.SORT_BY
+import com.application.moviesapp.data.api.response.CastDetailDto
+import com.application.moviesapp.data.api.response.CastImagesDto
 import com.application.moviesapp.data.api.response.CountryResponse
 import com.application.moviesapp.data.api.response.MovieDetailsCastDto
 import com.application.moviesapp.data.api.response.MovieDetailsDto
@@ -78,6 +80,12 @@ interface MoviesApi {
 
     @GET("/3/movie/{movie_id}/credits")
     suspend fun getMovieDetailsCast(@Path("movie_id") movieId: Int): Response<MovieDetailsCastDto>
+
+    @GET("/3/person/{person_id}")
+    suspend fun getPersonDetail(@Path("person_id") personId: Int): Response<CastDetailDto>
+
+    @GET("/3/person/{person_id}/images")
+    suspend fun getPersonImages(@Path("person_id") personId: Int): Response<CastImagesDto>
 
     @GET("/3/tv/{series_id}/aggregate_credits")
     suspend fun getTvSeriesDetailsCast(@Path("series_id") seriesId: Int, @Query("language") language: String = "en-US"): Response<TvSeriesDetailsCastDto>

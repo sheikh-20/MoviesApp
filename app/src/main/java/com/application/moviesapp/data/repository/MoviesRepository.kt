@@ -6,6 +6,8 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.application.moviesapp.data.api.response.MovieSimpleResponse
 import com.application.moviesapp.data.api.MoviesApi
+import com.application.moviesapp.data.api.response.CastDetailDto
+import com.application.moviesapp.data.api.response.CastImagesDto
 import com.application.moviesapp.data.api.response.CountryResponse
 import com.application.moviesapp.data.api.response.MovieDetailsCastDto
 import com.application.moviesapp.data.api.response.MovieDetailsDto
@@ -75,6 +77,10 @@ interface MoviesRepository {
     suspend fun getMovieDetailsCast(movieId: Int): Response<MovieDetailsCastDto>
 
     suspend fun getTvSeriesDetailsCast(seriesId: Int): Response<TvSeriesDetailsCastDto>
+
+    suspend fun getCastDetails(personId: Int): Response<CastDetailDto>
+
+    suspend fun getCastImages(personId: Int): Response<CastImagesDto>
 
     suspend fun getMovieTrailer(movieId: Int): Response<MovieTrailerDto>
 
@@ -166,9 +172,16 @@ class MoviesRepositoryImpl @Inject constructor(private val movies: MoviesApi,
 
     override suspend fun getTvSeriesDetailById(tvSeriesId: Int): Response<TvSeriesDetailsDto> = movies.getTvSeriesDetailsId(tvSeriesId)
 
+
+
     override suspend fun getMovieDetailsCast(movieId: Int): Response<MovieDetailsCastDto> = movies.getMovieDetailsCast(movieId)
 
     override suspend fun getTvSeriesDetailsCast(seriesId: Int): Response<TvSeriesDetailsCastDto> = movies.getTvSeriesDetailsCast(seriesId)
+
+
+    override suspend fun getCastDetails(personId: Int): Response<CastDetailDto> = movies.getPersonDetail(personId)
+
+    override suspend fun getCastImages(personId: Int): Response<CastImagesDto> = movies.getPersonImages(personId)
 
     override suspend fun getMovieTrailer(movieId: Int): Response<MovieTrailerDto> = movies.getMovieTrailer(movieId)
 
