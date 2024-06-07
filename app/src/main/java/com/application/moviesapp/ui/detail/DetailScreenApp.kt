@@ -49,6 +49,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.application.moviesapp.R
@@ -76,6 +77,8 @@ fun DetailScreenApp(modifier: Modifier = Modifier,
 
     val tvSeriesEpisodesUiState by viewModel.tvSeriesEpisodesResponse.collectAsState()
 
+    val castDetailUIState by viewModel.castDetailResponse.collectAsState()
+
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
@@ -93,8 +96,7 @@ fun DetailScreenApp(modifier: Modifier = Modifier,
     }
 
     Scaffold(
-        topBar = { DetailTopAppbar() },
-        containerColor = Color.Transparent,
+        topBar = { DetailTopAppbar(navController = navController) },
         snackbarHost = { SnackbarHost(snackbarHostState) }
         ) { paddingValues ->
 
@@ -118,7 +120,16 @@ fun DetailScreenApp(modifier: Modifier = Modifier,
                     tvSeriesEpisodesUIState = tvSeriesEpisodesUiState,
                     onTvSeriesEpisode = viewModel::getTvSeriesEpisodes,
                     onSeasonClick = { bottomSheetEnabled = true },
-                    onCastClick = { navController.navigate(DetailScreen.Cast.name) }
+                    onCastClick = {
+                        viewModel.getCastDetail(it)
+                        navController.navigate(DetailScreen.CastDetail.name) }
+                )
+            }
+
+            composable(route = DetailScreen.CastDetail.name) {
+                CastDetailScreen(
+                    modifier = modifier,
+                    castDetailUIState = castDetailUIState
                 )
             }
 
@@ -133,28 +144,57 @@ fun DetailScreenApp(modifier: Modifier = Modifier,
 }
 
 enum class DetailScreen {
-    Detail, Cast
+    Detail, CastDetail, Cast
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DetailTopAppbar(modifier: Modifier = Modifier) {
+private fun DetailTopAppbar(modifier: Modifier = Modifier, navController: NavHostController,) {
 
     val context = LocalContext.current
 
-    TopAppBar(
-        title = {  },
-        navigationIcon = {
-            IconButton(onClick = { (context as Activity).finish() }) {
-                Icon(imageVector = Icons.Rounded.ArrowBack, contentDescription = null, tint = Color.White)
-            }
-        },
-        actions = {
-            IconButton(onClick = {}) {
-                Icon(imageVector = Icons.Rounded.Cast, contentDescription = null, tint = Color.White)
-            }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent))
+    when (navController.currentBackStackEntryAsState().value?.destination?.route) {
+        DetailScreen.Detail.name -> {
+            TopAppBar(
+                title = {  },
+                navigationIcon = {
+                    IconButton(onClick = { (context as Activity).finish() }) {
+                        Icon(imageVector = Icons.Rounded.ArrowBack, contentDescription = null, tint = Color.White)
+                    }
+                },
+                actions = {
+                    IconButton(onClick = {}) {
+                        Icon(imageVector = Icons.Rounded.Cast, contentDescription = null, tint = Color.White)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent))
+        }
+        DetailScreen.CastDetail.name -> {
+            TopAppBar(
+                title = {  },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(imageVector = Icons.Rounded.ArrowBack, contentDescription = null, tint = Color.White)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent))
+        }
+        DetailScreen.Cast.name -> {
+            TopAppBar(
+                title = {  },
+                navigationIcon = {
+                    IconButton(onClick = { (context as Activity).finish() }) {
+                        Icon(imageVector = Icons.Rounded.ArrowBack, contentDescription = null, tint = Color.White)
+                    }
+                },
+                actions = {
+                    IconButton(onClick = {}) {
+                        Icon(imageVector = Icons.Rounded.Cast, contentDescription = null, tint = Color.White)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent))
+        }
+    }
 }
 
 

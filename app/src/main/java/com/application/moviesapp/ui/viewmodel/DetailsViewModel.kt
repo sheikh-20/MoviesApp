@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.WorkInfo
 import com.application.moviesapp.data.common.Resource
 import com.application.moviesapp.data.local.entity.MovieDownloadEntity
+import com.application.moviesapp.domain.model.CastDetail
+import com.application.moviesapp.domain.model.CastDetailWithImages
 import com.application.moviesapp.domain.model.MovieState
 import com.application.moviesapp.domain.model.MovieTrailerWithYoutube
 import com.application.moviesapp.domain.model.MoviesDetail
@@ -12,6 +14,7 @@ import com.application.moviesapp.domain.model.Stream
 import com.application.moviesapp.domain.model.TvSeriesDetail
 import com.application.moviesapp.domain.model.TvSeriesEpisodes
 import com.application.moviesapp.domain.model.TvSeriesTrailerWithYoutube
+import com.application.moviesapp.domain.usecase.CastDetailsUseCase
 import com.application.moviesapp.domain.usecase.MovieDetailsUseCase
 import com.application.moviesapp.domain.usecase.MovieStateUseCase
 import com.application.moviesapp.domain.usecase.MovieTrailerUseCase
@@ -56,7 +59,8 @@ class DetailsViewModel @Inject constructor(private val useCase: MovieDetailsUseC
                                            private val getMovieStateUseCase: MovieStateUseCase,
                                            private val videoInfoUseCase: VideoInfoUseCase,
                                            private val downloadUseCase: DownloadUseCase,
-                                           private val tvSeriesEpisodesUseCase: TvSeriesEpisodesUseCase): ViewModel() {
+                                           private val tvSeriesEpisodesUseCase: TvSeriesEpisodesUseCase,
+                                           private val castDetailsUseCase: CastDetailsUseCase): ViewModel() {
 
     private companion object {
         const val TAG = "DetailsViewModel"
@@ -82,6 +86,9 @@ class DetailsViewModel @Inject constructor(private val useCase: MovieDetailsUseC
 
     private var _tvSeriesEpisodesResponse = MutableStateFlow<Resource<TvSeriesEpisodes>>(Resource.Loading)
     val tvSeriesEpisodesResponse: StateFlow<Resource<TvSeriesEpisodes>> get() = _tvSeriesEpisodesResponse
+
+    private var _castDetailsResponse = MutableStateFlow<Resource<CastDetailWithImages>>(Resource.Loading)
+    val castDetailResponse: StateFlow<Resource<CastDetailWithImages>> get() = _castDetailsResponse
 
 
     fun getMovieDetail(movieId: Int) = viewModelScope.launch {
@@ -122,6 +129,14 @@ class DetailsViewModel @Inject constructor(private val useCase: MovieDetailsUseC
         val requestBody = jsonData.toString().toRequestBody(mediaType)
 
         updateMovieFavouriteUseCase(requestBody)
+    }
+
+    fun getCastDetail(personId: Int) = viewModelScope.launch {
+        try {
+            _castDetailsResponse.value = castDetailsUseCase(personId)
+        } catch (exception: Exception) {
+            Timber.tag(TAG).e(exception)
+        }
     }
 
     fun getMovieState(movieId: Int) = viewModelScope.launch {

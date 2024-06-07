@@ -27,6 +27,8 @@ import com.application.moviesapp.domain.usecase.GetSignInFacebookInteractor
 import com.application.moviesapp.domain.usecase.MovieDetailsUseCase
 import com.application.moviesapp.domain.usecase.MovieFavouriteUseCase
 import com.application.moviesapp.domain.usecase.AccountSetupUseCase
+import com.application.moviesapp.domain.usecase.CastDetailsUseCase
+import com.application.moviesapp.domain.usecase.GetCastDetailsInteractors
 import com.application.moviesapp.domain.usecase.GetLanguageInteractor
 import com.application.moviesapp.domain.usecase.GetMovieDownloadInteractor
 import com.application.moviesapp.domain.usecase.GetMovieGenreInteractor
@@ -269,6 +271,12 @@ class UseCaseModule {
     @Singleton
     fun providesTvSeriesEpisodesUseCase(moviesRepository: MoviesRepository): TvSeriesEpisodesUseCase {
         return GetTvSeriesEpisodesUseCase(moviesRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesCastDetailsUseCase(moviesRepository: MoviesRepository): CastDetailsUseCase {
+        return GetCastDetailsInteractors(moviesRepository)
     }
 
     @Provides

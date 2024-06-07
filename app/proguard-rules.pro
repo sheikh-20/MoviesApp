@@ -49,3 +49,7 @@
  -dontwarn javax.annotation.ParametersAreNonnullByDefault
 
  -keep class * extends com.google.protobuf.GeneratedMessageLite { *; }
+
+ # Firebase Authentication
+ -keep class com.google.firebase.auth.** { *; }
+ -dontwarn com.google.firebase.**
