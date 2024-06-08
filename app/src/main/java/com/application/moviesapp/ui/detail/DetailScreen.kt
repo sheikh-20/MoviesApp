@@ -1013,7 +1013,7 @@ private fun TvSeriesTrailerCard(modifier: Modifier = Modifier,
 
 @Preview
 @Composable
-private fun CommentsCompose(modifier: Modifier = Modifier) {
+fun CommentsCompose(modifier: Modifier = Modifier) {
     Column(modifier = modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp),

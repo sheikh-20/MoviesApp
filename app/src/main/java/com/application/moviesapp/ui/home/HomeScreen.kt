@@ -4,7 +4,9 @@ import android.app.Activity
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -175,6 +177,7 @@ fun HomeScreen(modifier: Modifier = Modifier,
                                 contentDescription = null,
                                 modifier = modifier
                                     .fillMaxSize()
+                                    .clickable(onClick = {  DetailActivity.startActivity(context as Activity, IS_TYPE.Movie, uiState.data.movies?.get(index)?.id ?: return@clickable)  }, interactionSource = remember { MutableInteractionSource() }, indication = null)
                                     .drawWithCache {
                                         val gradient = Brush.verticalGradient(
                                             colors = listOf(Color.Transparent, Color.Black),
