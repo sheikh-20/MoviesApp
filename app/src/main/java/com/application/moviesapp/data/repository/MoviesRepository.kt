@@ -8,6 +8,8 @@ import com.application.moviesapp.data.api.response.MovieSimpleResponse
 import com.application.moviesapp.data.api.MoviesApi
 import com.application.moviesapp.data.api.response.CastDetailDto
 import com.application.moviesapp.data.api.response.CastImagesDto
+import com.application.moviesapp.data.api.response.CastMovieCreditsDto
+import com.application.moviesapp.data.api.response.CastTvSeriesCreditDto
 import com.application.moviesapp.data.api.response.CountryResponse
 import com.application.moviesapp.data.api.response.MovieDetailsCastDto
 import com.application.moviesapp.data.api.response.MovieDetailsDto
@@ -81,6 +83,10 @@ interface MoviesRepository {
     suspend fun getCastDetails(personId: Int): Response<CastDetailDto>
 
     suspend fun getCastImages(personId: Int): Response<CastImagesDto>
+
+    suspend fun getCastMovieCredits(personId: Int): Response<CastMovieCreditsDto>
+
+    suspend fun getCastTvSeriesCredits(personId: Int): Response<CastTvSeriesCreditDto>
 
     suspend fun getMovieTrailer(movieId: Int): Response<MovieTrailerDto>
 
@@ -182,6 +188,10 @@ class MoviesRepositoryImpl @Inject constructor(private val movies: MoviesApi,
     override suspend fun getCastDetails(personId: Int): Response<CastDetailDto> = movies.getPersonDetail(personId)
 
     override suspend fun getCastImages(personId: Int): Response<CastImagesDto> = movies.getPersonImages(personId)
+
+    override suspend fun getCastMovieCredits(personId: Int): Response<CastMovieCreditsDto> = movies.getCastMovieCredits(personId)
+
+    override suspend fun getCastTvSeriesCredits(personId: Int): Response<CastTvSeriesCreditDto> = movies.getCastTvSeriesCredits(personId)
 
     override suspend fun getMovieTrailer(movieId: Int): Response<MovieTrailerDto> = movies.getMovieTrailer(movieId)
 
