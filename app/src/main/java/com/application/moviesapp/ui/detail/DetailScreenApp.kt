@@ -1,6 +1,7 @@
 package com.application.moviesapp.ui.detail
 
 import android.app.Activity
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,13 +10,16 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Cast
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -95,6 +99,8 @@ fun DetailScreenApp(modifier: Modifier = Modifier,
         )
     }
 
+    var selectedImage by remember { mutableStateOf(Pair<String, List<String?>?>("", emptyList())) }
+
     Scaffold(
         topBar = { DetailTopAppbar(navController = navController) },
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -129,14 +135,19 @@ fun DetailScreenApp(modifier: Modifier = Modifier,
             composable(route = DetailScreen.CastDetail.name) {
                 CastDetailScreen(
                     modifier = modifier,
-                    castDetailUIState = castDetailUIState
+                    castDetailUIState = castDetailUIState,
+                    onImageClick = {
+                        selectedImage = it
+                        navController.navigate(DetailScreen.Cast.name)
+                    }
                 )
             }
 
             composable(route = DetailScreen.Cast.name) {
                 CastScreen(
                     modifier = modifier,
-                    paddingValues = paddingValues
+                    paddingValues = paddingValues,
+                    selectedImage = selectedImage
                 )
             }
         }
@@ -183,13 +194,8 @@ private fun DetailTopAppbar(modifier: Modifier = Modifier, navController: NavHos
             TopAppBar(
                 title = {  },
                 navigationIcon = {
-                    IconButton(onClick = { (context as Activity).finish() }) {
-                        Icon(imageVector = Icons.Rounded.ArrowBack, contentDescription = null, tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = {}) {
-                        Icon(imageVector = Icons.Rounded.Cast, contentDescription = null, tint = Color.White)
+                    IconButton(onClick = { navController.navigateUp() }, modifier = modifier.padding(16.dp).background(color = Color(0xAABEBEBE), shape = RoundedCornerShape(50)).size(30.dp)) {
+                        Icon(imageVector = Icons.Rounded.Close, contentDescription = null, tint = Color.White)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent))
