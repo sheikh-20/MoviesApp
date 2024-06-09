@@ -76,7 +76,8 @@ import timber.log.Timber
 @Composable
 fun CastDetailScreen(modifier: Modifier = Modifier,
                      paddingValues: PaddingValues = PaddingValues(),
-                     castDetailUIState: Resource<CastDetailWithImages> = Resource.Loading
+                     castDetailUIState: Resource<CastDetailWithImages> = Resource.Loading,
+                     onImageClick: (Pair<String, List<String?>?>) -> Unit = { _ -> }
                      ) {
 
     val scrollState = rememberScrollState()
@@ -247,7 +248,7 @@ fun CastDetailScreen(modifier: Modifier = Modifier,
                                     contentPadding = PaddingValues(horizontal = 16.dp),
                                 ) {
                                     items(castDetailUIState.data.images.profiles?.size ?: 0) { index ->
-                                        CastImageCard(imageUrl = castDetailUIState.data.images.profiles?.get(index)?.filePath ?: "")
+                                        CastImageCard(imageUrl = castDetailUIState.data.images.profiles?.get(index)?.filePath ?: "", onImageClick = onImageClick, imageList = castDetailUIState.data.images.profiles?.map { it?.filePath ?: ""})
                                     }
                                 }
                             }
@@ -351,11 +352,11 @@ private fun TvSeriesImageCard(modifier: Modifier = Modifier, imageUrl: String = 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun CastImageCard(modifier: Modifier = Modifier, imageUrl: String = "", personId: Int? = null) {
+private fun CastImageCard(modifier: Modifier = Modifier, imageUrl: String = "", onImageClick: (Pair<String, List<String?>?>) -> Unit = {  }, imageList: List<String?>? = emptyList()) {
 
     val context = LocalContext.current
 
-    Card(shape = RoundedCornerShape(10), onClick = {  }) {
+    Card(shape = RoundedCornerShape(10), onClick = { onImageClick(Pair(imageUrl, imageList)) }) {
         Box {
             AsyncImage(
                 model = ImageRequest.Builder(context = LocalContext.current)

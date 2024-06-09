@@ -685,7 +685,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
 
                             items(count = tvSeriesUIState.data.cast?.size ?: 0) { index ->
 
-                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Row(modifier = modifier.clickable(onClick = { onCastClick(tvSeriesUIState.data.cast?.get(index)?.id ?: return@clickable) }, interactionSource = remember { MutableInteractionSource() }, indication = null), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                     AsyncImage(model = ImageRequest.Builder(context = LocalContext.current)
                                         .data(tvSeriesUIState.data.cast?.get(index)?.profilePath?.toImageUrl ?: "")
                                         .crossfade(true)
