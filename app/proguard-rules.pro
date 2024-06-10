@@ -53,3 +53,28 @@
  # Firebase Authentication
  -keep class com.google.firebase.auth.** { *; }
  -dontwarn com.google.firebase.**
+
+
+#--------------------Chaquopy----------------------------
+
+# Preserve the Chaquopy class which is used to initialize Python
+-keep class com.chaquo.python.** { *; }
+
+# Preserve Python standard library modules
+-keep class org.python.** { *; }
+
+# Preserve Chaquopy build script API
+-keep class com.chaquo.python.build.** { *; }
+
+# Preserve your Python modules
+-keep class com.application.moviesapp.data.python.** { *; }
+
+#-keep class com.github.oncename.pytube.** { *; }
+#
+## Keep annotations in pytube
+#-keepattributes *Annotation*
+#
+## Prevent stripping out methods that use reflection
+#-keepclassmembers class ** {
+#    @com.github.oncename.pytube.annotations.* *;
+#}
