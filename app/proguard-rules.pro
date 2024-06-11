@@ -57,10 +57,16 @@
 
 #--------------------Chaquopy----------------------------
 
-# Preserve the Chaquopy class which is used to initialize Python
+# Preserve Chaquopy classes and methods
 -keep class com.chaquo.python.** { *; }
 
-# Preserve Python standard library modules
+# Preserve PyTube classes and methods
+-keep class com.github.oncename.pytube.** { *; }
+
+# Keep annotations
+-keepattributes *Annotation*
+
+# Keep Python classes and methods
 -keep class org.python.** { *; }
 
 # Preserve Chaquopy build script API
@@ -69,12 +75,23 @@
 # Preserve your Python modules
 -keep class com.application.moviesapp.data.python.** { *; }
 
-#-keep class com.github.oncename.pytube.** { *; }
-#
-## Keep annotations in pytube
-#-keepattributes *Annotation*
-#
-## Prevent stripping out methods that use reflection
-#-keepclassmembers class ** {
-#    @com.github.oncename.pytube.annotations.* *;
-#}
+# Avoid stripping out Python assets
+-keep class com.application.moviesapp.MoviesApplication {
+    *;
+}
+
+# Preserve JNI-related code
+-keepclasseswithmembers class * {
+    native <methods>;
+}
+
+# Preserve any classes used for reflection
+-keepclassmembers class * {
+    *;
+}
+
+# Preserve all enums
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
