@@ -246,29 +246,64 @@ fun HomeApp(modifier: Modifier = Modifier,
         onboardingViewModel.getProfilePhoto()
     }
 
+    val itemsListCategories = listOf(Categories.Movies, Categories.TV)
+    var selectedItemCategories by remember { mutableStateOf(itemsListCategories[0]) }
+
+    val itemsListSort = listOf(
+        SORT_BY.POPULARITY,
+        SORT_BY.LATEST_RELEASE,
+        SORT_BY.VOTE_AVERAGE
+    )
+    var selectedItemSort by remember { mutableStateOf(itemsListSort[0]) }
+
+    var includeAdult by remember { mutableStateOf(false) }
+
     when (showBottomSheet) {
         BottomSheet.Default -> { }
         BottomSheet.Filter -> {
             BottomSheet(
-                onDismiss = { showBottomSheet = BottomSheet.Default },
-                onNegativeClick = { showBottomSheet = BottomSheet.Default },
+                onDismiss = {
+                    showBottomSheet = BottomSheet.Default
+
+                            },
+                onNegativeClick = {
+                    showBottomSheet = BottomSheet.Default
+
+                    selectedCategories = Categories.Movies
+                    selectedItemCategories = Categories.Movies
+                    selectedItemSort = SORT_BY.POPULARITY
+                    includeAdult = false
+                    exploreViewModel.resetGenre()
+                                  },
                 onPositiveClick = { showBottomSheet = BottomSheet.Default },
                 contentSheet = {
-                    onNegativeClick, onPositiveClick ->
+                        onNegativeClick, onPositiveClick ->
 
                     BottomSheetFilterContent(
                         onNegativeClick = onNegativeClick,
                         onPositiveClick = {
                                 categories, genres, sortBy, includeAdult ->
                             exploreViewModel.setSortAndFilter(genre = genres, sortBy = sortBy, includeAdult = includeAdult)
+
                             selectedCategories = categories
+
+
                             onPositiveClick()
-                                          },
+                        },
                         onFilterCalled = { exploreViewModel.getGenre(it) },
                         uiState = genreUiState,
                         readUserPreferences = accountSetupUiCase,
                         onCategoryClick = { exploreViewModel.getGenre(it) },
-                        onGenreUpdate = { exploreViewModel.updateGenre(it ?: return@BottomSheetFilterContent) }
+                        onGenreUpdate = { exploreViewModel.updateGenre(it ?: return@BottomSheetFilterContent) },
+
+                        selectedItemCategories = selectedItemCategories,
+                        onSelectedItemCategories = { selectedItemCategories = it },
+
+                        selectedItemSort = selectedItemSort,
+                        onSelectedItemSort = { selectedItemSort = it },
+
+                        includeAdult = includeAdult,
+                        onIncludeAdult = { includeAdult = it }
                     )
                 })
         }
@@ -396,7 +431,7 @@ fun HomeApp(modifier: Modifier = Modifier,
                             when (result) {
                                 SnackbarResult.ActionPerformed -> {
                                     navController.popBackStack()
-                                    navController.navigate(BottomNavigationScreens.MyList.route) }
+                                    navController.navigate(BottomNavigationScreens.Explore.route) }
                                 else -> { }
                             }
                         } },
@@ -460,7 +495,7 @@ private fun BottomSheet(modifier: Modifier = Modifier,
                         onNegativeClick: () -> Unit = {},
                         onPositiveClick: () -> Unit = {},
                         contentSheet: @Composable (onNegativeClick: () -> Unit, onPositiveClick: () -> Unit) -> Unit = { _, _ -> }
-                        ) {
+) {
 
     val bottomSheet = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val coroutineScope = rememberCoroutineScope()
@@ -494,27 +529,25 @@ private fun BottomSheetFilterContent(modifier: Modifier = Modifier,
                                      uiState: Resource<MovieGenre> = Resource.Loading,
                                      readUserPreferences: UserPreferences? = null,
                                      onCategoryClick: (Categories) -> Unit = { _ -> },
-                                     onGenreUpdate: (MovieGenre.Genre?) -> Unit = {  _ -> }) {
+                                     onGenreUpdate: (MovieGenre.Genre?) -> Unit = {  _ -> },
+
+                                     selectedItemCategories: Categories = Categories.Movies,
+                                     onSelectedItemCategories: (Categories) -> Unit = { _ -> },
+
+                                     selectedItemSort: SORT_BY = SORT_BY.POPULARITY,
+                                     onSelectedItemSort: (SORT_BY) -> Unit = { _ -> },
+
+                                     includeAdult: Boolean = false,
+                                     onIncludeAdult: (Boolean) -> Unit = { _ -> }
+) {
 
     val itemsListCategories = listOf(Categories.Movies, Categories.TV)
-
-    var selectedItemCategories by remember {
-        mutableStateOf(itemsListCategories[0])
-    }
 
     val itemsListSort = listOf(
         Pair("Popularity", SORT_BY.POPULARITY),
         Pair("Latest Release", SORT_BY.LATEST_RELEASE),
         Pair("Vote Average", SORT_BY.VOTE_AVERAGE)
     )
-
-    var selectedItemSort by remember {
-        mutableStateOf(itemsListSort[0])
-    }
-
-    var includeAdult by remember {
-        mutableStateOf(false)
-    }
 
     LaunchedEffect(key1 = null) {
         onFilterCalled(selectedItemCategories)
@@ -564,15 +597,15 @@ private fun BottomSheetFilterContent(modifier: Modifier = Modifier,
                                     .weight(1f), // gap between items
                                 selected = (item == selectedItemCategories),
                                 onClick = {
-                                    selectedItemCategories = item
+                                    onSelectedItemCategories(item)
                                     onCategoryClick(item)
-                                          },
+                                },
                                 label = { Text(text = item.title, modifier = modifier.fillMaxWidth(), textAlign = TextAlign.Center) },
                                 shape = RoundedCornerShape(50),
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = MaterialTheme.colorScheme.primary,
                                     selectedLabelColor = Color.White)
-                                )
+                            )
                         }
                     }
 
@@ -592,7 +625,7 @@ private fun BottomSheetFilterContent(modifier: Modifier = Modifier,
                                 selected = readUserPreferences?.genreList?.any { it.id == item?.id } ?: false,
                                 onClick = {
                                     onGenreUpdate(item)
-                                          },
+                                },
                                 label = { Text(text = item?.name ?: "", modifier = modifier.fillMaxWidth(), textAlign = TextAlign.Center) },
                                 shape = RoundedCornerShape(50),
                                 colors = FilterChipDefaults.filterChipColors(
@@ -613,14 +646,14 @@ private fun BottomSheetFilterContent(modifier: Modifier = Modifier,
                                 modifier = modifier
                                     .requiredHeight(36.dp)
                                     .padding(horizontal = 6.dp),
-                                selected = (item == selectedItemSort),
-                                onClick = { selectedItemSort = item },
+                                selected = (item.second == selectedItemSort),
+                                onClick = { onSelectedItemSort(item.second) },
                                 label = { Text(text = item.first, modifier = modifier.fillMaxWidth(), textAlign = TextAlign.Center) },
                                 shape = RoundedCornerShape(50),
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = MaterialTheme.colorScheme.primary,
                                     selectedLabelColor = Color.White)
-                                )
+                            )
                         }
                     }
 
@@ -634,7 +667,7 @@ private fun BottomSheetFilterContent(modifier: Modifier = Modifier,
                             .requiredHeight(36.dp)
                             .padding(horizontal = 16.dp),
                         selected = includeAdult,
-                        onClick = { includeAdult = !includeAdult },
+                        onClick = { onIncludeAdult(!includeAdult) },
                         label = { Text(text = stringResource(R.string.no), modifier = modifier, textAlign = TextAlign.Center) },
                         shape = RoundedCornerShape(50),
                         colors = FilterChipDefaults.filterChipColors(
@@ -657,7 +690,7 @@ private fun BottomSheetFilterContent(modifier: Modifier = Modifier,
                         Text(text = stringResource(R.string.reset))
                     }
 
-                    Button(onClick = { onPositiveClick(selectedItemCategories, readUserPreferences?.genreList?.map { MovieGenre.Genre(id = it.id, name = it.name) } ?: return@Button, selectedItemSort.second, includeAdult) }, modifier = modifier
+                    Button(onClick = { onPositiveClick(selectedItemCategories, readUserPreferences?.genreList?.map { MovieGenre.Genre(id = it.id, name = it.name) } ?: return@Button, selectedItemSort, includeAdult) }, modifier = modifier
                         .weight(1f)
                         .requiredHeight(50.dp)) {
                         Text(text = stringResource(R.string.apply))
@@ -816,7 +849,7 @@ private fun HomeTopAppbar(navController: NavHostController,
                           onHomeSearchClick: () -> Unit = {  },
                           searchValue: String = "",
                           onDownloadSearch: (String) -> Unit = { _ -> }
-                          ) {
+) {
 
     val context = LocalContext.current
 
@@ -913,7 +946,7 @@ private fun HomeTopAppbar(navController: NavHostController,
                                 focusRequest.requestFocus()
                             }
                         }
-                            },
+                    },
                     navigationIcon = {
                         if (!onSearchClick) {
                             IconButton(onClick = {   }) {
@@ -978,7 +1011,7 @@ private fun HomeTopAppbar(navController: NavHostController,
                                 focusRequest.requestFocus()
                             }
                         }
-                            },
+                    },
                     navigationIcon = {
                         if (!onSearchClick) {
                             IconButton(onClick = {   }) {
@@ -1052,16 +1085,16 @@ private fun HomeBottomBarNavigation(navController: NavHostController,
         BottomNavigationScreens.Profile)
 
     NavigationBar(modifier = Modifier.clip(shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)),
-     containerColor = Color.Transparent,
+        containerColor = Color.Transparent,
         tonalElevation = 3.dp
-        ) {
-        navigationBarItems.forEach { 
+    ) {
+        navigationBarItems.forEach {
             NavigationBarItem(
                 selected = navController.currentBackStackEntryAsState().value?.destination?.route == it.route,
                 onClick = {
                     navController.popBackStack()
                     navController.navigate(it.route)
-                          },
+                },
                 icon = { Icon(imageVector = it.vectorResource, contentDescription = null) },
                 label = { Text(text = stringResource(id = it.stringResource)) },
                 colors = NavigationBarItemDefaults.colors(
@@ -1069,7 +1102,7 @@ private fun HomeBottomBarNavigation(navController: NavHostController,
                     unselectedTextColor = Color.Gray, selectedTextColor = MaterialTheme.colorScheme.primary,
                     indicatorColor = MaterialTheme.colorScheme.surfaceColorAtElevation(LocalAbsoluteTonalElevation.current)
                 ),
-                )
+            )
         }
     }
 }

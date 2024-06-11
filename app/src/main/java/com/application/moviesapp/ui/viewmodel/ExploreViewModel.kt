@@ -135,6 +135,10 @@ class ExploreViewModel @Inject constructor(private val useCase: MoviesSortUseCas
         }
     }
 
+    fun resetGenre() = viewModelScope.launch {
+        accountSetupUseCase.updateGenre(genre = emptySet())
+    }
+
     fun setSortAndFilter(genre: List<MovieGenre.Genre> = emptyList(),
                          sortBy: SORT_BY = SORT_BY.POPULARITY,
                          includeAdult: Boolean = false) {
