@@ -46,8 +46,9 @@ import androidx.paging.compose.LazyPagingItems
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.application.moviesapp.R
-import com.application.moviesapp.domain.model.MovieNowPlaying
+import com.application.moviesapp.domain.model.MovieSearch
 import com.application.moviesapp.domain.model.TvSeriesNowPlaying
+import com.application.moviesapp.domain.model.TvSeriesSearch
 import com.application.moviesapp.ui.detail.DetailActivity
 import com.application.moviesapp.ui.detail.IS_TYPE
 import com.application.moviesapp.ui.utility.toImageUrl
@@ -60,8 +61,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun NowPlayingSeriesScreen(modifier: Modifier = Modifier,
                            uiState: MovieNewReleaseUiState = MovieNewReleaseUiState.Loading,
-                           moviesFlow: LazyPagingItems<TvSeriesNowPlaying>,
+                           tvSeriesFlow: LazyPagingItems<TvSeriesNowPlaying>,
                            lazyGridState: LazyGridState = LazyGridState(),
+                           tvSeriesSearchFlow: LazyPagingItems<TvSeriesSearch>,
+                           searchClicked: Boolean = false,
                            bottomPadding: PaddingValues = PaddingValues()
                       ) {
 
@@ -73,7 +76,7 @@ fun NowPlayingSeriesScreen(modifier: Modifier = Modifier,
         onRefresh = {
             coroutineScope.launch {
                 isRefreshing = !isRefreshing
-                moviesFlow.refresh()
+                tvSeriesFlow.refresh()
 
                 delay(1_000L)
                 isRefreshing = !isRefreshing
@@ -81,7 +84,7 @@ fun NowPlayingSeriesScreen(modifier: Modifier = Modifier,
         })
 
     LaunchedEffect(key1 = Unit) {
-        moviesFlow.refresh()
+        tvSeriesFlow.refresh()
     }
 
     Box(modifier = modifier
@@ -91,7 +94,7 @@ fun NowPlayingSeriesScreen(modifier: Modifier = Modifier,
             bottom = bottomPadding.calculateBottomPadding()
         ).pullRefresh(pullRefreshState)) {
         Column {
-            if (moviesFlow.itemCount == 0) {
+            if (tvSeriesFlow.itemCount == 0) {
                 Column(modifier = modifier
                     .fillMaxSize()
                     .wrapContentSize(align = Alignment.Center),
@@ -120,14 +123,27 @@ fun NowPlayingSeriesScreen(modifier: Modifier = Modifier,
                 }
             }
             else {
-                LazyVerticalGrid(columns = GridCells.Fixed(2),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    state = lazyGridState,
-                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
+                if (searchClicked) {
+                    LazyVerticalGrid(columns = GridCells.Fixed(2),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        state = lazyGridState,
+                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
 
-                    items(moviesFlow.itemCount) { index ->
-                        TvSeriesImageCard(imageUrl = moviesFlow[index]?.posterPath ?: "", rating = moviesFlow[index]?.voteAverage.toString() ?: "", tvSeriesId =  moviesFlow[index]?.id ?: 0)
+                        items(tvSeriesSearchFlow.itemCount) { index ->
+                            TvSeriesImageCard(imageUrl = tvSeriesSearchFlow[index]?.posterPath ?: "", rating = tvSeriesSearchFlow[index]?.voteAverage.toString() ?: "", tvSeriesId =  tvSeriesSearchFlow[index]?.id ?: 0)
+                        }
+                    }
+                } else {
+                    LazyVerticalGrid(columns = GridCells.Fixed(2),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        state = lazyGridState,
+                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
+
+                        items(tvSeriesFlow.itemCount) { index ->
+                            TvSeriesImageCard(imageUrl = tvSeriesFlow[index]?.posterPath ?: "", rating = tvSeriesFlow[index]?.voteAverage.toString() ?: "", tvSeriesId =  tvSeriesFlow[index]?.id ?: 0)
+                        }
                     }
                 }
             }

@@ -58,6 +58,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.application.moviesapp.R
 import com.application.moviesapp.domain.model.MovieNowPlaying
+import com.application.moviesapp.domain.model.MovieSearch
 import com.application.moviesapp.ui.detail.DetailActivity
 import com.application.moviesapp.ui.detail.IS_TYPE
 import com.application.moviesapp.ui.theme.MoviesAppTheme
@@ -70,10 +71,12 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun NowPlayingMoviesScreen(modifier: Modifier = Modifier,
-                    uiState: MovieTopRatedUiState = MovieTopRatedUiState.Loading,
-                    moviesFlow: LazyPagingItems<MovieNowPlaying>,
-                    lazyGridState: LazyGridState = LazyGridState(),
-                    bottomPadding: PaddingValues = PaddingValues()
+                           uiState: MovieTopRatedUiState = MovieTopRatedUiState.Loading,
+                           moviesFlow: LazyPagingItems<MovieNowPlaying>,
+                           movieSearchFlow: LazyPagingItems<MovieSearch>,
+                           searchClicked: Boolean = false,
+                           lazyGridState: LazyGridState = LazyGridState(),
+                           bottomPadding: PaddingValues = PaddingValues()
 ) {
 
     val coroutineScope = rememberCoroutineScope()
@@ -130,14 +133,28 @@ fun NowPlayingMoviesScreen(modifier: Modifier = Modifier,
                     }
                 }
             } else {
-                LazyVerticalGrid(columns = GridCells.Fixed(2),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    state = lazyGridState,
-                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
 
-                    items(moviesFlow.itemCount) { index ->
-                        MovieImageCard(imageUrl = moviesFlow[index]?.posterPath ?: "", rating = moviesFlow[index]?.voteAverage.toString() ?: "", movieId = moviesFlow[index]?.id ?: 0)
+                if (searchClicked) {
+                    LazyVerticalGrid(columns = GridCells.Fixed(2),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        state = lazyGridState,
+                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
+
+                        items(movieSearchFlow.itemCount) { index ->
+                            MovieImageCard(imageUrl = movieSearchFlow[index]?.posterPath ?: "", rating = movieSearchFlow[index]?.voteAverage.toString() ?: "", movieId = movieSearchFlow[index]?.id ?: 0)
+                        }
+                    }
+                } else {
+                    LazyVerticalGrid(columns = GridCells.Fixed(2),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        state = lazyGridState,
+                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
+
+                        items(moviesFlow.itemCount) { index ->
+                            MovieImageCard(imageUrl = moviesFlow[index]?.posterPath ?: "", rating = moviesFlow[index]?.voteAverage.toString() ?: "", movieId = moviesFlow[index]?.id ?: 0)
+                        }
                     }
                 }
             }

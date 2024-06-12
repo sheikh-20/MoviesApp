@@ -18,6 +18,7 @@ import com.application.moviesapp.domain.usecase.AccountSetupUseCase
 import com.application.moviesapp.domain.usecase.MovieGenresUseCase
 import com.application.moviesapp.domain.usecase.MovieSearchUseCase
 import com.application.moviesapp.domain.usecase.TvSeriesGenreUseCase
+import com.application.moviesapp.domain.usecase.TvSeriesSearchUseCase
 import com.application.moviesapp.ui.home.Categories
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -52,6 +53,7 @@ class ExploreViewModel @Inject constructor(private val useCase: MoviesSortUseCas
                                            private val movieGenresUseCase: MovieGenresUseCase,
                                            private val tvSeriesGenreUseCase: TvSeriesGenreUseCase,
                                            private val movieSearchUseCase: MovieSearchUseCase,
+                                           private val tvSeriesSearchUseCase: TvSeriesSearchUseCase,
                                            private val accountSetupUseCase: AccountSetupUseCase): ViewModel() {
 
     private companion object {
@@ -94,6 +96,8 @@ class ExploreViewModel @Inject constructor(private val useCase: MoviesSortUseCas
             includeAdult = includeAdult).cachedIn(viewModelScope)
 
     fun getMovieBySearch(search: String = "") = movieSearchUseCase(search).cachedIn(viewModelScope)
+
+    fun getTvSeriesBySearch(search: String = "") = tvSeriesSearchUseCase(search).cachedIn(viewModelScope)
 
     fun updateClickInput(clicked: Boolean) {
         _searchInputUiState.update {
