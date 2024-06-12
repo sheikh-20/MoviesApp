@@ -40,26 +40,28 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.application.moviesapp.R
+import com.application.moviesapp.ui.viewmodel.ExploreViewModel
 import com.application.moviesapp.ui.viewmodel.HomeViewModel
 import com.application.moviesapp.ui.viewmodel.MovieNewReleaseUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NowPlayingSeriesApp(modifier: Modifier = Modifier,
-                   homeViewModel: HomeViewModel = hiltViewModel(),
+                        homeViewModel: HomeViewModel = hiltViewModel(),
+                        exploreViewModel: ExploreViewModel = viewModel()
                    ) {
 
     val uiState: MovieNewReleaseUiState by homeViewModel.moviesNewReleaseUiState.collectAsState()
-    val moviesNewReleasePagingFlow = homeViewModel.nowPlayingSeriesPagingFlow().collectAsLazyPagingItems()
+    val tvSeriesNewReleasePagingFlow = homeViewModel.nowPlayingSeriesPagingFlow().collectAsLazyPagingItems()
 
     val newReleaseScrollState = rememberLazyGridState()
     val newReleaseHideTopAppBar by remember(newReleaseScrollState) {
@@ -68,17 +70,30 @@ fun NowPlayingSeriesApp(modifier: Modifier = Modifier,
         }
     }
 
+    val searchUiState by exploreViewModel.searchInputUiState.collectAsState()
+    val tvSeriesSearchFlowState = exploreViewModel.getTvSeriesBySearch(searchUiState.search).collectAsLazyPagingItems()
+
+
     Scaffold(
-        topBar = { NewReleasesTopAppbar(newReleaseHideTopAppBar) },
+        topBar = { NewReleasesTopAppbar(newReleaseHideTopAppBar, exploreViewModel, search = searchUiState.search) },
         containerColor = Color.Transparent
     ) { paddingValues ->
-        NowPlayingSeriesScreen(modifier = modifier, uiState = uiState, moviesFlow = moviesNewReleasePagingFlow, lazyGridState = newReleaseScrollState, bottomPadding = paddingValues)
+        NowPlayingSeriesScreen(
+            modifier = modifier,
+            uiState = uiState,
+            tvSeriesFlow = tvSeriesNewReleasePagingFlow,
+            lazyGridState = newReleaseScrollState,
+            bottomPadding = paddingValues,
+            tvSeriesSearchFlow = tvSeriesSearchFlowState,
+            searchClicked = searchUiState.clicked)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun NewReleasesTopAppbar(newReleaseHideTopAppBar: Boolean) {
+private fun NewReleasesTopAppbar(newReleaseHideTopAppBar: Boolean,
+                                 exploreViewModel: ExploreViewModel = viewModel(),
+                                 search: String = "",) {
 
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
@@ -91,6 +106,13 @@ private fun NewReleasesTopAppbar(newReleaseHideTopAppBar: Boolean) {
         onSearchClick = false
     }
 
+    if (search.isNotEmpty()) {
+        exploreViewModel.updateClickInput(true)
+    } else {
+        exploreViewModel.updateClickInput(false)
+    }
+
+
     AnimatedVisibility(
         visible = newReleaseHideTopAppBar,
         enter = slideInVertically(animationSpec = tween(durationMillis = 200)),
@@ -101,8 +123,8 @@ private fun NewReleasesTopAppbar(newReleaseHideTopAppBar: Boolean) {
                 if (!onSearchClick) {
                     Text(text = stringResource(id = R.string.now_playing_series), fontWeight = FontWeight.SemiBold)
                 } else {
-                    OutlinedTextField(value = "",
-                        onValueChange = {  },
+                    OutlinedTextField(value = search,
+                        onValueChange = exploreViewModel::updateSearchField,
                         modifier = Modifier
                             .height(64.dp)
                             .fillMaxWidth()

@@ -26,6 +26,7 @@ import com.application.moviesapp.data.api.response.TvSeriesDetailsDto
 import com.application.moviesapp.data.api.response.TvSeriesDiscoverDto
 import com.application.moviesapp.data.api.response.TvSeriesEpisodesDto
 import com.application.moviesapp.data.api.response.TvSeriesNowPlayingDto
+import com.application.moviesapp.data.api.response.TvSeriesSearchDto
 import com.application.moviesapp.data.api.response.TvSeriesTrailerDto
 import com.application.moviesapp.data.local.MoviesDatabase
 import com.application.moviesapp.data.local.entity.MovieDownloadEntity
@@ -38,6 +39,7 @@ import com.application.moviesapp.data.remote.MoviesDiscoverDto
 import com.application.moviesapp.data.remote.MoviesDiscoverPagingSource
 import com.application.moviesapp.data.remote.TvSeriesDiscoverPagingSource
 import com.application.moviesapp.data.remote.TvSeriesNowPlayingPagingSource
+import com.application.moviesapp.data.remote.TvSeriesSearchPagingSource
 import kotlinx.coroutines.flow.Flow
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -65,6 +67,8 @@ interface MoviesRepository {
     fun getMoviesNowPlayingPagingFlow(): Flow<PagingData<MovieNowPlayingDto.Result>>
 
     fun getMovieBySearchPagingFlow(search: String = ""): Flow<PagingData<MovieSearchDto.Result>>
+
+    fun getTvSeriesBySearchPagingFlow(search: String = ""): Flow<PagingData<TvSeriesSearchDto.Result>>
 
     fun getFavouriteMoviesPagingFlow(): Flow<PagingData<MovieFavouriteDto.Result>>
 
@@ -155,6 +159,13 @@ class MoviesRepositoryImpl @Inject constructor(private val movies: MoviesApi,
         config = PagingConfig(pageSize = PAGE_SIZE, prefetchDistance = 10, initialLoadSize = PAGE_SIZE),
         pagingSourceFactory = {
             MovieSearchPagingSource(movies, search)
+        }
+    ).flow
+
+    override fun getTvSeriesBySearchPagingFlow(search: String): Flow<PagingData<TvSeriesSearchDto.Result>> = Pager(
+        config = PagingConfig(pageSize = PAGE_SIZE, prefetchDistance = 10, initialLoadSize = PAGE_SIZE),
+        pagingSourceFactory = {
+            TvSeriesSearchPagingSource(movies, search)
         }
     ).flow
 

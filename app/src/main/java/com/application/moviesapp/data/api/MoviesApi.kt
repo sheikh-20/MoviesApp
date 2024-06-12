@@ -22,6 +22,7 @@ import com.application.moviesapp.data.api.response.TvSeriesDetailsDto
 import com.application.moviesapp.data.api.response.TvSeriesDiscoverDto
 import com.application.moviesapp.data.api.response.TvSeriesEpisodesDto
 import com.application.moviesapp.data.api.response.TvSeriesNowPlayingDto
+import com.application.moviesapp.data.api.response.TvSeriesSearchDto
 import com.application.moviesapp.data.api.response.TvSeriesTrailerDto
 import com.application.moviesapp.data.remote.MovieNewReleasesDto
 import com.application.moviesapp.data.remote.MovieUpcomingDto
@@ -118,4 +119,8 @@ interface MoviesApi {
 
     @GET("/3/search/movie")
     suspend fun getMovieBySearch(@Query("language") language: String = "en-US", @Query("query") query: String = "", @Query("page") page: Int = 1): Response<MovieSearchDto>
+
+    @GET("/3/search/tv")
+    suspend fun getTvSeriesBySearch(@Query("language") language: String = "en-US", @Query("query") query: String = "", @Query("page") page: Int = 1): Response<TvSeriesSearchDto>
+
 }

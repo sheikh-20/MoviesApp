@@ -42,6 +42,7 @@ import com.application.moviesapp.domain.usecase.GetTvSeriesDetailsInteractor
 import com.application.moviesapp.domain.usecase.GetTvSeriesEpisodesUseCase
 import com.application.moviesapp.domain.usecase.GetTvSeriesGenreInteractor
 import com.application.moviesapp.domain.usecase.GetTvSeriesNowPlayingInteractor
+import com.application.moviesapp.domain.usecase.GetTvSeriesSearchInteractor
 import com.application.moviesapp.domain.usecase.GetTvSeriesTrailerInteractor
 import com.application.moviesapp.domain.usecase.GetWifiInteractor
 import com.application.moviesapp.domain.usecase.LanguageUseCase
@@ -70,6 +71,7 @@ import com.application.moviesapp.domain.usecase.TvSeriesDetailsUseCase
 import com.application.moviesapp.domain.usecase.TvSeriesEpisodesUseCase
 import com.application.moviesapp.domain.usecase.TvSeriesGenreUseCase
 import com.application.moviesapp.domain.usecase.TvSeriesNowPlayingUseCase
+import com.application.moviesapp.domain.usecase.TvSeriesSearchUseCase
 import com.application.moviesapp.domain.usecase.TvSeriesTrailerUseCase
 import com.application.moviesapp.domain.usecase.WifiUseCase
 import com.application.moviesapp.domain.usecase.YoutubeThumbnailInteractor
@@ -265,6 +267,12 @@ class UseCaseModule {
     @Singleton
     fun providesMovieSearchUseCase(moviesRepository: MoviesRepository): MovieSearchUseCase {
         return GetMovieSearchInteractor(moviesRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesTvSeriesSearchUseCase(moviesRepository: MoviesRepository): TvSeriesSearchUseCase {
+        return GetTvSeriesSearchInteractor(moviesRepository)
     }
 
     @Provides
