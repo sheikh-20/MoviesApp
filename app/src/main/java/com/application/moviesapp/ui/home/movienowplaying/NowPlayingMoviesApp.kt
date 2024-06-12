@@ -47,14 +47,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.application.moviesapp.R
+import com.application.moviesapp.ui.viewmodel.ExploreViewModel
 import com.application.moviesapp.ui.viewmodel.HomeViewModel
 import com.application.moviesapp.ui.viewmodel.MovieTopRatedUiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NowPlayingMoviesApp(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = hiltViewModel()) {
+fun NowPlayingMoviesApp(modifier: Modifier = Modifier, homeViewModel: HomeViewModel = hiltViewModel(), exploreViewModel: ExploreViewModel = viewModel(),) {
 
     val uiState: MovieTopRatedUiState by homeViewModel.movieTopRatedUiState.collectAsState()
     val moviesFlow = homeViewModel.nowPlayingMoviesPagingFlow().collectAsLazyPagingItems()
@@ -66,16 +68,30 @@ fun NowPlayingMoviesApp(modifier: Modifier = Modifier, homeViewModel: HomeViewMo
         }
     }
 
+    val searchUiState by exploreViewModel.searchInputUiState.collectAsState()
+    val moviesSearchFlowState = exploreViewModel.getMovieBySearch(searchUiState.search).collectAsLazyPagingItems()
+
+
     Scaffold(
-        topBar = { TopMoviesTopAppbar(upcomingHideTopAppBar) }
+        topBar = { TopMoviesTopAppbar(upcomingHideTopAppBar, exploreViewModel = exploreViewModel, search = searchUiState.search) }
     ) { paddingValues ->
-        NowPlayingMoviesScreen(modifier = modifier, uiState = uiState, moviesFlow = moviesFlow, lazyGridState = upcomingScrollState, bottomPadding = paddingValues)
+        NowPlayingMoviesScreen(modifier = modifier,
+            uiState = uiState,
+            moviesFlow = moviesFlow,
+            lazyGridState = upcomingScrollState,
+            bottomPadding = paddingValues,
+            movieSearchFlow = moviesSearchFlowState,
+            searchClicked = searchUiState.clicked)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TopMoviesTopAppbar(upcomingHideTopAppBar: Boolean) {
+private fun TopMoviesTopAppbar(upcomingHideTopAppBar: Boolean,
+                               exploreViewModel: ExploreViewModel = viewModel(),
+                               search: String = "",
+
+                               ) {
 
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
@@ -88,6 +104,12 @@ private fun TopMoviesTopAppbar(upcomingHideTopAppBar: Boolean) {
         onSearchClick = false
     }
 
+    if (search.isNotEmpty()) {
+        exploreViewModel.updateClickInput(true)
+    } else {
+        exploreViewModel.updateClickInput(false)
+    }
+
     AnimatedVisibility(
         visible = upcomingHideTopAppBar,
         enter = slideInVertically(animationSpec = tween(durationMillis = 200)),
@@ -98,8 +120,8 @@ private fun TopMoviesTopAppbar(upcomingHideTopAppBar: Boolean) {
                 if (!onSearchClick) {
                     Text(text = stringResource(id = R.string.now_playing_movies), fontWeight = FontWeight.SemiBold)
                 } else {
-                    OutlinedTextField(value = "",
-                        onValueChange = {  },
+                    OutlinedTextField(value = search,
+                        onValueChange = exploreViewModel::updateSearchField,
                         modifier = Modifier
                             .height(64.dp)
                             .fillMaxWidth()
