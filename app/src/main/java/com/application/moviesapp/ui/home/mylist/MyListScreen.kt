@@ -49,6 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -69,7 +70,7 @@ import kotlinx.coroutines.launch
 )
 @Composable
 fun MyListScreen(modifier: Modifier = Modifier,
-                 moviesFavouriteFlow: LazyPagingItems<MovieFavourite>? = null,
+                 moviesFavouriteFlow: LazyPagingItems<MovieFavourite>,
                  lazyGridState: LazyGridState = LazyGridState(),
                  bottomPadding: PaddingValues = PaddingValues()
 ) {
@@ -90,112 +91,82 @@ fun MyListScreen(modifier: Modifier = Modifier,
         })
 
     LaunchedEffect(key1 = Unit) {
-        moviesFavouriteFlow?.refresh()
+        moviesFavouriteFlow.refresh()
     }
 
-//    when (uiState) {
-//            is Resource.Loading -> {
-//                Column(modifier = modifier.fillMaxSize()) {
-//                    CircularProgressIndicator(modifier = modifier
-//                        .fillMaxSize()
-//                        .wrapContentSize(align = Alignment.Center))
-//                }
-//            }
-//
-//            is Resource.Failure -> {
-//                Column(modifier = modifier
-//                    .fillMaxSize()
-//                    .wrapContentSize(align = Alignment.Center),
-//                    verticalArrangement = Arrangement.spacedBy(8.dp)) {
-//
-//                    Text(text = "Not found",
-//                        style = MaterialTheme.typography.displayMedium,
-//                        color = MaterialTheme.colorScheme.primary,
-//                        fontWeight = FontWeight.SemiBold,
-//                        modifier = modifier.fillMaxWidth(),
-//                        textAlign = TextAlign.Center)
-//
-//                    Text(text = "Check you internet connection",
-//                        style = MaterialTheme.typography.bodyLarge,
-//                        modifier = modifier.fillMaxWidth(),
-//                        textAlign = TextAlign.Center)
-//                }
-//            }
-//
-//            is Resource.Success -> {
-
-
-//                } else {
-
-                    Box(modifier = modifier
+    Box(modifier = modifier
+        .fillMaxSize()
+        .padding(
+            top = bottomPadding.calculateTopPadding(),
+            bottom = bottomPadding.calculateBottomPadding()
+        )
+        .pullRefresh(pullRefreshState)) {
+        Column() {
+            when (moviesFavouriteFlow.loadState.refresh){
+                is LoadState.Error -> Column(
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = modifier
                         .fillMaxSize()
-                        .padding(
-                            top = bottomPadding.calculateTopPadding(),
-                            bottom = bottomPadding.calculateBottomPadding()
-                        )
-                        .pullRefresh(pullRefreshState)) {
-                        Column() {
-                            if (moviesFavouriteFlow?.itemCount == 0) {
-                                Column(
-                                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                                    modifier = modifier
-                                        .fillMaxSize()
-                                        .wrapContentSize(align = Alignment.Center)
-                                        .padding(32.dp)
-                                ) {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.ic_empty_list),
-                                        contentDescription = null,
-                                        modifier = modifier
-                                            .fillMaxWidth()
-                                            .wrapContentWidth(align = Alignment.CenterHorizontally)
-                                            .size(200.dp),
-                                        contentScale = ContentScale.Crop,
-                                    )
+                        .wrapContentSize(align = Alignment.Center)
+                        .padding(32.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_empty_list),
+                        contentDescription = null,
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .wrapContentWidth(align = Alignment.CenterHorizontally)
+                            .size(200.dp),
+                        contentScale = ContentScale.Crop,
+                    )
 
-                                    Text(
-                                        text = stringResource(R.string.you_list_is_empty),
-                                        style = MaterialTheme.typography.titleLarge,
-                                        modifier = modifier
-                                            .fillMaxWidth()
-                                            .wrapContentWidth(align = Alignment.CenterHorizontally)
-                                    )
+                    Text(
+                        text = stringResource(R.string.you_list_is_empty),
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .wrapContentWidth(align = Alignment.CenterHorizontally)
+                    )
 
-                                    Text(
-                                        text = stringResource(R.string.it_seems_you_haven_t_listed_any_movies_or_series),
-                                        textAlign = TextAlign.Center,
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        modifier = modifier
-                                            .fillMaxWidth()
-                                            .wrapContentWidth(align = Alignment.CenterHorizontally)
-                                    )
-                                }
-                            } else {
-                                LazyVerticalGrid(
-                                    columns = GridCells.Fixed(2),
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                                    state = lazyGridState,
-                                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
+                    Text(
+                        text = stringResource(R.string.it_seems_you_haven_t_listed_any_movies_or_series),
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .wrapContentWidth(align = Alignment.CenterHorizontally)
+                    )
+                }
+                is LoadState.Loading -> {
+                    CircularProgressIndicator(modifier = modifier
+                        .fillMaxSize()
+                        .wrapContentSize(align = Alignment.Center))
+                }
+                is LoadState.NotLoading ->  {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        state = lazyGridState,
+                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
 
-                                    items(moviesFavouriteFlow?.itemCount ?: return@LazyVerticalGrid) { index ->
-                                        MovieImageCard(imageUrl = moviesFavouriteFlow[index]?.posterPath ?: "", rating = moviesFavouriteFlow[index]?.voteAverage.toString(), movieId = moviesFavouriteFlow[index]?.id ?: 0)
-                                    }
-                                }
-                            }
+                        items(moviesFavouriteFlow.itemCount) { index ->
+                            MovieImageCard(imageUrl = moviesFavouriteFlow[index]?.posterPath ?: "", rating = moviesFavouriteFlow[index]?.voteAverage.toString(), movieId = moviesFavouriteFlow[index]?.id ?: 0)
                         }
-
-                        PullRefreshIndicator(
-                            refreshing = isRefreshing,
-                            state = pullRefreshState,
-                            modifier = Modifier.align(Alignment.TopCenter),
-                            contentColor = MaterialTheme.colorScheme.primary,
-                            backgroundColor = MaterialTheme.colorScheme.background
-                        )
                     }
-//                }
-//            }
-//        }
+                }
+            }
+        }
+
+        PullRefreshIndicator(
+            refreshing = isRefreshing,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter),
+            contentColor = MaterialTheme.colorScheme.primary,
+            backgroundColor = MaterialTheme.colorScheme.background
+        )
+    }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -228,18 +199,18 @@ private fun MovieImageCard(modifier: Modifier = Modifier, imageUrl: String = "",
 }
 
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-private fun MyListScreenLightThemePreview() {
-    MoviesAppTheme(darkTheme = false) {
-        MyListScreen()
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
-@Composable
-private fun MyListScreenDarkThemePreview() {
-    MoviesAppTheme(darkTheme = true) {
-        MyListScreen()
-    }
-}
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//private fun MyListScreenLightThemePreview() {
+//    MoviesAppTheme(darkTheme = false) {
+//        MyListScreen()
+//    }
+//}
+//
+//@Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
+//@Composable
+//private fun MyListScreenDarkThemePreview() {
+//    MoviesAppTheme(darkTheme = true) {
+//        MyListScreen()
+//    }
+//}

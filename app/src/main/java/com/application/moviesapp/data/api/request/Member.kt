@@ -10,7 +10,8 @@ data class Member(
     val nickName: String = "",
     val email: String = "",
     val phoneNumber: String = "",
-    val gender: String = ""
+    val gender: String = "",
+    val forceDelete: Boolean = false
 )
 
 data class MemberPhoto(
