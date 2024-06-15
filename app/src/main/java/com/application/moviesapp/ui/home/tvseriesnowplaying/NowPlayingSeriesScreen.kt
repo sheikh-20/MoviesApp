@@ -22,6 +22,7 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -42,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -94,8 +96,8 @@ fun NowPlayingSeriesScreen(modifier: Modifier = Modifier,
             bottom = bottomPadding.calculateBottomPadding()
         ).pullRefresh(pullRefreshState)) {
         Column {
-            if (tvSeriesFlow.itemCount == 0) {
-                Column(modifier = modifier
+            when (tvSeriesFlow.loadState.refresh) {
+               is LoadState.Error -> Column(modifier = modifier
                     .fillMaxSize()
                     .wrapContentSize(align = Alignment.Center),
                     verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -121,32 +123,39 @@ fun NowPlayingSeriesScreen(modifier: Modifier = Modifier,
                             fontWeight = FontWeight.SemiBold)
                     }
                 }
-            }
-            else {
-                if (searchClicked) {
-                    LazyVerticalGrid(columns = GridCells.Fixed(2),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        state = lazyGridState,
-                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
 
-                        items(tvSeriesSearchFlow.itemCount) { index ->
-                            TvSeriesImageCard(imageUrl = tvSeriesSearchFlow[index]?.posterPath ?: "", rating = tvSeriesSearchFlow[index]?.voteAverage.toString() ?: "", tvSeriesId =  tvSeriesSearchFlow[index]?.id ?: 0)
+                is LoadState.Loading -> {
+                    CircularProgressIndicator(modifier = modifier
+                        .fillMaxSize()
+                        .wrapContentSize(align = Alignment.Center))
+                }
+                is LoadState.NotLoading ->  {
+                    if (searchClicked) {
+                        LazyVerticalGrid(columns = GridCells.Fixed(2),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            state = lazyGridState,
+                            contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
+
+                            items(tvSeriesSearchFlow.itemCount) { index ->
+                                TvSeriesImageCard(imageUrl = tvSeriesSearchFlow[index]?.posterPath ?: "", rating = tvSeriesSearchFlow[index]?.voteAverage.toString() ?: "", tvSeriesId =  tvSeriesSearchFlow[index]?.id ?: 0)
+                            }
                         }
-                    }
-                } else {
-                    LazyVerticalGrid(columns = GridCells.Fixed(2),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        state = lazyGridState,
-                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
+                    } else {
+                        LazyVerticalGrid(columns = GridCells.Fixed(2),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            state = lazyGridState,
+                            contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
 
-                        items(tvSeriesFlow.itemCount) { index ->
-                            TvSeriesImageCard(imageUrl = tvSeriesFlow[index]?.posterPath ?: "", rating = tvSeriesFlow[index]?.voteAverage.toString() ?: "", tvSeriesId =  tvSeriesFlow[index]?.id ?: 0)
+                            items(tvSeriesFlow.itemCount) { index ->
+                                TvSeriesImageCard(imageUrl = tvSeriesFlow[index]?.posterPath ?: "", rating = tvSeriesFlow[index]?.voteAverage.toString() ?: "", tvSeriesId =  tvSeriesFlow[index]?.id ?: 0)
+                            }
                         }
                     }
                 }
             }
+
         }
 
         PullRefreshIndicator(

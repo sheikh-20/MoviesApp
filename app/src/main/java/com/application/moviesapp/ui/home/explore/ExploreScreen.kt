@@ -21,6 +21,7 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -42,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -108,8 +110,8 @@ fun ExploreScreen(modifier: Modifier = Modifier,
         )
         .pullRefresh(pullRefreshState)) {
         Column {
-            if (moviesDiscoverFlow.itemCount == 0) {
-                Column(
+            when (moviesDiscoverFlow.loadState.refresh) {
+                is LoadState.Error -> Column(
                     modifier = modifier
                         .fillMaxSize()
                         .wrapContentSize(align = Alignment.Center),
@@ -146,48 +148,57 @@ fun ExploreScreen(modifier: Modifier = Modifier,
                         )
                     }
                 }
-            } else {
-                if (searchClicked) {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        state = lazyGridState,
-                        contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp)
-                    ) {
 
-                        items(count = movieSearchFlow.itemCount) { index ->
-                            MovieImageCard(
-                                imageUrl = movieSearchFlow[index]?.posterPath ?: "",
-                                rating = movieSearchFlow[index]?.voteAverage.toString() ?: "",
-                                movieId = movieSearchFlow[index]?.id
-                            )
-                        }
-                    }
-                } else {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        state = lazyGridState,
-                        contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp)
-                    ) {
+                is LoadState.Loading -> {
+                    CircularProgressIndicator(modifier = modifier
+                        .fillMaxSize()
+                        .wrapContentSize(align = Alignment.Center))
+                }
+                is LoadState.NotLoading -> {
+                    if (searchClicked) {
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            state = lazyGridState,
+                            contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp)
+                        ) {
 
-                        if (categories == Categories.Movies) {
-                            items(count = moviesDiscoverFlow.itemCount) { index ->
+                            items(count = movieSearchFlow.itemCount) { index ->
                                 MovieImageCard(
-                                    imageUrl = moviesDiscoverFlow[index]?.posterPath ?: "",
-                                    rating = moviesDiscoverFlow[index]?.voteAverage.toString() ?: "",
-                                    movieId = moviesDiscoverFlow[index]?.id
+                                    imageUrl = movieSearchFlow[index]?.posterPath ?: "",
+                                    rating = movieSearchFlow[index]?.voteAverage.toString() ?: "",
+                                    movieId = movieSearchFlow[index]?.id
                                 )
                             }
-                        } else {
-                            items(count = tvSeriesDiscoverFlow.itemCount) { index ->
-                                MovieImageCard(
-                                    imageUrl = tvSeriesDiscoverFlow[index]?.posterPath ?: "",
-                                    rating = tvSeriesDiscoverFlow[index]?.voteAverage.toString() ?: "",
-                                    movieId = tvSeriesDiscoverFlow[index]?.id
-                                )
+                        }
+                    } else {
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            state = lazyGridState,
+                            contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp)
+                        ) {
+
+                            if (categories == Categories.Movies) {
+                                items(count = moviesDiscoverFlow.itemCount) { index ->
+                                    MovieImageCard(
+                                        imageUrl = moviesDiscoverFlow[index]?.posterPath ?: "",
+                                        rating = moviesDiscoverFlow[index]?.voteAverage.toString()
+                                            ?: "",
+                                        movieId = moviesDiscoverFlow[index]?.id
+                                    )
+                                }
+                            } else {
+                                items(count = tvSeriesDiscoverFlow.itemCount) { index ->
+                                    MovieImageCard(
+                                        imageUrl = tvSeriesDiscoverFlow[index]?.posterPath ?: "",
+                                        rating = tvSeriesDiscoverFlow[index]?.voteAverage.toString()
+                                            ?: "",
+                                        movieId = tvSeriesDiscoverFlow[index]?.id
+                                    )
+                                }
                             }
                         }
                     }

@@ -68,6 +68,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.R
+import com.application.moviesapp.data.api.request.Member
 import com.application.moviesapp.data.common.Resource
 import com.application.moviesapp.domain.model.MovieWithTvSeries
 import com.application.moviesapp.ui.detail.DetailActivity
@@ -88,7 +89,22 @@ fun HomeScreen(modifier: Modifier = Modifier,
                goToDownloadClick: () -> Unit = {  }, 
                goToMyListClick: (String, Int, Boolean) -> Unit = { _, _, _ ->  },
                onMovieWithTvSeries: () -> Unit = {  },
+
+
+               userDetailUIState: Resource<Member> = Resource.Loading,
+               onForceDelete: () -> Unit = { }
 ) {
+
+
+    when (userDetailUIState) {
+        is Resource.Loading -> {  }
+        is Resource.Failure -> { }
+        is Resource.Success -> {
+            if (userDetailUIState.data.forceDelete) {
+                onForceDelete()
+            }
+        }
+    }
 
     val context = LocalContext.current
 
