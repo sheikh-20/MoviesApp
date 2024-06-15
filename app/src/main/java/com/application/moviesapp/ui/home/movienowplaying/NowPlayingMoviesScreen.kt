@@ -105,8 +105,8 @@ fun NowPlayingMoviesScreen(modifier: Modifier = Modifier,
             bottom = bottomPadding.calculateBottomPadding()
         ).pullRefresh(pullRefreshState)) {
         Column {
-            if (moviesFlow.itemCount == 0) {
-                Column(modifier = modifier
+            when (moviesFlow.loadState.refresh) {
+                is LoadState.Error -> Column(modifier = modifier
                     .fillMaxSize()
                     .wrapContentSize(align = Alignment.Center),
                     verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -132,28 +132,34 @@ fun NowPlayingMoviesScreen(modifier: Modifier = Modifier,
                             fontWeight = FontWeight.SemiBold)
                     }
                 }
-            } else {
+                is LoadState.Loading -> {
+                    CircularProgressIndicator(modifier = modifier
+                        .fillMaxSize()
+                        .wrapContentSize(align = Alignment.Center))
+                }
+                is LoadState.NotLoading -> {
 
-                if (searchClicked) {
-                    LazyVerticalGrid(columns = GridCells.Fixed(2),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        state = lazyGridState,
-                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
+                    if (searchClicked) {
+                        LazyVerticalGrid(columns = GridCells.Fixed(2),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            state = lazyGridState,
+                            contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
 
-                        items(movieSearchFlow.itemCount) { index ->
-                            MovieImageCard(imageUrl = movieSearchFlow[index]?.posterPath ?: "", rating = movieSearchFlow[index]?.voteAverage.toString() ?: "", movieId = movieSearchFlow[index]?.id ?: 0)
+                            items(movieSearchFlow.itemCount) { index ->
+                                MovieImageCard(imageUrl = movieSearchFlow[index]?.posterPath ?: "", rating = movieSearchFlow[index]?.voteAverage.toString() ?: "", movieId = movieSearchFlow[index]?.id ?: 0)
+                            }
                         }
-                    }
-                } else {
-                    LazyVerticalGrid(columns = GridCells.Fixed(2),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        state = lazyGridState,
-                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
+                    } else {
+                        LazyVerticalGrid(columns = GridCells.Fixed(2),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            state = lazyGridState,
+                            contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
 
-                        items(moviesFlow.itemCount) { index ->
-                            MovieImageCard(imageUrl = moviesFlow[index]?.posterPath ?: "", rating = moviesFlow[index]?.voteAverage.toString() ?: "", movieId = moviesFlow[index]?.id ?: 0)
+                            items(moviesFlow.itemCount) { index ->
+                                MovieImageCard(imageUrl = moviesFlow[index]?.posterPath ?: "", rating = moviesFlow[index]?.voteAverage.toString() ?: "", movieId = moviesFlow[index]?.id ?: 0)
+                            }
                         }
                     }
                 }

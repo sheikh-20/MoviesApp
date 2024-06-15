@@ -143,6 +143,7 @@ import com.application.moviesapp.ui.viewmodel.OnboardingViewModel
 import com.application.moviesapp.ui.viewmodel.ProfileViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
@@ -171,6 +172,7 @@ fun HomeApp(modifier: Modifier = Modifier,
     val profileUiState by homeViewModel.profileInfoUiState.collectAsState()
     val darkModeUiState by profileViewModel.isDarkMode.collectAsState(initial = SettingsPreference(false))
 
+    val userDetailUIState by onboardingViewModel.profileUIState.collectAsState()
 
     var searchValue by remember {
         mutableStateOf("")
@@ -244,6 +246,7 @@ fun HomeApp(modifier: Modifier = Modifier,
     LaunchedEffect(key1 = Unit) {
         permissionState.launchMultiplePermissionRequest()
         onboardingViewModel.getProfilePhoto()
+        onboardingViewModel.getProfile()
     }
 
     val itemsListCategories = listOf(Categories.Movies, Categories.TV)
@@ -435,7 +438,14 @@ fun HomeApp(modifier: Modifier = Modifier,
                                 else -> { }
                             }
                         } },
-                    onMovieWithTvSeries = homeViewModel::getMovieWithTvSeries
+                    onMovieWithTvSeries = homeViewModel::getMovieWithTvSeries,
+
+                    userDetailUIState = userDetailUIState,
+                    onForceDelete = {
+                        homeViewModel.signOut()
+                        (context as Activity).finish()
+                        HomeActivity.startActivity(context as Activity)
+                    }
                 )
             }
             composable(route = BottomNavigationScreens.Explore.route) {
