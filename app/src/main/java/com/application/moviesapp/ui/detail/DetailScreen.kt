@@ -522,7 +522,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                                     IconButton(onClick = {
                                         isFavorite = bookmarkUiState.data.favorite != true
 
-                                        onBookmarkClicked("movie", tvSeriesUIState.data.id ?: 0, bookmarkUiState.data.favorite != true)
+                                        onBookmarkClicked("tv", tvSeriesUIState.data.id ?: 0, bookmarkUiState.data.favorite != true)
                                         coroutineScope.launch {
                                             snackbarHostState.showSnackbar(message = "Bookmark updated")
                                         }

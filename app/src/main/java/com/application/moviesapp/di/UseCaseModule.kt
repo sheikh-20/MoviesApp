@@ -40,6 +40,7 @@ import com.application.moviesapp.domain.usecase.GetPasswordResetInteractors
 import com.application.moviesapp.domain.usecase.GetSettingsInteractor
 import com.application.moviesapp.domain.usecase.GetTvSeriesDetailsInteractor
 import com.application.moviesapp.domain.usecase.GetTvSeriesEpisodesUseCase
+import com.application.moviesapp.domain.usecase.GetTvSeriesFavouriteInteractor
 import com.application.moviesapp.domain.usecase.GetTvSeriesGenreInteractor
 import com.application.moviesapp.domain.usecase.GetTvSeriesNowPlayingInteractor
 import com.application.moviesapp.domain.usecase.GetTvSeriesSearchInteractor
@@ -69,6 +70,7 @@ import com.application.moviesapp.domain.usecase.SignUpEmailInteractor
 import com.application.moviesapp.domain.usecase.SignUpEmailUseCase
 import com.application.moviesapp.domain.usecase.TvSeriesDetailsUseCase
 import com.application.moviesapp.domain.usecase.TvSeriesEpisodesUseCase
+import com.application.moviesapp.domain.usecase.TvSeriesFavouriteUseCase
 import com.application.moviesapp.domain.usecase.TvSeriesGenreUseCase
 import com.application.moviesapp.domain.usecase.TvSeriesNowPlayingUseCase
 import com.application.moviesapp.domain.usecase.TvSeriesSearchUseCase
@@ -189,6 +191,12 @@ class UseCaseModule {
         return GetMovieFavouriteInteractor(moviesRepository)
     }
 
+
+    @Provides
+    @Singleton
+    fun providesTvSeriesFavouriteUseCase(moviesRepository: MoviesRepository): TvSeriesFavouriteUseCase {
+        return  GetTvSeriesFavouriteInteractor(moviesRepository)
+    }
 
     @Provides
     @Singleton

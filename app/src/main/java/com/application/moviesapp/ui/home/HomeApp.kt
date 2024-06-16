@@ -34,8 +34,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
-import androidx.compose.material.Snackbar
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.rounded.Bookmark
@@ -46,7 +44,6 @@ import androidx.compose.material.icons.rounded.NotificationsNone
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.PlayCircle
 import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -82,7 +79,6 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -143,9 +139,7 @@ import com.application.moviesapp.ui.viewmodel.OnboardingViewModel
 import com.application.moviesapp.ui.viewmodel.ProfileViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.io.File
 
 private const val TAG = "HomeApp"
@@ -196,7 +190,8 @@ fun HomeApp(modifier: Modifier = Modifier,
 
     val moviesSearchFlowState = exploreViewModel.getMovieBySearch(searchUiState.search).collectAsLazyPagingItems()
 
-    val myListFlowState = myListViewModel.getMovieFavouritePagingFlow.collectAsLazyPagingItems()
+    val myListMoviesFlowState = myListViewModel.getMovieFavouritePagingFlow.collectAsLazyPagingItems()
+    val myListTvSeriesFlowState = myListViewModel.getTvSeriesFavouritePagingFlow.collectAsLazyPagingItems()
 
     val coroutineScope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(BottomSheet.Default) }
@@ -357,6 +352,8 @@ fun HomeApp(modifier: Modifier = Modifier,
     }
 
     val myListScrollState = rememberLazyGridState()
+    val myListTvSeriesScrollState = rememberLazyGridState()
+
     val myListHideTopAppBar by remember(myListScrollState) {
         derivedStateOf {
             myListScrollState.firstVisibleItemIndex == 0
@@ -467,8 +464,10 @@ fun HomeApp(modifier: Modifier = Modifier,
             composable(route = BottomNavigationScreens.MyList.route) {
                 MyListScreen(
                     modifier = modifier,
-                    moviesFavouriteFlow = myListFlowState,
+                    moviesFavouriteFlow = myListMoviesFlowState,
+                    tvSeriesFavouriteFlow = myListTvSeriesFlowState,
                     lazyGridState = myListScrollState,
+                    lazyTvSeriesGridState = myListTvSeriesScrollState,
                     bottomPadding = paddingValues)
             }
             composable(route = BottomNavigationScreens.Download.route) {

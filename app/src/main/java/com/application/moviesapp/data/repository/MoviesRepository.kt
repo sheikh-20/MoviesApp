@@ -38,6 +38,8 @@ import com.application.moviesapp.data.remote.MovieUpcomingDto
 import com.application.moviesapp.data.remote.MoviesDiscoverDto
 import com.application.moviesapp.data.remote.MoviesDiscoverPagingSource
 import com.application.moviesapp.data.remote.TvSeriesDiscoverPagingSource
+import com.application.moviesapp.data.remote.TvSeriesFavouriteDto
+import com.application.moviesapp.data.remote.TvSeriesFavouritePagingSource
 import com.application.moviesapp.data.remote.TvSeriesNowPlayingPagingSource
 import com.application.moviesapp.data.remote.TvSeriesSearchPagingSource
 import kotlinx.coroutines.flow.Flow
@@ -71,6 +73,8 @@ interface MoviesRepository {
     fun getTvSeriesBySearchPagingFlow(search: String = ""): Flow<PagingData<TvSeriesSearchDto.Result>>
 
     fun getFavouriteMoviesPagingFlow(): Flow<PagingData<MovieFavouriteDto.Result>>
+
+    fun getFavouriteTvSeriesPagingFlow(): Flow<PagingData<TvSeriesFavouriteDto.Result>>
 
     suspend fun getMoviesUpcoming(): MovieUpcomingDto
 
@@ -182,6 +186,13 @@ class MoviesRepositoryImpl @Inject constructor(private val movies: MoviesApi,
         config = PagingConfig(pageSize = 20),
         pagingSourceFactory = {
             MovieFavouritePagingSource(movies)
+        }
+    ).flow
+
+    override fun getFavouriteTvSeriesPagingFlow(): Flow<PagingData<TvSeriesFavouriteDto.Result>> = Pager(
+        config = PagingConfig(pageSize = 20),
+        pagingSourceFactory = {
+            TvSeriesFavouritePagingSource(movies)
         }
     ).flow
 
