@@ -27,6 +27,7 @@ import com.application.moviesapp.data.api.response.TvSeriesTrailerDto
 import com.application.moviesapp.data.remote.MovieNewReleasesDto
 import com.application.moviesapp.data.remote.MovieUpcomingDto
 import com.application.moviesapp.data.remote.MoviesDiscoverDto
+import com.application.moviesapp.data.remote.TvSeriesFavouriteDto
 import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -110,6 +111,10 @@ interface MoviesApi {
 
     @GET("/3/account/{account_id}/favorite/movies")
     suspend fun getMovieFavourite(@Path("account_id") accountId: Int = 20210857, @Query("language") language: String = "en-US", @Query("page") page: Int = 1): Response<MovieFavouriteDto>
+
+    @GET("/3/account/{account_id}/favorite/tv")
+    suspend fun getTvSeriesFavourite(@Path("account_id") accountId: Int = 20210857, @Query("language") language: String = "en-US", @Query("page") page: Int = 1): Response<TvSeriesFavouriteDto>
+
 
     @POST("/3/account/{account_id}/favorite")
     suspend fun updateMovieFavourite(@Path("account_id") accountId: Int = 20210857, @Body body: RequestBody): Response<MovieUpdateFavouriteDto>
