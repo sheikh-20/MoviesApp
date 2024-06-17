@@ -5,7 +5,7 @@ import androidx.paging.PagingState
 import com.application.moviesapp.data.api.MoviesApi
 import com.application.moviesapp.data.api.response.MovieNowPlayingDto
 
-class MovieFavouritePagingSource(private val moviesApi: MoviesApi): PagingSource<Int, MovieFavouriteDto.Result>() {
+class MovieFavouritePagingSource(private val moviesApi: MoviesApi, private val searchText: String = ""): PagingSource<Int, MovieFavouriteDto.Result>() {
     override fun getRefreshKey(state: PagingState<Int, MovieFavouriteDto.Result>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
@@ -28,7 +28,7 @@ class MovieFavouritePagingSource(private val moviesApi: MoviesApi): PagingSource
             }
 
             LoadResult.Page(
-                data = movies?.results?.map { it ?: MovieFavouriteDto.Result(null, null, null, null, null, null, null, null, null, null, null, null, null, null)} ?: listOf(),
+                data = movies?.results?.filter { it?.title?.contains(searchText, ignoreCase = true) == true }?.map { it ?: MovieFavouriteDto.Result(null, null, null, null, null, null, null, null, null, null, null, null, null, null)} ?: listOf(),
                 prevKey = if (page == 1) null else page.minus(1),
                 nextKey = if (movies?.results?.isEmpty() == true) null else page.plus(1),
             )
