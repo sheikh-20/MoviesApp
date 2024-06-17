@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 interface TvSeriesFavouriteUseCase {
-    operator fun invoke(): Flow<PagingData<TvSeriesFavourite>>
+    operator fun invoke(searchText: String = ""): Flow<PagingData<TvSeriesFavourite>>
 }
 
 class GetTvSeriesFavouriteInteractor @Inject constructor(private val repository: MoviesRepository): TvSeriesFavouriteUseCase {
@@ -22,7 +22,7 @@ class GetTvSeriesFavouriteInteractor @Inject constructor(private val repository:
         const val TAG = "GetTvSeriesFavouriteInteractor"
     }
 
-    override fun invoke(): Flow<PagingData<TvSeriesFavourite>> = repository.getFavouriteTvSeriesPagingFlow().map {
+    override fun invoke(searchText: String): Flow<PagingData<TvSeriesFavourite>> = repository.getFavouriteTvSeriesPagingFlow(searchText).map {
         it.map { tvSeries -> tvSeries.toDomain() }
     }
 }

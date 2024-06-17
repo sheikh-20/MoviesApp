@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 interface MovieFavouriteUseCase {
-    operator fun invoke(): Flow<PagingData<MovieFavourite>>
+    operator fun invoke(searchText: String = ""): Flow<PagingData<MovieFavourite>>
 }
 
 class GetMovieFavouriteInteractor @Inject constructor(private val repository: MoviesRepository): MovieFavouriteUseCase {
@@ -19,7 +19,7 @@ class GetMovieFavouriteInteractor @Inject constructor(private val repository: Mo
         const val TAG = "GetMovieFavouriteInteractor"
     }
 
-    override fun invoke(): Flow<PagingData<MovieFavourite>> = repository.getFavouriteMoviesPagingFlow().map {
+    override fun invoke(searchText: String): Flow<PagingData<MovieFavourite>> = repository.getFavouriteMoviesPagingFlow(searchText).map {
         it.map { movie ->
             movie.toMovie()
         }
