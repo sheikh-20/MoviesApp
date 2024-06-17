@@ -190,8 +190,8 @@ fun HomeApp(modifier: Modifier = Modifier,
 
     val moviesSearchFlowState = exploreViewModel.getMovieBySearch(searchUiState.search).collectAsLazyPagingItems()
 
-    val myListMoviesFlowState = myListViewModel.getMovieFavouritePagingFlow.collectAsLazyPagingItems()
-    val myListTvSeriesFlowState = myListViewModel.getTvSeriesFavouritePagingFlow.collectAsLazyPagingItems()
+    val myListMoviesFlowState = myListViewModel.getMovieFavouritePagingFlow(searchValue).collectAsLazyPagingItems()
+    val myListTvSeriesFlowState = myListViewModel.getTvSeriesFavouritePagingFlow(searchValue).collectAsLazyPagingItems()
 
     val coroutineScope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(BottomSheet.Default) }
@@ -468,6 +468,7 @@ fun HomeApp(modifier: Modifier = Modifier,
                     tvSeriesFavouriteFlow = myListTvSeriesFlowState,
                     lazyGridState = myListScrollState,
                     lazyTvSeriesGridState = myListTvSeriesScrollState,
+                    searchText = searchValue,
                     bottomPadding = paddingValues)
             }
             composable(route = BottomNavigationScreens.Download.route) {

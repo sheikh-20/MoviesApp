@@ -4,7 +4,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.application.moviesapp.data.api.MoviesApi
 
-class TvSeriesFavouritePagingSource(private val moviesApi: MoviesApi): PagingSource<Int, TvSeriesFavouriteDto.Result>() {
+class TvSeriesFavouritePagingSource(private val moviesApi: MoviesApi, private val searchText: String = ""): PagingSource<Int, TvSeriesFavouriteDto.Result>() {
     override fun getRefreshKey(state: PagingState<Int, TvSeriesFavouriteDto.Result>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
@@ -27,7 +27,7 @@ class TvSeriesFavouritePagingSource(private val moviesApi: MoviesApi): PagingSou
             }
 
             LoadResult.Page(
-                data = movies?.results?.map { it ?: TvSeriesFavouriteDto.Result(null, null, null, null, null, null, null, null, null, null, null, null, null, null)} ?: listOf(),
+                data = movies?.results?.filter { it?.name?.contains(searchText, ignoreCase = true) == true }?.map { it ?: TvSeriesFavouriteDto.Result(null, null, null, null, null, null, null, null, null, null, null, null, null, null)} ?: listOf(),
                 prevKey = if (page == 1) null else page.minus(1),
                 nextKey = if (movies?.results?.isEmpty() == true) null else page.plus(1),
             )

@@ -86,6 +86,7 @@ fun MyListScreen(modifier: Modifier = Modifier,
                  tvSeriesFavouriteFlow: LazyPagingItems<TvSeriesFavourite>,
                  lazyGridState: LazyGridState = LazyGridState(),
                  lazyTvSeriesGridState: LazyGridState = LazyGridState(),
+                 searchText: String = "",
                  bottomPadding: PaddingValues = PaddingValues()
 ) {
 

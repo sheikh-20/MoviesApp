@@ -17,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MyListViewModel @Inject constructor(private val useCase: MovieFavouriteUseCase, private val tvSeriesFavouriteUseCase: TvSeriesFavouriteUseCase): ViewModel() {
 
-    val getMovieFavouritePagingFlow = useCase().cachedIn(viewModelScope)
+    fun getMovieFavouritePagingFlow(searchText: String = "") = useCase(searchText).cachedIn(viewModelScope)
 
-    val getTvSeriesFavouritePagingFlow = tvSeriesFavouriteUseCase().cachedIn(viewModelScope)
+    fun getTvSeriesFavouritePagingFlow(searchText: String = "") = tvSeriesFavouriteUseCase(searchText).cachedIn(viewModelScope)
 }
