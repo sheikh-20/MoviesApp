@@ -89,6 +89,10 @@ fun LoginWithPasswordScreen(modifier: Modifier = Modifier,
         mutableStateOf(false)
     }
 
+    var isRemember by remember {
+        mutableStateOf(false)
+    }
+
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { result ->
@@ -168,7 +172,7 @@ fun LoginWithPasswordScreen(modifier: Modifier = Modifier,
             )
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(checked = false, onCheckedChange = {})
+                Checkbox(checked = isRemember, onCheckedChange = { isRemember = !isRemember })
                 Text(text = stringResource(id = R.string.remember_me), style = MaterialTheme.typography.labelLarge)
             }
 

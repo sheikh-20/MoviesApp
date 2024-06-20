@@ -53,7 +53,6 @@ class DetailActivity : BaseActivity() {
                 viewModel.getTvSeriesTrailer(intent.getIntExtra(ID, 0))
             }
         }
-
         viewModel.getMovieState(movieId)
 
 
