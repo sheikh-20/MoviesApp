@@ -57,6 +57,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -129,6 +130,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                  moviesFlow: LazyPagingItems<MovieNowPlaying>,
                  onBookmarkClicked: (String, Int, Boolean) -> Unit = { _, _, _ -> },
                  snackbarHostState: SnackbarHostState = SnackbarHostState(),
+                 onBookmark: (Int) -> Unit = { _ -> },
                  bookmarkUiState: Resource<MovieState> = Resource.Loading,
                  onTrailerClick: (String) -> Unit = { _ -> },
                  downloaderUiState: DownloadUiState = DownloadUiState.Default,
@@ -216,8 +218,9 @@ fun DetailScreen(modifier: Modifier = Modifier,
                                         isFavorite = bookmarkUiState.data.favorite != true
 
                                         onBookmarkClicked("movie", movieUIState.data.id ?: 0, bookmarkUiState.data.favorite != true)
+                                        onBookmark(movieUIState.data.id ?: 0)
                                         coroutineScope.launch {
-                                            snackbarHostState.showSnackbar(message = "Bookmark updated")
+                                            snackbarHostState.showSnackbar(message = if (!isFavorite) "Bookmark removed" else "Bookmark updated", duration = SnackbarDuration.Short)
                                         }
                                     }
                                     ) {
@@ -523,8 +526,9 @@ fun DetailScreen(modifier: Modifier = Modifier,
                                         isFavorite = bookmarkUiState.data.favorite != true
 
                                         onBookmarkClicked("tv", tvSeriesUIState.data.id ?: 0, bookmarkUiState.data.favorite != true)
+                                        onBookmark(tvSeriesUIState.data.id ?: 0)
                                         coroutineScope.launch {
-                                            snackbarHostState.showSnackbar(message = "Bookmark updated")
+                                            snackbarHostState.showSnackbar(message = if (!isFavorite) "Bookmark removed" else "Bookmark updated", duration = SnackbarDuration.Short)
                                         }
                                     }
                                     ) {
@@ -993,7 +997,10 @@ private fun TvSeriesTrailerCard(modifier: Modifier = Modifier,
                 }
             }
 
-            Column(modifier = modifier.weight(1f).requiredHeight(100.dp).padding(vertical = 16.dp), verticalArrangement = Arrangement.SpaceBetween) {
+            Column(modifier = modifier
+                .weight(1f)
+                .requiredHeight(100.dp)
+                .padding(vertical = 16.dp), verticalArrangement = Arrangement.SpaceBetween) {
                 Text(
                     text = tvSeriesTrailerWithYoutube.title ?: "",
                     style = MaterialTheme.typography.titleSmall,

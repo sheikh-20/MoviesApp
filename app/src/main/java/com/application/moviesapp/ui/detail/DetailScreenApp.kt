@@ -114,6 +114,9 @@ fun DetailScreenApp(modifier: Modifier = Modifier,
                     moviesTrailerUiState = movieTrailerUiState,
                     tvSeriesTrailerUiState = tvSeriesTrailerUiState,
                     moviesFlow = moviesFlow,
+                    onBookmark = {
+                        viewModel.getMovieState(it)
+                    },
                     onBookmarkClicked = { movieType: String, movieId: Int, isFavorite ->
                         viewModel.updateMovieFavourite(movieType, movieId, isFavorite)
 //                viewModel.getMovieState(movieId)
