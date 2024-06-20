@@ -96,6 +96,8 @@ fun SignupWithPasswordScreen(modifier: Modifier = Modifier,
 
     var isLoading by remember { mutableStateOf(false) }
 
+    var isTermsConditions by remember { mutableStateOf(false) }
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -183,8 +185,8 @@ fun SignupWithPasswordScreen(modifier: Modifier = Modifier,
 
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(checked = false, onCheckedChange = {})
-                Text(text = stringResource(R.string.remember_me), style = MaterialTheme.typography.labelLarge)
+                Checkbox(checked = isTermsConditions, onCheckedChange = { isTermsConditions = !isTermsConditions })
+                Text(text = "I agree to Mflix\'s terms & conditions", style = MaterialTheme.typography.labelLarge)
             }
 
             Button(onClick = { onSignupClick(email, password) },
@@ -196,6 +198,7 @@ fun SignupWithPasswordScreen(modifier: Modifier = Modifier,
                         shape = RoundedCornerShape(50)
                     )
                     .fillMaxWidth(),
+                enabled = isTermsConditions,
                 colors = ButtonDefaults.filledTonalButtonColors(containerColor = Color.Red)) {
 
                 if (isLoading) {
