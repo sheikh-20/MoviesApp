@@ -431,7 +431,7 @@ fun HomeApp(modifier: Modifier = Modifier,
                             when (result) {
                                 SnackbarResult.ActionPerformed -> {
                                     navController.popBackStack()
-                                    navController.navigate(BottomNavigationScreens.Explore.route) }
+                                    navController.navigate(BottomNavigationScreens.MyList.route) }
                                 else -> { }
                             }
                         } },
