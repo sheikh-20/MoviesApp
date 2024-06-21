@@ -138,7 +138,7 @@ fun MyListScreen(modifier: Modifier = Modifier,
                             .fillMaxSize()
                             .padding(horizontal = 16.dp, vertical = 4.dp)
                             .background(
-                                MaterialTheme.colorScheme.secondaryContainer,
+                                MaterialTheme.colorScheme.primaryContainer,
                                 FilterChipDefaults.shape,
                             )
                     ) {}
