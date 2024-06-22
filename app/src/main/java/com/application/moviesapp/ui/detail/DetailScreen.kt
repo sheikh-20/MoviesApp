@@ -138,7 +138,8 @@ fun DetailScreen(modifier: Modifier = Modifier,
                  tvSeriesEpisodesUIState: Resource<TvSeriesEpisodes> = Resource.Loading,
                  onTvSeriesEpisode: (Int, Int) -> Unit = { _, _ -> },
                  onSeasonClick: () -> Unit = {  },
-                 onCastClick: (Int) -> Unit = { _ ->  }
+                 onCastClick: (Int) -> Unit = { _ ->  },
+                 onCommentsClick: (Int) -> Unit = { _ -> }
 ) {
 
     val coroutineScope = rememberCoroutineScope()
@@ -455,7 +456,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                                         }
                                     }
                                     2 -> {
-                                         CommentsCompose()
+                                         CommentsCompose(onCommentsClick = onCommentsClick)
                                     }
                                 }
                             }
@@ -845,7 +846,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                                         }
                                     }
                                     2 -> {
-                                        CommentsCompose()
+                                        CommentsCompose(onCommentsClick = onCommentsClick)
                                     }
                                 }
                             }
@@ -1020,7 +1021,7 @@ private fun TvSeriesTrailerCard(modifier: Modifier = Modifier,
 
 @Preview
 @Composable
-fun CommentsCompose(modifier: Modifier = Modifier) {
+fun CommentsCompose(modifier: Modifier = Modifier, onCommentsClick: (Int) -> Unit = { _ -> }) {
     Column(modifier = modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
@@ -1033,10 +1034,12 @@ fun CommentsCompose(modifier: Modifier = Modifier) {
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold)
 
-            Text(text = "See all",
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.SemiBold)
+            TextButton(onClick = { onCommentsClick(0) }) {
+                Text(text = "See all",
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold)
+            }
         }
 
         LazyColumn(
