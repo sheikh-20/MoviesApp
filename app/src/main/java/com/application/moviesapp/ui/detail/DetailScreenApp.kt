@@ -22,6 +22,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Cast
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Comment
+import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -142,7 +144,10 @@ fun DetailScreenApp(modifier: Modifier = Modifier,
                     onSeasonClick = { bottomSheetEnabled = true },
                     onCastClick = {
                         viewModel.getCastDetail(it)
-                        navController.navigate(DetailScreen.CastDetail.name) }
+                        navController.navigate(DetailScreen.CastDetail.name) },
+                    onCommentsClick = {
+                        navController.navigate(DetailScreen.Comments.name)
+                    }
                 )
             }
 
@@ -164,12 +169,19 @@ fun DetailScreenApp(modifier: Modifier = Modifier,
                     selectedImage = selectedImage
                 )
             }
+
+            composable(route = DetailScreen.Comments.name) {
+                CommentsScreen(
+                    modifier = modifier,
+                    paddingValues = paddingValues
+                )
+            }
         }
     }
 }
 
 enum class DetailScreen {
-    Detail, CastDetail, Cast
+    Detail, CastDetail, Cast, Comments
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -208,8 +220,28 @@ private fun DetailTopAppbar(modifier: Modifier = Modifier, navController: NavHos
             TopAppBar(
                 title = {  },
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }, modifier = modifier.padding(16.dp).background(color = Color(0xAABEBEBE), shape = RoundedCornerShape(50)).size(30.dp)) {
+                    IconButton(onClick = { navController.navigateUp() }, modifier = modifier
+                        .padding(16.dp)
+                        .background(color = Color(0xAABEBEBE), shape = RoundedCornerShape(50))
+                        .size(30.dp)) {
                         Icon(imageVector = Icons.Rounded.Close, contentDescription = null, tint = Color.White)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent))
+        }
+        DetailScreen.Comments.name -> {
+            TopAppBar(
+                title = {
+                    Text(text = "24.6K Comments", fontWeight = FontWeight.SemiBold)
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(imageVector = Icons.Rounded.ArrowBack, contentDescription = null)
+                    }
+                },
+                actions = {
+                    IconButton(onClick = {  }) {
+                        Icon(imageVector = Icons.Rounded.MoreVert, contentDescription = null)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent))
