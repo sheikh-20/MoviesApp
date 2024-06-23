@@ -3,26 +3,21 @@ package com.application.moviesapp.ui.detail
 import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Cast
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Comment
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -53,19 +48,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.application.moviesapp.R
 import com.application.moviesapp.data.common.Resource
+import com.application.moviesapp.domain.model.MovieReview
 import com.application.moviesapp.domain.model.TvSeriesDetail
-import com.application.moviesapp.domain.model.TvSeriesEpisodes
 import com.application.moviesapp.ui.viewmodel.DetailsViewModel
 import com.application.moviesapp.ui.viewmodel.HomeViewModel
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 
 @Composable
@@ -73,6 +70,8 @@ fun DetailScreenApp(modifier: Modifier = Modifier,
                     navController: NavHostController = rememberNavController(),
                     viewModel: DetailsViewModel = hiltViewModel(),
                     homeViewModel: HomeViewModel = hiltViewModel()) {
+
+    val context = LocalContext.current
 
     val moviesDetailsUiState by viewModel.movieDetailResponse.collectAsState()
     val tvSeriesDetailsUiState by viewModel.tvSeriesDetailResponse.collectAsState()
@@ -86,6 +85,9 @@ fun DetailScreenApp(modifier: Modifier = Modifier,
     val tvSeriesEpisodesUiState by viewModel.tvSeriesEpisodesResponse.collectAsState()
 
     val castDetailUIState by viewModel.castDetailResponse.collectAsState()
+
+    val movieReviewFlowState = viewModel.getMovieReviewPagingFlow((context as Activity).intent.getIntExtra(DetailActivity.ID, 0)).collectAsLazyPagingItems()
+    val tvSeriesReviewFlowState = viewModel.getTvSeriesReviewPagingFlow((context as Activity).intent.getIntExtra(DetailActivity.ID, 0)).collectAsLazyPagingItems()
 
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -106,7 +108,7 @@ fun DetailScreenApp(modifier: Modifier = Modifier,
     var selectedImage by remember { mutableStateOf(Pair<String, List<String?>?>("", emptyList())) }
 
     Scaffold(
-        topBar = { DetailTopAppbar(navController = navController) },
+        topBar = { DetailTopAppbar(navController = navController, movieReviewFlow = movieReviewFlowState) },
         snackbarHost = { SnackbarHost(snackbarHostState) {
             androidx.compose.material3.Snackbar(
                 modifier = modifier.padding(8.dp),
@@ -127,6 +129,8 @@ fun DetailScreenApp(modifier: Modifier = Modifier,
                     moviesTrailerUiState = movieTrailerUiState,
                     tvSeriesTrailerUiState = tvSeriesTrailerUiState,
                     moviesFlow = moviesFlow,
+                    movieReviewFlow = movieReviewFlowState,
+                    tvSeriesReviewFlow = tvSeriesReviewFlowState,
                     onBookmark = {
                         viewModel.getMovieState(it)
                     },
@@ -173,7 +177,8 @@ fun DetailScreenApp(modifier: Modifier = Modifier,
             composable(route = DetailScreen.Comments.name) {
                 CommentsScreen(
                     modifier = modifier,
-                    paddingValues = paddingValues
+                    paddingValues = paddingValues,
+                    movieReviewFlow = movieReviewFlowState
                 )
             }
         }
@@ -186,7 +191,7 @@ enum class DetailScreen {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DetailTopAppbar(modifier: Modifier = Modifier, navController: NavHostController,) {
+private fun DetailTopAppbar(modifier: Modifier = Modifier, navController: NavHostController, movieReviewFlow: LazyPagingItems<MovieReview>) {
 
     val context = LocalContext.current
 
@@ -232,7 +237,7 @@ private fun DetailTopAppbar(modifier: Modifier = Modifier, navController: NavHos
         DetailScreen.Comments.name -> {
             TopAppBar(
                 title = {
-                    Text(text = "24.6K Comments", fontWeight = FontWeight.SemiBold)
+                    Text(text = "${movieReviewFlow.itemCount} Comments", fontWeight = FontWeight.SemiBold)
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {

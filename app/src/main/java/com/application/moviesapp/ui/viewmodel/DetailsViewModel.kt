@@ -2,10 +2,10 @@ package com.application.moviesapp.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.cachedIn
 import androidx.work.WorkInfo
 import com.application.moviesapp.data.common.Resource
 import com.application.moviesapp.data.local.entity.MovieDownloadEntity
-import com.application.moviesapp.domain.model.CastDetail
 import com.application.moviesapp.domain.model.CastDetailWithImages
 import com.application.moviesapp.domain.model.MovieState
 import com.application.moviesapp.domain.model.MovieTrailerWithYoutube
@@ -16,11 +16,13 @@ import com.application.moviesapp.domain.model.TvSeriesEpisodes
 import com.application.moviesapp.domain.model.TvSeriesTrailerWithYoutube
 import com.application.moviesapp.domain.usecase.CastDetailsUseCase
 import com.application.moviesapp.domain.usecase.MovieDetailsUseCase
+import com.application.moviesapp.domain.usecase.MovieReviewUseCase
 import com.application.moviesapp.domain.usecase.MovieStateUseCase
 import com.application.moviesapp.domain.usecase.MovieTrailerUseCase
 import com.application.moviesapp.domain.usecase.MovieUpdateFavouriteInteractor
 import com.application.moviesapp.domain.usecase.TvSeriesDetailsUseCase
 import com.application.moviesapp.domain.usecase.TvSeriesEpisodesUseCase
+import com.application.moviesapp.domain.usecase.TvSeriesReviewUseCase
 import com.application.moviesapp.domain.usecase.TvSeriesTrailerUseCase
 import com.application.moviesapp.domain.usecase.worker.DownloadUseCase
 import com.application.moviesapp.domain.usecase.worker.VideoInfoUseCase
@@ -60,7 +62,9 @@ class DetailsViewModel @Inject constructor(private val useCase: MovieDetailsUseC
                                            private val videoInfoUseCase: VideoInfoUseCase,
                                            private val downloadUseCase: DownloadUseCase,
                                            private val tvSeriesEpisodesUseCase: TvSeriesEpisodesUseCase,
-                                           private val castDetailsUseCase: CastDetailsUseCase): ViewModel() {
+                                           private val castDetailsUseCase: CastDetailsUseCase,
+                                           private val movieReviewUseCase: MovieReviewUseCase,
+                                           private val tvSeriesReviewUseCase: TvSeriesReviewUseCase): ViewModel() {
 
     private companion object {
         const val TAG = "DetailsViewModel"
@@ -90,6 +94,8 @@ class DetailsViewModel @Inject constructor(private val useCase: MovieDetailsUseC
     private var _castDetailsResponse = MutableStateFlow<Resource<CastDetailWithImages>>(Resource.Loading)
     val castDetailResponse: StateFlow<Resource<CastDetailWithImages>> get() = _castDetailsResponse
 
+    fun getMovieReviewPagingFlow(movieId: Int) = movieReviewUseCase(movieId).cachedIn(viewModelScope)
+    fun getTvSeriesReviewPagingFlow(seriesId: Int) = tvSeriesReviewUseCase(seriesId).cachedIn(viewModelScope)
 
     fun getMovieDetail(movieId: Int) = viewModelScope.launch {
         _movieDetailResponse.value = useCase(movieId)
