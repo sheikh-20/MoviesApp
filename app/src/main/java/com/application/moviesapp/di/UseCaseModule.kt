@@ -33,6 +33,7 @@ import com.application.moviesapp.domain.usecase.GetLanguageInteractor
 import com.application.moviesapp.domain.usecase.GetMovieDownloadInteractor
 import com.application.moviesapp.domain.usecase.GetMovieGenreInteractor
 import com.application.moviesapp.domain.usecase.GetMovieNowPlayingInteractor
+import com.application.moviesapp.domain.usecase.GetMovieReviewInteractor
 import com.application.moviesapp.domain.usecase.GetMovieSearchInteractor
 import com.application.moviesapp.domain.usecase.GetMovieWithTvSeriesInteractor
 import com.application.moviesapp.domain.usecase.GetNotificationInteractor
@@ -43,6 +44,7 @@ import com.application.moviesapp.domain.usecase.GetTvSeriesEpisodesUseCase
 import com.application.moviesapp.domain.usecase.GetTvSeriesFavouriteInteractor
 import com.application.moviesapp.domain.usecase.GetTvSeriesGenreInteractor
 import com.application.moviesapp.domain.usecase.GetTvSeriesNowPlayingInteractor
+import com.application.moviesapp.domain.usecase.GetTvSeriesReviewInteractor
 import com.application.moviesapp.domain.usecase.GetTvSeriesSearchInteractor
 import com.application.moviesapp.domain.usecase.GetTvSeriesTrailerInteractor
 import com.application.moviesapp.domain.usecase.GetWifiInteractor
@@ -50,6 +52,7 @@ import com.application.moviesapp.domain.usecase.LanguageUseCase
 import com.application.moviesapp.domain.usecase.MovieDownloadUseCase
 import com.application.moviesapp.domain.usecase.MovieGenresUseCase
 import com.application.moviesapp.domain.usecase.MovieNowPlayingUseCase
+import com.application.moviesapp.domain.usecase.MovieReviewUseCase
 import com.application.moviesapp.domain.usecase.MovieSearchUseCase
 import com.application.moviesapp.domain.usecase.MovieStateUseCase
 import com.application.moviesapp.domain.usecase.MovieTrailerUseCase
@@ -73,6 +76,7 @@ import com.application.moviesapp.domain.usecase.TvSeriesEpisodesUseCase
 import com.application.moviesapp.domain.usecase.TvSeriesFavouriteUseCase
 import com.application.moviesapp.domain.usecase.TvSeriesGenreUseCase
 import com.application.moviesapp.domain.usecase.TvSeriesNowPlayingUseCase
+import com.application.moviesapp.domain.usecase.TvSeriesReviewUseCase
 import com.application.moviesapp.domain.usecase.TvSeriesSearchUseCase
 import com.application.moviesapp.domain.usecase.TvSeriesTrailerUseCase
 import com.application.moviesapp.domain.usecase.WifiUseCase
@@ -311,6 +315,18 @@ class UseCaseModule {
     @Singleton
     fun providesNotificationUseCase(notificationPreferenceRepository: NotificationPreferenceRepository): NotificationUseCase {
         return GetNotificationInteractor(notificationPreferenceRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesMovieReviewUseCase(moviesRepository: MoviesRepository): MovieReviewUseCase {
+        return GetMovieReviewInteractor(moviesRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesTvSeriesReviewUseCase(moviesRepository: MoviesRepository): TvSeriesReviewUseCase {
+        return GetTvSeriesReviewInteractor(moviesRepository)
     }
 }
 
