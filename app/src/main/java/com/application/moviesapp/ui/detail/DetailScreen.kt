@@ -90,7 +90,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.application.moviesapp.R
@@ -99,12 +101,15 @@ import com.application.moviesapp.data.local.entity.MovieDownloadEntity
 import com.application.moviesapp.domain.model.Comment
 import com.application.moviesapp.domain.model.CommentRepository
 import com.application.moviesapp.domain.model.MovieNowPlaying
+import com.application.moviesapp.domain.model.MovieReview
 import com.application.moviesapp.domain.model.MovieState
 import com.application.moviesapp.domain.model.MovieTrailerWithYoutube
 import com.application.moviesapp.domain.model.MoviesDetail
+import com.application.moviesapp.domain.model.MoviesDiscover
 import com.application.moviesapp.domain.model.Stream
 import com.application.moviesapp.domain.model.TvSeriesDetail
 import com.application.moviesapp.domain.model.TvSeriesEpisodes
+import com.application.moviesapp.domain.model.TvSeriesReview
 import com.application.moviesapp.domain.model.TvSeriesTrailerWithYoutube
 import com.application.moviesapp.ui.play.PlayActivity
 import com.application.moviesapp.ui.play.Screen
@@ -116,6 +121,7 @@ import com.application.moviesapp.ui.viewmodel.DownloadUiState
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -128,6 +134,8 @@ fun DetailScreen(modifier: Modifier = Modifier,
                  moviesTrailerUiState: Resource<List<MovieTrailerWithYoutube>> = Resource.Loading,
                  tvSeriesTrailerUiState: Resource<List<TvSeriesTrailerWithYoutube>> = Resource.Loading,
                  moviesFlow: LazyPagingItems<MovieNowPlaying>,
+                 movieReviewFlow: LazyPagingItems<MovieReview>,
+                 tvSeriesReviewFlow: LazyPagingItems<TvSeriesReview>,
                  onBookmarkClicked: (String, Int, Boolean) -> Unit = { _, _, _ -> },
                  snackbarHostState: SnackbarHostState = SnackbarHostState(),
                  onBookmark: (Int) -> Unit = { _ -> },
@@ -456,7 +464,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                                         }
                                     }
                                     2 -> {
-                                         CommentsCompose(onCommentsClick = onCommentsClick)
+                                         CommentsCompose(onCommentsClick = onCommentsClick, movieReviewFlow = movieReviewFlow)
                                     }
                                 }
                             }
@@ -846,7 +854,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                                         }
                                     }
                                     2 -> {
-                                        CommentsCompose(onCommentsClick = onCommentsClick)
+                                        CommentsCompose(onCommentsClick = onCommentsClick, movieReviewFlow = movieReviewFlow)
                                     }
                                 }
                             }
@@ -1021,7 +1029,11 @@ private fun TvSeriesTrailerCard(modifier: Modifier = Modifier,
 
 @Preview
 @Composable
-fun CommentsCompose(modifier: Modifier = Modifier, onCommentsClick: (Int) -> Unit = { _ -> }) {
+fun CommentsCompose(modifier: Modifier = Modifier,
+                    onCommentsClick: (Int) -> Unit = { _ -> },
+                    movieReviewFlow: LazyPagingItems<MovieReview> = flowOf(PagingData.empty<MovieReview>()).collectAsLazyPagingItems()) {
+
+
     Column(modifier = modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
@@ -1030,7 +1042,7 @@ fun CommentsCompose(modifier: Modifier = Modifier, onCommentsClick: (Int) -> Uni
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween) {
 
-            Text(text = "24.6K Comments",
+            Text(text = "${movieReviewFlow.itemCount} Comments",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold)
 
@@ -1043,65 +1055,56 @@ fun CommentsCompose(modifier: Modifier = Modifier, onCommentsClick: (Int) -> Uni
         }
 
         LazyColumn(
-            modifier = modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = modifier
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp),
         ) {
-            items(CommentRepository.getComments().size) {
-                CommentsPeopleCompose(comment = CommentRepository.getComments()[it])
+
+            items(movieReviewFlow.itemCount) { index ->
+                CommentsPeopleCompose(review = movieReviewFlow[index] ?: return@items)
             }
         }
     }
 }
 
+
+@Preview
 @Composable
-private fun CommentsPeopleCompose(modifier: Modifier = Modifier, comment: Comment = Comment()) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            AsyncImage(
-                model = ImageRequest.Builder(context = LocalContext.current)
-                    .data(comment.imageUrl)
-                    .crossfade(true)
-                    .build(),
-                error = painterResource(id = R.drawable.ic_broken_image),
-                placeholder = painterResource(id = R.drawable.ic_image_placeholder),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = modifier
-                    .size(height = 50.dp, width = 50.dp)
-                    .clip(RoundedCornerShape(50)),
-            )
+fun CommentsTvSeriesCompose(modifier: Modifier = Modifier,
+                    onCommentsClick: (Int) -> Unit = { _ -> },
+                    tvSeriesReviewFlow: LazyPagingItems<TvSeriesReview> = flowOf(PagingData.empty<TvSeriesReview>()).collectAsLazyPagingItems()) {
 
-            Text(text = comment.userName ?: "", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
 
-            Spacer(modifier = modifier.weight(1f))
+    Column(modifier = modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Row(modifier = modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween) {
 
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Rounded.Comment, contentDescription = null)
+            Text(text = "${tvSeriesReviewFlow.itemCount} Comments",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold)
+
+            TextButton(onClick = { onCommentsClick(0) }) {
+                Text(text = "See all",
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold)
             }
         }
 
-        Text(text = comment.comment ?: "", style = MaterialTheme.typography.bodyLarge, maxLines = 2, overflow = TextOverflow.Ellipsis)
+        LazyColumn(
+            modifier = modifier
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp),
+        ) {
 
-        Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = { /*TODO*/ }, modifier = modifier.then(modifier.size(24.dp))) {
-                Icon(imageVector = Icons.Rounded.Favorite, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-            }
-
-            Spacer(modifier = modifier.width(4.dp))
-
-            Text(text = "${comment.likes ?: 0}", style = MaterialTheme.typography.bodyMedium)
-
-            Spacer(modifier = modifier.width(16.dp))
-
-            Text(text = comment.postedDate ?: "", style = MaterialTheme.typography.bodyMedium)
-
-            Spacer(modifier = modifier.width(16.dp))
-
-            TextButton(onClick = { /*TODO*/ }) {
-                Text(text = "Reply")
+            items(tvSeriesReviewFlow.itemCount) { index ->
+//                CommentsPeopleCompose(review = tvSeriesReviewFlow[index] ?: return@items)
             }
         }
     }
