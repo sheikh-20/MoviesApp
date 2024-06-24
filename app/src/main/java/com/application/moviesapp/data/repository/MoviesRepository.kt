@@ -16,7 +16,7 @@ import com.application.moviesapp.data.api.response.MovieDetailsDto
 import com.application.moviesapp.data.remote.MovieFavouriteDto
 import com.application.moviesapp.data.api.response.MovieGenreResponse
 import com.application.moviesapp.data.api.response.MovieNowPlayingDto
-import com.application.moviesapp.data.api.response.MovieReviewDto
+import com.application.moviesapp.data.api.response.UserReviewDto
 import com.application.moviesapp.data.api.response.MovieSearchDto
 import com.application.moviesapp.data.api.response.MovieStateDto
 import com.application.moviesapp.data.api.response.MovieTopRatedResponse
@@ -27,7 +27,6 @@ import com.application.moviesapp.data.api.response.TvSeriesDetailsDto
 import com.application.moviesapp.data.api.response.TvSeriesDiscoverDto
 import com.application.moviesapp.data.api.response.TvSeriesEpisodesDto
 import com.application.moviesapp.data.api.response.TvSeriesNowPlayingDto
-import com.application.moviesapp.data.api.response.TvSeriesReviewDto
 import com.application.moviesapp.data.api.response.TvSeriesSearchDto
 import com.application.moviesapp.data.api.response.TvSeriesTrailerDto
 import com.application.moviesapp.data.local.MoviesDatabase
@@ -46,7 +45,6 @@ import com.application.moviesapp.data.remote.TvSeriesFavouritePagingSource
 import com.application.moviesapp.data.remote.TvSeriesNowPlayingPagingSource
 import com.application.moviesapp.data.remote.TvSeriesReviewPagingSource
 import com.application.moviesapp.data.remote.TvSeriesSearchPagingSource
-import com.application.moviesapp.domain.model.TvSeriesReview
 import kotlinx.coroutines.flow.Flow
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -125,9 +123,9 @@ interface MoviesRepository {
 
     suspend fun getTvSeriesEpisodes(seriesId: Int, seasonNumber: Int = 1): Response<TvSeriesEpisodesDto>
 
-    fun getMovieReviewPagingFlow(movieId: Int): Flow<PagingData<MovieReviewDto.Result>>
+    fun getMovieReviewPagingFlow(movieId: Int): Flow<PagingData<UserReviewDto.Result>>
 
-    fun getTvSeriesReviewPagingFlow(seriesId: Int): Flow<PagingData<TvSeriesReviewDto.Result>>
+    fun getTvSeriesReviewPagingFlow(seriesId: Int): Flow<PagingData<UserReviewDto.Result>>
 }
 
 @OptIn(ExperimentalPagingApi::class)
@@ -247,14 +245,14 @@ class MoviesRepositoryImpl @Inject constructor(private val movies: MoviesApi,
     override suspend fun getTvSeriesNowPlayingList(): Response<TvSeriesNowPlayingDto> = movies.getNowPlayingSeriesList()
 
     override suspend fun getTvSeriesEpisodes(seriesId: Int, seasonNumber: Int): Response<TvSeriesEpisodesDto> = movies.getTvSeriesEpisodes(seriesId = seriesId, seasonNumber = seasonNumber)
-    override fun getMovieReviewPagingFlow(movieId: Int): Flow<PagingData<MovieReviewDto.Result>> = Pager(
+    override fun getMovieReviewPagingFlow(movieId: Int): Flow<PagingData<UserReviewDto.Result>> = Pager(
         config = PagingConfig(pageSize = 20),
         pagingSourceFactory = {
             MovieReviewPagingSource(movies, movieId)
         }
     ).flow
 
-    override fun getTvSeriesReviewPagingFlow(seriesId: Int): Flow<PagingData<TvSeriesReviewDto.Result>> = Pager(
+    override fun getTvSeriesReviewPagingFlow(seriesId: Int): Flow<PagingData<UserReviewDto.Result>> = Pager(
         config = PagingConfig(pageSize = 20),
         pagingSourceFactory = {
             TvSeriesReviewPagingSource(movies, seriesId)

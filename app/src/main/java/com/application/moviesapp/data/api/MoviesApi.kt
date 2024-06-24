@@ -11,7 +11,7 @@ import com.application.moviesapp.data.api.response.MovieDetailsDto
 import com.application.moviesapp.data.remote.MovieFavouriteDto
 import com.application.moviesapp.data.api.response.MovieGenreResponse
 import com.application.moviesapp.data.api.response.MovieNowPlayingDto
-import com.application.moviesapp.data.api.response.MovieReviewDto
+import com.application.moviesapp.data.api.response.UserReviewDto
 import com.application.moviesapp.data.api.response.MovieSearchDto
 import com.application.moviesapp.data.api.response.MovieSimpleResponse
 import com.application.moviesapp.data.api.response.MovieStateDto
@@ -23,7 +23,6 @@ import com.application.moviesapp.data.api.response.TvSeriesDetailsDto
 import com.application.moviesapp.data.api.response.TvSeriesDiscoverDto
 import com.application.moviesapp.data.api.response.TvSeriesEpisodesDto
 import com.application.moviesapp.data.api.response.TvSeriesNowPlayingDto
-import com.application.moviesapp.data.api.response.TvSeriesReviewDto
 import com.application.moviesapp.data.api.response.TvSeriesSearchDto
 import com.application.moviesapp.data.api.response.TvSeriesTrailerDto
 import com.application.moviesapp.data.remote.MovieNewReleasesDto
@@ -131,8 +130,8 @@ interface MoviesApi {
     suspend fun getTvSeriesBySearch(@Query("language") language: String = "en-US", @Query("query") query: String = "", @Query("page") page: Int = 1): Response<TvSeriesSearchDto>
 
     @GET("/3/movie/{movie_id}/reviews")
-    suspend fun getMovieReview(@Path("movie_id") movieId: Int, @Query("language") language: String = "en-US", @Query("page") page: Int = 1): Response<MovieReviewDto>
+    suspend fun getMovieReview(@Path("movie_id") movieId: Int, @Query("language") language: String = "en-US", @Query("page") page: Int = 1): Response<UserReviewDto>
 
     @GET("/3/tv/{series_id}/reviews")
-    suspend fun getTvSeriesReview(@Path("series_id") seriesId: Int, @Query("language") language: String = "en-US", @Query("page") page: Int = 1): Response<TvSeriesReviewDto>
+    suspend fun getTvSeriesReview(@Path("series_id") seriesId: Int, @Query("language") language: String = "en-US", @Query("page") page: Int = 1): Response<UserReviewDto>
 }

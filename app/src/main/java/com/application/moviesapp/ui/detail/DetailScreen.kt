@@ -2,7 +2,6 @@ package com.application.moviesapp.ui.detail
 
 import android.app.Activity
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -34,19 +32,14 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material.icons.rounded.ArrowForwardIos
 import androidx.compose.material.icons.rounded.Bookmark
 import androidx.compose.material.icons.rounded.BookmarkBorder
-import androidx.compose.material.icons.rounded.Comment
 import androidx.compose.material.icons.rounded.ExpandMore
-import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.PlayCircle
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.StarHalf
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -77,7 +70,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -98,18 +90,14 @@ import coil.request.ImageRequest
 import com.application.moviesapp.R
 import com.application.moviesapp.data.common.Resource
 import com.application.moviesapp.data.local.entity.MovieDownloadEntity
-import com.application.moviesapp.domain.model.Comment
-import com.application.moviesapp.domain.model.CommentRepository
 import com.application.moviesapp.domain.model.MovieNowPlaying
-import com.application.moviesapp.domain.model.MovieReview
+import com.application.moviesapp.domain.model.UserReview
 import com.application.moviesapp.domain.model.MovieState
 import com.application.moviesapp.domain.model.MovieTrailerWithYoutube
 import com.application.moviesapp.domain.model.MoviesDetail
-import com.application.moviesapp.domain.model.MoviesDiscover
 import com.application.moviesapp.domain.model.Stream
 import com.application.moviesapp.domain.model.TvSeriesDetail
 import com.application.moviesapp.domain.model.TvSeriesEpisodes
-import com.application.moviesapp.domain.model.TvSeriesReview
 import com.application.moviesapp.domain.model.TvSeriesTrailerWithYoutube
 import com.application.moviesapp.ui.play.PlayActivity
 import com.application.moviesapp.ui.play.Screen
@@ -134,8 +122,8 @@ fun DetailScreen(modifier: Modifier = Modifier,
                  moviesTrailerUiState: Resource<List<MovieTrailerWithYoutube>> = Resource.Loading,
                  tvSeriesTrailerUiState: Resource<List<TvSeriesTrailerWithYoutube>> = Resource.Loading,
                  moviesFlow: LazyPagingItems<MovieNowPlaying>,
-                 movieReviewFlow: LazyPagingItems<MovieReview>,
-                 tvSeriesReviewFlow: LazyPagingItems<TvSeriesReview>,
+                 moviesReviewFlow: LazyPagingItems<UserReview>,
+                 tvSeriesReviewFlow: LazyPagingItems<UserReview>,
                  onBookmarkClicked: (String, Int, Boolean) -> Unit = { _, _, _ -> },
                  snackbarHostState: SnackbarHostState = SnackbarHostState(),
                  onBookmark: (Int) -> Unit = { _ -> },
@@ -464,7 +452,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                                         }
                                     }
                                     2 -> {
-                                         CommentsCompose(onCommentsClick = onCommentsClick, movieReviewFlow = movieReviewFlow)
+                                         CommentsCompose(onCommentsClick = onCommentsClick, userReviewFlow = moviesReviewFlow)
                                     }
                                 }
                             }
@@ -854,7 +842,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
                                         }
                                     }
                                     2 -> {
-                                        CommentsCompose(onCommentsClick = onCommentsClick, movieReviewFlow = movieReviewFlow)
+                                        CommentsCompose(onCommentsClick = onCommentsClick, userReviewFlow = tvSeriesReviewFlow)
                                     }
                                 }
                             }
@@ -1031,7 +1019,7 @@ private fun TvSeriesTrailerCard(modifier: Modifier = Modifier,
 @Composable
 fun CommentsCompose(modifier: Modifier = Modifier,
                     onCommentsClick: (Int) -> Unit = { _ -> },
-                    movieReviewFlow: LazyPagingItems<MovieReview> = flowOf(PagingData.empty<MovieReview>()).collectAsLazyPagingItems()) {
+                    userReviewFlow: LazyPagingItems<UserReview> = flowOf(PagingData.empty<UserReview>()).collectAsLazyPagingItems()) {
 
 
     Column(modifier = modifier
@@ -1042,7 +1030,7 @@ fun CommentsCompose(modifier: Modifier = Modifier,
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween) {
 
-            Text(text = "${movieReviewFlow.itemCount} Comments",
+            Text(text = "${userReviewFlow.itemCount} Comments",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold)
 
@@ -1061,50 +1049,8 @@ fun CommentsCompose(modifier: Modifier = Modifier,
             contentPadding = PaddingValues(horizontal = 16.dp),
         ) {
 
-            items(movieReviewFlow.itemCount) { index ->
-                CommentsPeopleCompose(review = movieReviewFlow[index] ?: return@items)
-            }
-        }
-    }
-}
-
-
-@Preview
-@Composable
-fun CommentsTvSeriesCompose(modifier: Modifier = Modifier,
-                    onCommentsClick: (Int) -> Unit = { _ -> },
-                    tvSeriesReviewFlow: LazyPagingItems<TvSeriesReview> = flowOf(PagingData.empty<TvSeriesReview>()).collectAsLazyPagingItems()) {
-
-
-    Column(modifier = modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        Row(modifier = modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween) {
-
-            Text(text = "${tvSeriesReviewFlow.itemCount} Comments",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold)
-
-            TextButton(onClick = { onCommentsClick(0) }) {
-                Text(text = "See all",
-                    color = MaterialTheme.colorScheme.primary,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold)
-            }
-        }
-
-        LazyColumn(
-            modifier = modifier
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp),
-        ) {
-
-            items(tvSeriesReviewFlow.itemCount) { index ->
-//                CommentsPeopleCompose(review = tvSeriesReviewFlow[index] ?: return@items)
+            items(userReviewFlow.itemCount) { index ->
+                CommentsPeopleCompose(review = userReviewFlow[index] ?: return@items)
             }
         }
     }
