@@ -1,7 +1,6 @@
 package com.application.moviesapp.ui.detail
 
 import android.content.res.Configuration
-import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,32 +10,24 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.FloatingActionButtonDefaults
-import androidx.compose.material.FloatingActionButtonElevation
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Comment
 import androidx.compose.material.icons.rounded.EmojiEmotions
 import androidx.compose.material.icons.rounded.Favorite
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Send
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -49,7 +40,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -67,18 +57,16 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.application.moviesapp.R
 import com.application.moviesapp.domain.model.Comment
-import com.application.moviesapp.domain.model.CommentRepository
-import com.application.moviesapp.domain.model.MovieReview
+import com.application.moviesapp.domain.model.UserReview
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.utility.toImageUrl
-import com.application.moviesapp.ui.utility.toOneDecimal
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun CommentsScreen(
     modifier: Modifier = Modifier,
     paddingValues: PaddingValues = PaddingValues(),
-    movieReviewFlow: LazyPagingItems<MovieReview> = flowOf(PagingData.empty<MovieReview>()).collectAsLazyPagingItems(),
+    userReviewFlow: LazyPagingItems<UserReview> = flowOf(PagingData.empty<UserReview>()).collectAsLazyPagingItems(),
 ) {
 
     val focusRequest = remember { FocusRequester() }
@@ -97,8 +85,8 @@ fun CommentsScreen(
             contentPadding = PaddingValues(horizontal = 16.dp),
         ) {
 
-            items(movieReviewFlow.itemCount) { index ->
-                CommentsPeopleCompose(review = movieReviewFlow[index] ?: return@items)
+            items(userReviewFlow.itemCount) { index ->
+                CommentsPeopleCompose(review = userReviewFlow[index] ?: return@items)
             }
         }
 
@@ -136,7 +124,7 @@ fun CommentsScreen(
 }
 
 @Composable
-fun CommentsPeopleCompose(modifier: Modifier = Modifier, comment: Comment = Comment(), review: MovieReview = MovieReview(null, null, null, null, null, null, null)) {
+fun CommentsPeopleCompose(modifier: Modifier = Modifier, comment: Comment = Comment(), review: UserReview = UserReview(null, null, null, null, null, null, null)) {
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp)

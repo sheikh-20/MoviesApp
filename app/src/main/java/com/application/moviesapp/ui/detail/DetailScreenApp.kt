@@ -53,16 +53,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.application.moviesapp.R
 import com.application.moviesapp.data.common.Resource
-import com.application.moviesapp.domain.model.MovieReview
+import com.application.moviesapp.domain.model.UserReview
 import com.application.moviesapp.domain.model.TvSeriesDetail
 import com.application.moviesapp.ui.viewmodel.DetailsViewModel
 import com.application.moviesapp.ui.viewmodel.HomeViewModel
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 
 @Composable
@@ -108,7 +106,16 @@ fun DetailScreenApp(modifier: Modifier = Modifier,
     var selectedImage by remember { mutableStateOf(Pair<String, List<String?>?>("", emptyList())) }
 
     Scaffold(
-        topBar = { DetailTopAppbar(navController = navController, movieReviewFlow = movieReviewFlowState) },
+        topBar = { DetailTopAppbar(
+            navController = navController,
+            userReviewFlow = when ((context as Activity).intent.getStringExtra(DetailActivity.TYPE)) {
+                IS_TYPE.Movie.name -> {
+                    movieReviewFlowState
+                }
+                else -> {
+                    tvSeriesReviewFlowState
+                }
+            }) },
         snackbarHost = { SnackbarHost(snackbarHostState) {
             androidx.compose.material3.Snackbar(
                 modifier = modifier.padding(8.dp),
@@ -129,7 +136,7 @@ fun DetailScreenApp(modifier: Modifier = Modifier,
                     moviesTrailerUiState = movieTrailerUiState,
                     tvSeriesTrailerUiState = tvSeriesTrailerUiState,
                     moviesFlow = moviesFlow,
-                    movieReviewFlow = movieReviewFlowState,
+                    moviesReviewFlow = movieReviewFlowState,
                     tvSeriesReviewFlow = tvSeriesReviewFlowState,
                     onBookmark = {
                         viewModel.getMovieState(it)
@@ -175,11 +182,22 @@ fun DetailScreenApp(modifier: Modifier = Modifier,
             }
 
             composable(route = DetailScreen.Comments.name) {
-                CommentsScreen(
-                    modifier = modifier,
-                    paddingValues = paddingValues,
-                    movieReviewFlow = movieReviewFlowState
-                )
+                when ((context as Activity).intent.getStringExtra(DetailActivity.TYPE)) {
+                    IS_TYPE.Movie.name -> {
+                        CommentsScreen(
+                            modifier = modifier,
+                            paddingValues = paddingValues,
+                            userReviewFlow = movieReviewFlowState
+                        )
+                    }
+                    IS_TYPE.TvSeries.name -> {
+                        CommentsScreen(
+                            modifier = modifier,
+                            paddingValues = paddingValues,
+                            userReviewFlow = tvSeriesReviewFlowState
+                        )
+                    }
+                }
             }
         }
     }
@@ -191,7 +209,9 @@ enum class DetailScreen {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DetailTopAppbar(modifier: Modifier = Modifier, navController: NavHostController, movieReviewFlow: LazyPagingItems<MovieReview>) {
+private fun DetailTopAppbar(modifier: Modifier = Modifier, 
+                            navController: NavHostController,
+                            userReviewFlow: LazyPagingItems<UserReview>) {
 
     val context = LocalContext.current
 
@@ -237,7 +257,7 @@ private fun DetailTopAppbar(modifier: Modifier = Modifier, navController: NavHos
         DetailScreen.Comments.name -> {
             TopAppBar(
                 title = {
-                    Text(text = "${movieReviewFlow.itemCount} Comments", fontWeight = FontWeight.SemiBold)
+                    Text(text = "${userReviewFlow.itemCount} Comments", fontWeight = FontWeight.SemiBold)
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {

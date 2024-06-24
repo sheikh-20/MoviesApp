@@ -1,9 +1,6 @@
 package com.application.moviesapp.domain.model
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-
-data class MovieReview(
+data class UserReview(
     val author: String?,
     val authorDetails: AuthorDetails?,
     val content: String?,
