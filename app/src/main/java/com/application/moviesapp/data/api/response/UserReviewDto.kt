@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MovieReviewDto(
+data class UserReviewDto(
 
     @SerialName("id")
     val id: Int?,
