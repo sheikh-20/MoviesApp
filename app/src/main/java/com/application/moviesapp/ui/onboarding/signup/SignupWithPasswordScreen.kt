@@ -198,7 +198,7 @@ fun SignupWithPasswordScreen(modifier: Modifier = Modifier,
                         shape = RoundedCornerShape(50)
                     )
                     .fillMaxWidth(),
-                enabled = isTermsConditions,
+                enabled = isTermsConditions && email.contains("@") && password.isNotEmpty(),
                 colors = ButtonDefaults.filledTonalButtonColors(containerColor = Color.Red)) {
 
                 if (isLoading) {
