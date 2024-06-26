@@ -1049,7 +1049,7 @@ fun CommentsCompose(modifier: Modifier = Modifier,
             contentPadding = PaddingValues(horizontal = 16.dp),
         ) {
 
-            items(userReviewFlow.itemCount) { index ->
+            items(userReviewFlow.itemCount.until(2).last) { index ->
                 CommentsPeopleCompose(review = userReviewFlow[index] ?: return@items)
             }
         }
