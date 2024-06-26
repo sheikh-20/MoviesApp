@@ -59,6 +59,7 @@ import com.application.moviesapp.ui.onboarding.component.SocialLoginComponent
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.viewmodel.OnboardUIState
 import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -116,7 +117,11 @@ fun LoginWithPasswordScreen(modifier: Modifier = Modifier,
                     isLoading = false
                     if (it.throwable is FirebaseAuthInvalidUserException) {
                         snackbarHostState.showSnackbar(message = "Email does not exists, Try signup!")
-                    } else {
+                    }
+                    else if (it.throwable is FirebaseAuthInvalidCredentialsException) {
+                        snackbarHostState.showSnackbar(message = "Incorrect email or password")
+                    }
+                    else {
                         snackbarHostState.showSnackbar(message = "Failure!")
                         Timber.tag("Login").e(it.throwable)
                     }
@@ -185,6 +190,7 @@ fun LoginWithPasswordScreen(modifier: Modifier = Modifier,
                         shape = RoundedCornerShape(50)
                     )
                     .fillMaxWidth(),
+                enabled = email.contains("@") && password.isNotEmpty(),
                 colors = ButtonDefaults.filledTonalButtonColors(containerColor = Color.Red)) {
 
                 if (isLoading) {
