@@ -92,7 +92,7 @@ class HomeActivity : BaseActivity() {
                             modifier = Modifier.fillMaxSize(),
                             color = MaterialTheme.colorScheme.background
                         ) {
-                            if (viewModel.getUserInfo() != null) {
+                            if (viewModel.getUserInfo() != null && viewModel.getUserInfo()?.isEmailVerified == true) {
                                 HomeApp()
                             } else {
                                 OnboardingApp()

@@ -236,6 +236,17 @@ class OnboardingViewModel @Inject constructor(private val movieGenresUseCase: Mo
         passwordResetUseCase.sendOtp(email)
     }
 
+
+    fun sendVerificationEmail(onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        auth.currentUser?.sendEmailVerification()?.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                onSuccess()
+            } else {
+                task.exception?.let { onFailure(it) }
+            }
+        }
+    }
+
     init {
         showLoading()
     }
