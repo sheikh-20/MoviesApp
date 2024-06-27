@@ -130,13 +130,23 @@ fun LoginWithPasswordScreen(modifier: Modifier = Modifier,
                     isLoading = false
                     Timber.tag("Login").d("Google Success")
 
-                    if (it.data.additionalUserInfo?.isNewUser == true) {
-                        (context as Activity).finish()
-                        AccountSetupActivity.startActivity(context as Activity)
-                    } else {
-                        (context as Activity).finish()
-                        HomeActivity.startActivity((context as Activity))
+                    if (it.data.user?.isEmailVerified == true) {
+                        if (it.data.additionalUserInfo?.isNewUser == true) {
+                            (context as Activity).finish()
+                            AccountSetupActivity.startActivity(context as Activity)
+                        } else {
+                            (context as Activity).finish()
+                            HomeActivity.startActivity((context as Activity))
+                        }
                     }
+
+//                    if (it.data.additionalUserInfo?.isNewUser == true) {
+//                        (context as Activity).finish()
+//                        AccountSetupActivity.startActivity(context as Activity)
+//                    } else {
+//                        (context as Activity).finish()
+//                        HomeActivity.startActivity((context as Activity))
+//                    }
                 }
             }
         }

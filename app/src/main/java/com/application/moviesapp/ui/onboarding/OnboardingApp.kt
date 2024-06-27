@@ -7,7 +7,12 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultRegistryOwner
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
@@ -19,6 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -29,6 +35,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -79,7 +87,33 @@ fun OnboardingApp(modifier: Modifier = Modifier,
 
     Scaffold(
         topBar = { OnboardingAppBar(currentScreen = backStackEntry?.destination?.route ?: OnboardingScreen.Start.name, canNavigateBack = navController.previousBackStackEntry != null) { navController.navigateUp() } },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = {
+            SnackbarHost(snackbarHostState) {
+                androidx.compose.material3.Snackbar(
+                    modifier = modifier.padding(8.dp),
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ) {
+                    Row(horizontalArrangement = Arrangement.SpaceBetween) {
+                        Text(text = it.visuals.message, fontWeight = FontWeight.SemiBold)
+
+                        Spacer(modifier = modifier.weight(1f))
+
+
+                        Text(
+                            text = it.visuals.actionLabel ?: "",
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = modifier.clickable(
+                                onClick = { it.performAction() },
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            )
+                        )
+                    }
+                }
+            }
+        }
      ) { innerPadding ->
             NavHost(modifier = modifier.padding(innerPadding),
                 navController = navController,
@@ -135,7 +169,10 @@ fun OnboardingApp(modifier: Modifier = Modifier,
                         onGithubSignInClick = { onboardingViewModel.signInGithub(context as Activity) },
                         onSocialSignIn = onSocialSignIn,
                         snackbarHostState = snackbarHostState,
-                        signupUIState = signupUIState
+                        signupUIState = signupUIState,
+                        sendVerificationEmail = { onSuccess, onFailure ->
+                            onboardingViewModel.sendVerificationEmail(onSuccess, onFailure)
+                        }
                     )
                 }
 
