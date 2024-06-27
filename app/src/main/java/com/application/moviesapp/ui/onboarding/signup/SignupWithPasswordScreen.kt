@@ -88,7 +88,8 @@ fun SignupWithPasswordScreen(modifier: Modifier = Modifier,
                              onSocialSignIn: SharedFlow<Resource<AuthResult>>? = null,
                              onSignInClick: () -> Unit = { },
                              snackbarHostState: SnackbarHostState = SnackbarHostState(),
-                             signupUIState: OnboardUIState = OnboardUIState()) {
+                             signupUIState: OnboardUIState = OnboardUIState(),
+                             sendVerificationEmail: (() -> Unit, (Exception) -> Unit) -> Unit =  { _, _ -> }) {
 
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -135,12 +136,27 @@ fun SignupWithPasswordScreen(modifier: Modifier = Modifier,
                     isLoading = false
                     Timber.tag("Login").d("Google Success")
 
-                    if (it.data.additionalUserInfo?.isNewUser == true) {
-                        (context as Activity).finish()
-                        AccountSetupActivity.startActivity(context as Activity)
+                    if (it.data.user?.isEmailVerified == true) {
+                        if (it.data.additionalUserInfo?.isNewUser == true) {
+                            (context as Activity).finish()
+                            AccountSetupActivity.startActivity(context as Activity)
+                        } else {
+                            (context as Activity).finish()
+                            HomeActivity.startActivity((context as Activity))
+                        }
                     } else {
-                        (context as Activity).finish()
-                        HomeActivity.startActivity((context as Activity))
+                        sendVerificationEmail(
+                            {
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar(message = "Check your inbox to verify email.")
+                                }
+                            },
+                            {
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar(message = it.message.toString())
+                                }
+                            }
+                        )
                     }
                 }
             }
