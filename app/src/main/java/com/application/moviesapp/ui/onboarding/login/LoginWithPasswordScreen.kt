@@ -25,6 +25,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -51,6 +52,7 @@ import com.application.moviesapp.R
 import com.application.moviesapp.data.common.Resource
 import com.application.moviesapp.domain.usecase.SignInGoogleInteractor
 import com.application.moviesapp.ui.accountsetup.AccountSetupActivity
+import com.application.moviesapp.ui.home.BottomNavigationScreens
 import com.application.moviesapp.ui.home.HomeActivity
 import com.application.moviesapp.ui.onboarding.OnboardingActivity
 import com.application.moviesapp.ui.onboarding.component.EmailComponent
@@ -116,7 +118,12 @@ fun LoginWithPasswordScreen(modifier: Modifier = Modifier,
                 is Resource.Failure -> {
                     isLoading = false
                     if (it.throwable is FirebaseAuthInvalidUserException) {
-                        snackbarHostState.showSnackbar(message = "Email does not exists, Try signup!")
+                        val result = snackbarHostState.showSnackbar(message = "Email does not exists", actionLabel = "Try signup!")
+
+                        when (result) {
+                            SnackbarResult.ActionPerformed -> onSignupClick()
+                            else -> { }
+                        }
                     }
                     else if (it.throwable is FirebaseAuthInvalidCredentialsException) {
                         snackbarHostState.showSnackbar(message = "Incorrect email or password")
