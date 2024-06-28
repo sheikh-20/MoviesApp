@@ -99,7 +99,6 @@ fun OnboardingApp(modifier: Modifier = Modifier,
 
                         Spacer(modifier = modifier.weight(1f))
 
-
                         Text(
                             text = it.visuals.actionLabel ?: "",
                             fontWeight = FontWeight.SemiBold,

@@ -36,6 +36,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -125,8 +126,12 @@ fun SignupWithPasswordScreen(modifier: Modifier = Modifier,
                     isLoading = false
 
                     if (it.throwable is FirebaseAuthUserCollisionException) {
-                        snackbarHostState.showSnackbar(message = "Already created, Try Login!")
-                        Timber.tag("Login").e(it.throwable)
+                        val result = snackbarHostState.showSnackbar(message = "Already created", actionLabel = "Try Login!")
+
+                        when (result) {
+                            SnackbarResult.ActionPerformed -> onSignInClick()
+                            else -> { }
+                        }
                     } else {
                         snackbarHostState.showSnackbar(message = "Failure!")
                         Timber.tag("Login").e(it.throwable)
