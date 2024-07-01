@@ -4,6 +4,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.application.moviesapp.data.api.MoviesApi
 import com.application.moviesapp.data.api.response.MovieNowPlayingDto
+import kotlinx.coroutines.delay
 
 class MovieNowPlayingPagingSource(private val moviesApi: MoviesApi): PagingSource<Int, MovieNowPlayingDto.Result>() {
     override fun getRefreshKey(state: PagingState<Int, MovieNowPlayingDto.Result>): Int? {

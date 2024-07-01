@@ -95,7 +95,7 @@ fun NowPlayingSeriesScreen(modifier: Modifier = Modifier,
             top = bottomPadding.calculateTopPadding(),
             bottom = bottomPadding.calculateBottomPadding()
         ).pullRefresh(pullRefreshState)) {
-        Column {
+        Column(modifier = modifier.fillMaxSize()) {
             when (tvSeriesFlow.loadState.refresh) {
                is LoadState.Error -> Column(modifier = modifier
                     .fillMaxSize()
@@ -131,7 +131,9 @@ fun NowPlayingSeriesScreen(modifier: Modifier = Modifier,
                 }
                 is LoadState.NotLoading ->  {
                     if (searchClicked) {
-                        LazyVerticalGrid(columns = GridCells.Fixed(2),
+                        LazyVerticalGrid(
+                            modifier = modifier.weight(1f),
+                            columns = GridCells.Fixed(2),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                             state = lazyGridState,
@@ -142,7 +144,9 @@ fun NowPlayingSeriesScreen(modifier: Modifier = Modifier,
                             }
                         }
                     } else {
-                        LazyVerticalGrid(columns = GridCells.Fixed(2),
+                        LazyVerticalGrid(
+                            modifier = modifier.weight(1f),
+                            columns = GridCells.Fixed(2),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                             state = lazyGridState,
@@ -156,6 +160,23 @@ fun NowPlayingSeriesScreen(modifier: Modifier = Modifier,
                 }
             }
 
+            when (tvSeriesFlow.loadState.append) {
+                is LoadState.Loading -> {
+                    CircularProgressIndicator(modifier = modifier
+                        .fillMaxWidth()
+                        .wrapContentWidth(align = Alignment.CenterHorizontally)
+                        .padding(16.dp))
+                }
+                is LoadState.NotLoading -> {   }
+                is LoadState.Error -> {
+                    Text(text = if (tvSeriesFlow.loadState.append.endOfPaginationReached) "You have reached the end" else "",
+                        style = MaterialTheme.typography.displayMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = modifier.fillMaxWidth().wrapContentWidth(align = Alignment.CenterHorizontally).padding(16.dp),
+                        textAlign = TextAlign.Center)
+                }
+            }
         }
 
         PullRefreshIndicator(

@@ -20,6 +20,8 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
+import java.time.Duration
+import java.util.concurrent.TimeUnit
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -46,7 +48,12 @@ object NetworkModule {
     @Singleton
     @Named("movies_http_client")
     fun providesOKHttpClient(networkInterceptor: NetworkInterceptor): OkHttpClient {
-        return OkHttpClient.Builder().addInterceptor(networkInterceptor).build()
+        return OkHttpClient.Builder()
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .addInterceptor(networkInterceptor)
+            .build()
     }
 
     @Provides

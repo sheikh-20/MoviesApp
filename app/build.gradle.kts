@@ -43,7 +43,7 @@ android {
         create("config") {
             keyAlias = "moviesapp"
             keyPassword = "Sheikh"
-            storeFile = file("/media/sheikh/hdd/AndroidStudioProjects/AndroidStudioProjects/MoviesApp/app/keystore.jks")
+            storeFile = file("/Users/sheikh/StudioProjects/MoviesApp/app/keystore.jks")
             storePassword = "Sheikh"
             enableV4Signing = true
         }
@@ -53,8 +53,8 @@ android {
         applicationId = "com.application.moviesapp"
         minSdk = 24
         targetSdk = 33
-        versionCode = 25
-        versionName = "1.0.24"
+        versionCode = 26
+        versionName = "1.0.25"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
