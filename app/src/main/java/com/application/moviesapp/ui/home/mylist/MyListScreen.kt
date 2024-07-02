@@ -168,195 +168,245 @@ fun MyListScreen(modifier: Modifier = Modifier,
             HorizontalPager(count = tabsList.size, state = pager, modifier = modifier.fillMaxWidth()) { index ->
                 when (index) {
                     0 -> {
-                        when (moviesFavouriteFlow.loadState.refresh){
-                            is LoadState.Error -> Column(
-                                verticalArrangement = Arrangement.spacedBy(16.dp),
-                                modifier = modifier
-                                    .fillMaxSize()
-                                    .wrapContentSize(align = Alignment.Center)
-                                    .padding(32.dp)
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.ic_empty_list),
-                                    contentDescription = null,
+                        Column(modifier = modifier.fillMaxSize()) {
+                            when (moviesFavouriteFlow.loadState.refresh){
+                                is LoadState.Error -> Column(
+                                    verticalArrangement = Arrangement.spacedBy(16.dp),
                                     modifier = modifier
-                                        .fillMaxWidth()
-                                        .wrapContentWidth(align = Alignment.CenterHorizontally)
-                                        .size(200.dp),
-                                    contentScale = ContentScale.Crop,
-                                )
+                                        .fillMaxSize()
+                                        .wrapContentSize(align = Alignment.Center)
+                                        .padding(32.dp)
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.ic_empty_list),
+                                        contentDescription = null,
+                                        modifier = modifier
+                                            .fillMaxWidth()
+                                            .wrapContentWidth(align = Alignment.CenterHorizontally)
+                                            .size(200.dp),
+                                        contentScale = ContentScale.Crop,
+                                    )
 
-                                Text(
-                                    text = stringResource(R.string.you_list_is_empty),
-                                    style = MaterialTheme.typography.titleLarge,
-                                    modifier = modifier
-                                        .fillMaxWidth()
-                                        .wrapContentWidth(align = Alignment.CenterHorizontally)
-                                )
+                                    Text(
+                                        text = stringResource(R.string.you_list_is_empty),
+                                        style = MaterialTheme.typography.titleLarge,
+                                        modifier = modifier
+                                            .fillMaxWidth()
+                                            .wrapContentWidth(align = Alignment.CenterHorizontally)
+                                    )
 
-                                Text(
-                                    text = stringResource(R.string.it_seems_you_haven_t_listed_any_movies_or_series),
-                                    textAlign = TextAlign.Center,
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    modifier = modifier
-                                        .fillMaxWidth()
-                                        .wrapContentWidth(align = Alignment.CenterHorizontally)
-                                )
-                            }
-                            is LoadState.Loading -> {
-                                CircularProgressIndicator(modifier = modifier
-                                    .fillMaxSize()
-                                    .wrapContentSize(align = Alignment.Center))
-                            }
-                            is LoadState.NotLoading ->  {
-                                Column(modifier = modifier.fillMaxSize().wrapContentSize(align = Alignment.TopStart)) {
+                                    Text(
+                                        text = stringResource(R.string.it_seems_you_haven_t_listed_any_movies_or_series),
+                                        textAlign = TextAlign.Center,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        modifier = modifier
+                                            .fillMaxWidth()
+                                            .wrapContentWidth(align = Alignment.CenterHorizontally)
+                                    )
+                                }
+                                is LoadState.Loading -> {
+                                    CircularProgressIndicator(modifier = modifier
+                                        .fillMaxSize()
+                                        .wrapContentSize(align = Alignment.Center))
+                                }
+                                is LoadState.NotLoading ->  {
+                                    Column(modifier = modifier
+                                        .fillMaxSize()
+                                        .wrapContentSize(align = Alignment.TopStart)) {
 
-                                    if (moviesFavouriteFlow.itemCount == 0) {
-                                        Column(
-                                            verticalArrangement = Arrangement.spacedBy(16.dp),
-                                            modifier = modifier
-                                                .fillMaxSize()
-                                                .wrapContentSize(align = Alignment.Center)
-                                                .padding(32.dp)
-                                        ) {
-                                            Image(
-                                                painter = painterResource(id = R.drawable.ic_empty_list),
-                                                contentDescription = null,
+                                        if (moviesFavouriteFlow.itemCount == 0) {
+                                            Column(
+                                                verticalArrangement = Arrangement.spacedBy(16.dp),
                                                 modifier = modifier
-                                                    .fillMaxWidth()
-                                                    .wrapContentWidth(align = Alignment.CenterHorizontally)
-                                                    .size(200.dp),
-                                                contentScale = ContentScale.Crop,
-                                            )
+                                                    .fillMaxSize()
+                                                    .wrapContentSize(align = Alignment.Center)
+                                                    .padding(32.dp)
+                                            ) {
+                                                Image(
+                                                    painter = painterResource(id = R.drawable.ic_empty_list),
+                                                    contentDescription = null,
+                                                    modifier = modifier
+                                                        .fillMaxWidth()
+                                                        .wrapContentWidth(align = Alignment.CenterHorizontally)
+                                                        .size(200.dp),
+                                                    contentScale = ContentScale.Crop,
+                                                )
 
-                                            Text(
-                                                text = stringResource(R.string.you_list_is_empty),
-                                                style = MaterialTheme.typography.titleLarge,
-                                                modifier = modifier
-                                                    .fillMaxWidth()
-                                                    .wrapContentWidth(align = Alignment.CenterHorizontally)
-                                            )
+                                                Text(
+                                                    text = stringResource(R.string.you_list_is_empty),
+                                                    style = MaterialTheme.typography.titleLarge,
+                                                    modifier = modifier
+                                                        .fillMaxWidth()
+                                                        .wrapContentWidth(align = Alignment.CenterHorizontally)
+                                                )
 
-                                            Text(
-                                                text = stringResource(R.string.it_seems_you_haven_t_listed_any_movies_or_series),
-                                                textAlign = TextAlign.Center,
-                                                style = MaterialTheme.typography.bodyLarge,
-                                                modifier = modifier
-                                                    .fillMaxWidth()
-                                                    .wrapContentWidth(align = Alignment.CenterHorizontally)
-                                            )
+                                                Text(
+                                                    text = stringResource(R.string.it_seems_you_haven_t_listed_any_movies_or_series),
+                                                    textAlign = TextAlign.Center,
+                                                    style = MaterialTheme.typography.bodyLarge,
+                                                    modifier = modifier
+                                                        .fillMaxWidth()
+                                                        .wrapContentWidth(align = Alignment.CenterHorizontally)
+                                                )
+                                            }
                                         }
-                                    }
-                                    else {
-                                        LazyVerticalGrid(
-                                            columns = GridCells.Fixed(2),
-                                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                                            state = lazyGridState,
-                                            contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
+                                        else {
+                                            LazyVerticalGrid(
+                                                columns = GridCells.Fixed(2),
+                                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                                                state = lazyGridState,
+                                                contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
 
-                                            items(moviesFavouriteFlow.itemCount) { index ->
-                                                MovieImageCard(imageUrl = moviesFavouriteFlow[index]?.posterPath ?: "", rating = moviesFavouriteFlow[index]?.voteAverage.toString(), movieId = moviesFavouriteFlow[index]?.id ?: 0)
+                                                items(moviesFavouriteFlow.itemCount) { index ->
+                                                    MovieImageCard(imageUrl = moviesFavouriteFlow[index]?.posterPath ?: "", rating = moviesFavouriteFlow[index]?.voteAverage.toString(), movieId = moviesFavouriteFlow[index]?.id ?: 0)
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
+
+                            when (moviesFavouriteFlow.loadState.append) {
+                                is LoadState.Loading -> {
+                                    CircularProgressIndicator(modifier = modifier
+                                        .fillMaxWidth()
+                                        .wrapContentWidth(align = Alignment.CenterHorizontally)
+                                        .padding(16.dp))
+                                }
+                                is LoadState.NotLoading -> {   }
+                                is LoadState.Error -> {
+                                    Text(text = if (moviesFavouriteFlow.loadState.append.endOfPaginationReached) "You have reached the end" else "",
+                                        style = MaterialTheme.typography.displayMedium,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        fontWeight = FontWeight.SemiBold,
+                                        modifier = modifier
+                                            .fillMaxWidth()
+                                            .wrapContentWidth(align = Alignment.CenterHorizontally)
+                                            .padding(16.dp),
+                                        textAlign = TextAlign.Center)
+                                }
+                            }
                         }
                     }
                     1 -> {
-                        when (tvSeriesFavouriteFlow.loadState.refresh){
-                            is LoadState.Error -> Column(
-                                verticalArrangement = Arrangement.spacedBy(16.dp),
-                                modifier = modifier
-                                    .fillMaxSize()
-                                    .wrapContentSize(align = Alignment.Center)
-                                    .padding(32.dp)
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.ic_empty_list),
-                                    contentDescription = null,
+                        Column(modifier = modifier.fillMaxSize()) {
+                            when (tvSeriesFavouriteFlow.loadState.refresh){
+                                is LoadState.Error -> Column(
+                                    verticalArrangement = Arrangement.spacedBy(16.dp),
                                     modifier = modifier
-                                        .fillMaxWidth()
-                                        .wrapContentWidth(align = Alignment.CenterHorizontally)
-                                        .size(200.dp),
-                                    contentScale = ContentScale.Crop,
-                                )
+                                        .fillMaxSize()
+                                        .wrapContentSize(align = Alignment.Center)
+                                        .padding(32.dp)
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.ic_empty_list),
+                                        contentDescription = null,
+                                        modifier = modifier
+                                            .fillMaxWidth()
+                                            .wrapContentWidth(align = Alignment.CenterHorizontally)
+                                            .size(200.dp),
+                                        contentScale = ContentScale.Crop,
+                                    )
 
-                                Text(
-                                    text = stringResource(R.string.you_list_is_empty),
-                                    style = MaterialTheme.typography.titleLarge,
-                                    modifier = modifier
-                                        .fillMaxWidth()
-                                        .wrapContentWidth(align = Alignment.CenterHorizontally)
-                                )
+                                    Text(
+                                        text = stringResource(R.string.you_list_is_empty),
+                                        style = MaterialTheme.typography.titleLarge,
+                                        modifier = modifier
+                                            .fillMaxWidth()
+                                            .wrapContentWidth(align = Alignment.CenterHorizontally)
+                                    )
 
-                                Text(
-                                    text = stringResource(R.string.it_seems_you_haven_t_listed_any_movies_or_series),
-                                    textAlign = TextAlign.Center,
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    modifier = modifier
-                                        .fillMaxWidth()
-                                        .wrapContentWidth(align = Alignment.CenterHorizontally)
-                                )
-                            }
-                            is LoadState.Loading -> {
-                                CircularProgressIndicator(modifier = modifier
-                                    .fillMaxSize()
-                                    .wrapContentSize(align = Alignment.Center))
-                            }
-                            is LoadState.NotLoading ->  {
-                                Column(modifier = modifier.fillMaxSize().wrapContentSize(align = Alignment.TopStart)) {
+                                    Text(
+                                        text = stringResource(R.string.it_seems_you_haven_t_listed_any_movies_or_series),
+                                        textAlign = TextAlign.Center,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        modifier = modifier
+                                            .fillMaxWidth()
+                                            .wrapContentWidth(align = Alignment.CenterHorizontally)
+                                    )
+                                }
+                                is LoadState.Loading -> {
+                                    CircularProgressIndicator(modifier = modifier
+                                        .fillMaxSize()
+                                        .wrapContentSize(align = Alignment.Center))
+                                }
+                                is LoadState.NotLoading ->  {
+                                    Column(modifier = modifier
+                                        .fillMaxSize()
+                                        .wrapContentSize(align = Alignment.TopStart)) {
 
-                                    if (tvSeriesFavouriteFlow.itemCount == 0) {
-                                        Column(
-                                            verticalArrangement = Arrangement.spacedBy(16.dp),
-                                            modifier = modifier
-                                                .fillMaxSize()
-                                                .wrapContentSize(align = Alignment.Center)
-                                                .padding(32.dp)
-                                        ) {
-                                            Image(
-                                                painter = painterResource(id = R.drawable.ic_empty_list),
-                                                contentDescription = null,
+                                        if (tvSeriesFavouriteFlow.itemCount == 0) {
+                                            Column(
+                                                verticalArrangement = Arrangement.spacedBy(16.dp),
                                                 modifier = modifier
-                                                    .fillMaxWidth()
-                                                    .wrapContentWidth(align = Alignment.CenterHorizontally)
-                                                    .size(200.dp),
-                                                contentScale = ContentScale.Crop,
-                                            )
+                                                    .fillMaxSize()
+                                                    .wrapContentSize(align = Alignment.Center)
+                                                    .padding(32.dp)
+                                            ) {
+                                                Image(
+                                                    painter = painterResource(id = R.drawable.ic_empty_list),
+                                                    contentDescription = null,
+                                                    modifier = modifier
+                                                        .fillMaxWidth()
+                                                        .wrapContentWidth(align = Alignment.CenterHorizontally)
+                                                        .size(200.dp),
+                                                    contentScale = ContentScale.Crop,
+                                                )
 
-                                            Text(
-                                                text = stringResource(R.string.you_list_is_empty),
-                                                style = MaterialTheme.typography.titleLarge,
-                                                modifier = modifier
-                                                    .fillMaxWidth()
-                                                    .wrapContentWidth(align = Alignment.CenterHorizontally)
-                                            )
+                                                Text(
+                                                    text = stringResource(R.string.you_list_is_empty),
+                                                    style = MaterialTheme.typography.titleLarge,
+                                                    modifier = modifier
+                                                        .fillMaxWidth()
+                                                        .wrapContentWidth(align = Alignment.CenterHorizontally)
+                                                )
 
-                                            Text(
-                                                text = stringResource(R.string.it_seems_you_haven_t_listed_any_movies_or_series),
-                                                textAlign = TextAlign.Center,
-                                                style = MaterialTheme.typography.bodyLarge,
-                                                modifier = modifier
-                                                    .fillMaxWidth()
-                                                    .wrapContentWidth(align = Alignment.CenterHorizontally)
-                                            )
+                                                Text(
+                                                    text = stringResource(R.string.it_seems_you_haven_t_listed_any_movies_or_series),
+                                                    textAlign = TextAlign.Center,
+                                                    style = MaterialTheme.typography.bodyLarge,
+                                                    modifier = modifier
+                                                        .fillMaxWidth()
+                                                        .wrapContentWidth(align = Alignment.CenterHorizontally)
+                                                )
+                                            }
                                         }
-                                    }
-                                    else {
-                                        LazyVerticalGrid(
-                                            columns = GridCells.Fixed(2),
-                                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                                            state = lazyTvSeriesGridState,
-                                            contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
+                                        else {
+                                            LazyVerticalGrid(
+                                                columns = GridCells.Fixed(2),
+                                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                                                state = lazyTvSeriesGridState,
+                                                contentPadding = PaddingValues(start = 16.dp, end = 16.dp)) {
 
-                                            items(tvSeriesFavouriteFlow.itemCount) { index ->
-                                                MovieImageCard(imageUrl = tvSeriesFavouriteFlow[index]?.posterPath ?: "", rating = tvSeriesFavouriteFlow[index]?.voteAverage.toString(), movieId = tvSeriesFavouriteFlow[index]?.id ?: 0, isType = IS_TYPE.TvSeries)
+                                                items(tvSeriesFavouriteFlow.itemCount) { index ->
+                                                    MovieImageCard(imageUrl = tvSeriesFavouriteFlow[index]?.posterPath ?: "", rating = tvSeriesFavouriteFlow[index]?.voteAverage.toString(), movieId = tvSeriesFavouriteFlow[index]?.id ?: 0, isType = IS_TYPE.TvSeries)
+                                                }
                                             }
                                         }
                                     }
+                                }
+                            }
+
+                            when (tvSeriesFavouriteFlow.loadState.append) {
+                                is LoadState.Loading -> {
+                                    CircularProgressIndicator(modifier = modifier
+                                        .fillMaxWidth()
+                                        .wrapContentWidth(align = Alignment.CenterHorizontally)
+                                        .padding(16.dp))
+                                }
+                                is LoadState.NotLoading -> {   }
+                                is LoadState.Error -> {
+                                    Text(text = if (tvSeriesFavouriteFlow.loadState.append.endOfPaginationReached) "You have reached the end" else "",
+                                        style = MaterialTheme.typography.displayMedium,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        fontWeight = FontWeight.SemiBold,
+                                        modifier = modifier
+                                            .fillMaxWidth()
+                                            .wrapContentWidth(align = Alignment.CenterHorizontally)
+                                            .padding(16.dp),
+                                        textAlign = TextAlign.Center)
                                 }
                             }
                         }
