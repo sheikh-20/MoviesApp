@@ -927,6 +927,10 @@ private fun HomeTopAppbar(navController: NavHostController,
 
             }
 
+            LaunchedEffect(key1 = null) {
+                onDownloadSearch("")
+            }
+
             AnimatedVisibility(
                 visible = mylistHideTopAppBar,
                 enter = slideInVertically(animationSpec = tween(durationMillis = 200)),
@@ -990,6 +994,10 @@ private fun HomeTopAppbar(navController: NavHostController,
             if (!interactionSource.collectIsFocusedAsState().value) {
                 onSearchClick = false
 
+            }
+
+            LaunchedEffect(key1 = null) {
+                onDownloadSearch("")
             }
 
             AnimatedVisibility(
