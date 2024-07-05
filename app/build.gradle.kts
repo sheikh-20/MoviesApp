@@ -262,6 +262,9 @@ dependencies {
 
     //Youtube Url Extracter
     implementation(libs.kotlin.youtubeExtractor)
+
+    //Youtube Url extract2
+    implementation(libs.kotlin.youtubeExtract2)
 }
 
 protobuf {

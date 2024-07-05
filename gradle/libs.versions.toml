@@ -23,6 +23,7 @@ firebase-messaging = "23.4.1"
 hilt-android-compiler = "2.48"
 junit = "4.13.2"
 kotlin-youtubeExtractor = "0.0.7"
+kotlin-youtubeExtract2 = "2.1.0"
 kotlinx-serialization-json = "1.5.1"
 lifecycle-runtime-ktx = "2.7.0"
 bom = "2024.02.00"
@@ -99,6 +100,7 @@ firebase-messaging = { module = "com.google.firebase:firebase-messaging", versio
 firebase-storage = { module = "com.google.firebase:firebase-storage", version.ref = "firebase-database" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt-android-compiler" }
 kotlin-youtubeExtractor = { module = "com.github.maxrave-dev:kotlin-youtubeExtractor", version.ref = "kotlin-youtubeExtractor" }
+kotlin-youtubeExtract2 = { module = "com.github.HaarigerHarald:android-youtubeExtractor", version.ref = "kotlin-youtubeExtract2" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "play-services-auth" }
