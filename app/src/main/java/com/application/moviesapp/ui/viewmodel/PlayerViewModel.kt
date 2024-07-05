@@ -140,6 +140,10 @@ class PlayerViewModel @Inject constructor(val player: Player): ViewModel() {
                 }
             }
             runnable.run()
+        } else if (yt.state == State.ERROR){
+            Timber.tag(TAG).e("Error youtube extract url")
+        } else {
+            Timber.tag(TAG).e("Error youtube extract url")
         }
     }
 
