@@ -24,7 +24,7 @@ chaquopy {
         pip{
             options("--upgrade","--ignore-installed","--force-reinstall")
             install("yt-dlp")
-            install("git+https://github.com/oncename/pytube")
+            install("git+https://github.com/WildDIC/pytube")
             install("ffmpeg")
         }
     }
