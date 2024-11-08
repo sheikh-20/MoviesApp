@@ -1,43 +1,21 @@
-import com.android.build.api.dsl.AndroidSourceSet
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import com.google.protobuf.gradle.GenerateProtoTask
 import com.google.protobuf.gradle.id
-import org.jetbrains.kotlin.gradle.plugin.extraProperties
 
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    kotlin("kapt")
     id("com.google.dagger.hilt.android")
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.0.21"
     id("com.google.gms.google-services")
     id("com.google.protobuf") version "0.9.1"
-    id("com.chaquo.python")
     id("com.google.firebase.crashlytics")
-}
-
-chaquopy {
-    defaultConfig {
-        buildPython("/usr/local/bin/python3")
-        buildPython("python3")
-        version = "3.8"
-
-        pip{
-            options("--upgrade","--ignore-installed","--force-reinstall")
-            install("yt-dlp")
-            install("git+https://github.com/oncename/pytube")
-            install("ffmpeg")
-        }
-    }
-    sourceSets {
-        getByName("main") {
-            srcDirs("src/main/python")
-        }
-    }
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.21"
+    id("com.google.devtools.ksp")
 }
 
 android {
     namespace = "com.application.moviesapp"
-    compileSdk = 33
+    compileSdk = 35
 
     signingConfigs {
         create("config") {
@@ -52,7 +30,7 @@ android {
     defaultConfig {
         applicationId = "com.application.moviesapp"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 35
         versionCode = 27
         versionName = "1.0.26"
 
@@ -60,8 +38,6 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        compileSdkPreview = "UpsideDownCake"
-
         ndk {
             abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86_64")
         }
@@ -118,19 +94,13 @@ android {
         jvmTarget = "17"
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
+        kotlinCompilerExtensionVersion = "1.5.21"
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-
-//    flavorDimensions += "pyVersion"
-//    productFlavors {
-//        create("py310") { dimension = "pyVersion" }
-//        create("py311") { dimension = "pyVersion" }
-//    }
 }
 
 dependencies {
@@ -167,7 +137,7 @@ dependencies {
 
     // Dagger - Hilt
     implementation(libs.dagger.hilt)
-    kapt(libs.dagger.hilt.compiler)
+    ksp(libs.dagger.hilt.compiler)
     implementation(libs.dagger.nav.compose)
 
     // ViewModel with ktx
@@ -210,7 +180,7 @@ dependencies {
 
     // Room
     implementation(libs.androidx.room.runtime)
-    kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.paging)
 
@@ -245,8 +215,8 @@ dependencies {
 
     //Work Manager + Hilt
     implementation(libs.androidx.hilt.work)
-    kapt(libs.dagger.hilt.compiler)
-    kapt(libs.androidx.hilt.compiler)
+    ksp(libs.dagger.hilt.compiler)
+    ksp(libs.androidx.hilt.compiler)
 
     //app start up
     implementation(libs.androidx.startup.runtime)
@@ -291,6 +261,22 @@ protobuf {
                 id("kotlin") {
                     option("lite")
                 }
+            }
+        }
+    }
+}
+
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        afterEvaluate {
+            val protoTask =
+                project.tasks.getByName("generate" + variant.name.replaceFirstChar { it.uppercaseChar() } + "Proto") as GenerateProtoTask
+
+            project.tasks.getByName("ksp" + variant.name.replaceFirstChar { it.uppercaseChar() } + "Kotlin") {
+                dependsOn(protoTask)
+                (this as org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompileTool<*>).setSource(
+                    protoTask.outputBaseDir
+                )
             }
         }
     }

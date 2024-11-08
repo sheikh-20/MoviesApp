@@ -4,7 +4,6 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
         maven { url = uri("https://jitpack.io") }
-        maven { url = uri("https://chaquo.com/maven-test") }
     }
 }
 dependencyResolutionManagement {
@@ -18,4 +17,9 @@ dependencyResolutionManagement {
 
 rootProject.name = "Movies App"
 include(":app")
- 
+include(":feature")
+include(":feature:download")
+include(":feature:play")
+include(":core")
+include(":domain")
+include(":core:data")

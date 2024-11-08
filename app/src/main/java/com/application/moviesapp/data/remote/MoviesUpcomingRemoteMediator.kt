@@ -66,7 +66,7 @@ class MoviesUpcomingRemoteMediator @Inject constructor(private val api: MoviesAp
                     database.moviesUpcomingRemoteKeyEntity.deleteAllRemoteKeys()
                 }
 
-                val moviesEntities = apiResult.results?.map { it?.toMoviesEntity() } ?: listOf()
+                val moviesEntities = apiResult.results?.map { it!!.toMoviesEntity() } ?: listOf()
                 database.moviesUpcomingDao.upsertAll(moviesEntities)
 
                 val keys = apiResult.results?.map { moviesEntity ->
@@ -77,7 +77,7 @@ class MoviesUpcomingRemoteMediator @Inject constructor(private val api: MoviesAp
                     )
                 }
                 database.moviesUpcomingRemoteKeyEntity.upsertAll(remoteKeys = keys ?: listOf())
-                database.moviesUpcomingDao.upsertAll(movies = apiResult.results?.map { it?.toMoviesEntity() } ?: listOf())
+                database.moviesUpcomingDao.upsertAll(movies = apiResult.results?.map { it!!.toMoviesEntity() } ?: listOf())
             }
 
             MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)

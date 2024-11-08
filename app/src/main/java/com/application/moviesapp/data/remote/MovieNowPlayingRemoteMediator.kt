@@ -82,8 +82,8 @@ class MovieNowPlayingRemoteMediator @Inject constructor(private val moviesApi: M
                 val prevKey = if (page > 1) page - 1 else null
                 val nextKey = if (endOfPaginationReached) null else page + 1
 
-                val moviesEntities = movies?.map { it?.toMoviesEntity() } ?: listOf()
-                database.movieNowPlayingDao.upsertAll(moviesEntities)
+//                val moviesEntities = movies?.map { it?.toMoviesEntity() } ?: listOf()
+//                database.movieNowPlayingDao.upsertAll(moviesEntities)
 
                 val keys = movies?.map { moviesEntity ->
                     MovieNowPlayingRemoteKeyEntity(
@@ -94,8 +94,7 @@ class MovieNowPlayingRemoteMediator @Inject constructor(private val moviesApi: M
                     )
                 }
                 database.movieNowPlayingRemoteKeyDao.upsertAll(remoteKeys = keys ?: listOf())
-                database.movieNowPlayingDao.upsertAll(movies = movies?.map { it?.toMoviesEntity() }
-                    ?: listOf())
+                database.movieNowPlayingDao.upsertAll(movies = movies?.map { it!!.toMoviesEntity() } ?: listOf())
             }
 
             return MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)

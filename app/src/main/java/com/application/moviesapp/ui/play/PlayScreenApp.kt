@@ -2,6 +2,7 @@ package com.application.moviesapp.ui.play
 
 import android.app.Activity
 import android.widget.Toast
+import androidx.annotation.NonNull
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -10,12 +11,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -49,7 +52,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.application.moviesapp.data.local.entity.MovieDownloadEntity
 import com.application.moviesapp.domain.model.Stream
@@ -64,6 +70,9 @@ import com.application.moviesapp.ui.viewmodel.PlayerUIState
 import com.application.moviesapp.ui.viewmodel.PlayerViewModel
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import timber.log.Timber
 import java.io.File
 
@@ -152,25 +161,46 @@ fun PlayScreenApp(modifier: Modifier = Modifier,
                     }
 
                     else -> {
-                        DetailPlayScreen(
-                            modifier = modifier,
-                            player = playerViewModel.player,
-                            onPlayOrPause = playerViewModel::playOrPauseVideo,
-                            playerStreamUIState = playStreamUIState,
-                            onScreenTouch = playerViewModel::onScreenTouch,
-                            onLockModeClick = playerViewModel::onLockMode,
-                            onVolumeClick = playerViewModel::onVolumeClick,
-                            onSeekTo = playerViewModel::onSeekTo,
-                            onSeekForward = playerViewModel::onSeekForward,
-                            onSeekBackward = playerViewModel::onSeekBackward,
-                            onPlaybackSpeedClick = {
-                                drawerState = DrawerValue.Open
-                                sideSheetContent = SideSheet.Playback
-                                                   },
-                            onDownloadClick = {
-                                drawerState = DrawerValue.Open
-                                sideSheetContent = SideSheet.Quality
-                            },
+//                        DetailPlayScreen(
+//                            modifier = modifier,
+//                            player = playerViewModel.player,
+//                            onPlayOrPause = playerViewModel::playOrPauseVideo,
+//                            playerStreamUIState = playStreamUIState,
+//                            onScreenTouch = playerViewModel::onScreenTouch,
+//                            onLockModeClick = playerViewModel::onLockMode,
+//                            onVolumeClick = playerViewModel::onVolumeClick,
+//                            onSeekTo = playerViewModel::onSeekTo,
+//                            onSeekForward = playerViewModel::onSeekForward,
+//                            onSeekBackward = playerViewModel::onSeekBackward,
+//                            onPlaybackSpeedClick = {
+//                                drawerState = DrawerValue.Open
+//                                sideSheetContent = SideSheet.Playback
+//                                                   },
+//                            onDownloadClick = {
+//                                drawerState = DrawerValue.Open
+//                                sideSheetContent = SideSheet.Quality
+//                            },
+//                        )
+                        val context = LocalContext.current
+
+                        val youtubePlayer = remember {
+                            YouTubePlayerView(context).apply {
+                                (context as LifecycleOwner).lifecycle.addObserver(this)
+                                enableAutomaticInitialization = false
+                                initialize(object : AbstractYouTubePlayerListener() {
+                                    override fun onReady(@NonNull youTubePlayer: YouTubePlayer) {
+                                        youTubePlayer.cueVideo( (context as Activity).intent.getStringExtra(PlayActivity.VIDEO_ID) ?: "", 0f)
+                                    }
+                                })
+                            }
+                        }
+
+                        AndroidView(
+                            {
+                                youtubePlayer
+                            }, modifier = Modifier.padding(paddingValues)
+                                .fillMaxSize()
+                                .aspectRatio(16 / 9f)
                         )
                     }
                 }
