@@ -11,7 +11,7 @@ interface UpcomingRemoteKeyDao {
     suspend fun getRemoteKeys(movieId: Int): MovieUpcomingRemoteKeyEntity
 
     @Upsert
-    suspend fun upsertAll(remoteKeys: List<MovieUpcomingRemoteKeyEntity?>)
+    suspend fun upsertAll(remoteKeys: List<MovieUpcomingRemoteKeyEntity>)
 
     @Query("DELETE FROM movie_upcoming_remotekey_entity")
     suspend fun deleteAllRemoteKeys()

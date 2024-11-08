@@ -12,7 +12,7 @@ interface RemoteKeyDao {
     suspend fun getRemoteKeys(movieId: Int): MovieRemoteKeyEntity
 
     @Upsert
-    suspend fun upsertAll(remoteKeys: List<MovieRemoteKeyEntity?>)
+    suspend fun upsertAll(remoteKeys: List<MovieRemoteKeyEntity>)
 
     @Query("DELETE FROM movie_remotekey_entity")
     suspend fun deleteAllRemoteKeys()

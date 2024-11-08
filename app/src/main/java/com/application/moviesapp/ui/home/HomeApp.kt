@@ -979,7 +979,7 @@ private fun HomeTopAppbar(navController: NavHostController,
                             }
                         }
                     },
-                    colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent)
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
                 )
             }
         }
@@ -1048,7 +1048,7 @@ private fun HomeTopAppbar(navController: NavHostController,
                             }
                         }
                     },
-                    colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent)
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
                 )
             }
         }
@@ -1062,7 +1062,7 @@ private fun HomeTopAppbar(navController: NavHostController,
                             tint = MaterialTheme.colorScheme.primary)
                     }
                 },
-                colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         }
         BottomNavigationScreens.Home.route -> {

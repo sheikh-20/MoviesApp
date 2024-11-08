@@ -9,7 +9,7 @@ import com.application.moviesapp.data.local.entity.MovieUpcomingEntity
 @Dao
 interface MoviesUpcomingDao {
     @Upsert
-    suspend fun upsertAll(movies: List<MovieUpcomingEntity?>)
+    suspend fun upsertAll(movies: List<MovieUpcomingEntity>)
 
     @Query("SELECT * FROM movie_upcoming_entity")
     fun pagingSource(): PagingSource<Int, MovieUpcomingEntity>

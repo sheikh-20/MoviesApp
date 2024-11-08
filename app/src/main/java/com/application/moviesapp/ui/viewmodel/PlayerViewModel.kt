@@ -311,7 +311,9 @@ class PlayerViewModel @Inject constructor(val player: Player): ViewModel() {
                     context.contentResolver.openOutputStream(fileUri).use { out ->
                         val bmOptions = BitmapFactory.Options()
                         val bmp = BitmapFactory.decodeFile(filePath, bmOptions)
-                        bmp.compress(Bitmap.CompressFormat.JPEG, 90, out)
+                        if (out != null) {
+                            bmp.compress(Bitmap.CompressFormat.JPEG, 90, out)
+                        }
                         bmp.recycle()
                     }
                 }

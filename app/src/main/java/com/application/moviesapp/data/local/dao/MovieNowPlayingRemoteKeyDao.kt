@@ -13,7 +13,7 @@ interface MovieNowPlayingRemoteKeyDao {
     suspend fun getRemoteKeys(movieId: Int): MovieNowPlayingRemoteKeyEntity
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsertAll(remoteKeys: List<MovieNowPlayingRemoteKeyEntity?>)
+    suspend fun upsertAll(remoteKeys: List<MovieNowPlayingRemoteKeyEntity>)
 
     @Query("DELETE FROM movie_now_playing_remotekey_entity")
     suspend fun deleteAllRemoteKeys()
