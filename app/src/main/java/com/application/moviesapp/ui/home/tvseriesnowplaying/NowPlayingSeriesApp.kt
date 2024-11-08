@@ -160,7 +160,7 @@ private fun NewReleasesTopAppbar(newReleaseHideTopAppBar: Boolean,
                     }
                 }
             },
-            colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent)
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
         )
     }
 }

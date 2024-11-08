@@ -7,7 +7,6 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.application.moviesapp.data.python.DownloaderRepository
 import com.application.moviesapp.ui.utility.makeStatusNotification
-import com.chaquo.python.Python
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers

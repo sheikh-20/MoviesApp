@@ -12,7 +12,7 @@ import com.application.moviesapp.data.local.entity.MovieNowPlayingEntity
 interface MovieNowPlayingDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsertAll(movies: List<MovieNowPlayingEntity?>)
+    suspend fun upsertAll(movies: List<MovieNowPlayingEntity>)
 
     @Query("SELECT * FROM movie_now_playing_entity")
     fun pagingSource(): PagingSource<Int, MovieNowPlayingEntity>
