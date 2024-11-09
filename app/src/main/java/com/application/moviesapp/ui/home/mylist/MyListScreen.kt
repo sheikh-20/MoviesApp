@@ -68,6 +68,7 @@ import com.application.moviesapp.domain.model.TvSeriesFavourite
 import com.application.moviesapp.ui.detail.DetailActivity
 import com.application.moviesapp.ui.detail.IS_TYPE
 import com.application.moviesapp.ui.theme.MoviesAppTheme
+import com.application.moviesapp.ui.utility.MovieImageShimmerCard
 import com.application.moviesapp.ui.utility.toImageUrl
 import com.application.moviesapp.ui.utility.toOneDecimal
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -205,9 +206,16 @@ fun MyListScreen(modifier: Modifier = Modifier,
                                     )
                                 }
                                 is LoadState.Loading -> {
-                                    CircularProgressIndicator(modifier = modifier
-                                        .fillMaxSize()
-                                        .wrapContentSize(align = Alignment.Center))
+                                    LazyVerticalGrid(columns = GridCells.Fixed(2),
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                                        state = lazyGridState,
+                                        contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp)) {
+
+                                        items(10) {
+                                            MovieImageShimmerCard()
+                                        }
+                                    }
                                 }
                                 is LoadState.NotLoading ->  {
                                     Column(modifier = modifier
@@ -327,9 +335,16 @@ fun MyListScreen(modifier: Modifier = Modifier,
                                     )
                                 }
                                 is LoadState.Loading -> {
-                                    CircularProgressIndicator(modifier = modifier
-                                        .fillMaxSize()
-                                        .wrapContentSize(align = Alignment.Center))
+                                    LazyVerticalGrid(columns = GridCells.Fixed(2),
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                                        state = lazyGridState,
+                                        contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp)) {
+
+                                        items(10) {
+                                            MovieImageShimmerCard()
+                                        }
+                                    }
                                 }
                                 is LoadState.NotLoading ->  {
                                     Column(modifier = modifier
