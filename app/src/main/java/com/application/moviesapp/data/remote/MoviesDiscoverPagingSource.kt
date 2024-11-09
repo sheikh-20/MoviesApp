@@ -4,6 +4,7 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.application.moviesapp.data.api.MoviesApi
+import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 @OptIn(ExperimentalPagingApi::class)
