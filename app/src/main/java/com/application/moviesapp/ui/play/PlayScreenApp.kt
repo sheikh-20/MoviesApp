@@ -1,6 +1,8 @@
 package com.application.moviesapp.ui.play
 
 import android.app.Activity
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.compose.foundation.background
@@ -192,15 +194,18 @@ fun PlayScreenApp(modifier: Modifier = Modifier,
                                         youTubePlayer.cueVideo( (context as Activity).intent.getStringExtra(PlayActivity.VIDEO_ID) ?: "", 0f)
                                     }
                                 })
+                                layoutParams = FrameLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.MATCH_PARENT
+                                )
                             }
                         }
 
                         AndroidView(
                             {
                                 youtubePlayer
-                            }, modifier = Modifier.padding(paddingValues)
-                                .fillMaxSize()
-                                .aspectRatio(16 / 9f)
+                            }, modifier = Modifier.padding(paddingValues).fillMaxWidth()
+
                         )
                     }
                 }
