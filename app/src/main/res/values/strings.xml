@@ -98,6 +98,7 @@
     <string name="empty">Empty</string>
     <string name="you_did_not_receive_any_notification">You did not receive any notification</string>
     <string name="facebook_app_id" translatable="false">1343643482425305</string>
+    <string name="music">Music</string>
 
 
 </resources>

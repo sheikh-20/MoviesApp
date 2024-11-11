@@ -86,4 +86,5 @@
     <string name="your_account_is_ready_to_use_you_will_be_redirected_to_the_home_page_in_a_few_seconds">حسابك جاهز للاستخدام. ستتم إعادة توجيهك إلى الصفحة الرئيسية خلال بضع ثوانٍ.</string>
     <string name="empty">فارغ</string>
     <string name="you_did_not_receive_any_notification">لم تتلق أي إشعار</string>
+    <string name="music">Music</string>
 </resources>
