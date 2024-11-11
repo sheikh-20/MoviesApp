@@ -40,6 +40,7 @@ import androidx.compose.material.icons.rounded.Bookmark
 import androidx.compose.material.icons.rounded.Explore
 import androidx.compose.material.icons.rounded.FileDownload
 import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.NotificationsNone
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.PlayCircle
@@ -122,6 +123,7 @@ import com.application.moviesapp.domain.model.MovieGenre
 import com.application.moviesapp.domain.model.SettingsPreference
 import com.application.moviesapp.ui.home.download.DownloadScreen
 import com.application.moviesapp.ui.home.explore.ExploreScreen
+import com.application.moviesapp.ui.home.mylist.MyListActivity
 import com.application.moviesapp.ui.home.mylist.MyListScreen
 import com.application.moviesapp.ui.home.profile.ProfileScreen
 import com.application.moviesapp.ui.language.language
@@ -377,10 +379,7 @@ fun HomeApp(modifier: Modifier = Modifier,
                 downloadHideTopAppBar = downloadHideTopAppBar,
                 onFilterClick = { showBottomSheet = BottomSheet.Filter },
                 search = searchUiState.search,
-                onHomeSearchClick = {
-                    navController.popBackStack()
-                    navController.navigate(BottomNavigationScreens.Explore.route)
-                },
+                onBookmarkClicked = { MyListActivity.startActivity(context as Activity) },
                 searchValue = searchValue,
                 onDownloadSearch = { searchValue = it })
         },
@@ -396,7 +395,6 @@ fun HomeApp(modifier: Modifier = Modifier,
                     Text(text = it.visuals.message, fontWeight = FontWeight.SemiBold)
 
                     Spacer(modifier = modifier.weight(1f))
-
 
                     Text(
                         text = it.visuals.actionLabel ?: "",
@@ -431,7 +429,7 @@ fun HomeApp(modifier: Modifier = Modifier,
                             when (result) {
                                 SnackbarResult.ActionPerformed -> {
                                     navController.popBackStack()
-                                    navController.navigate(BottomNavigationScreens.MyList.route) }
+                                    navController.navigate(BottomNavigationScreens.Music.route) }
                                 else -> { }
                             }
                         } },
@@ -461,7 +459,7 @@ fun HomeApp(modifier: Modifier = Modifier,
                         navController.navigate(BottomNavigationScreens.Download.route)
                     })
             }
-            composable(route = BottomNavigationScreens.MyList.route) {
+            composable(route = BottomNavigationScreens.Music.route) {
                 MyListScreen(
                     modifier = modifier,
                     moviesFavouriteFlow = myListMoviesFlowState,
@@ -856,7 +854,7 @@ private fun HomeTopAppbar(navController: NavHostController,
                           downloadHideTopAppBar: Boolean,
                           onFilterClick: () -> Unit = {},
                           search: String = "",
-                          onHomeSearchClick: () -> Unit = {  },
+                          onBookmarkClicked: () -> Unit = {  },
                           searchValue: String = "",
                           onDownloadSearch: (String) -> Unit = { _ -> }
 ) {
@@ -914,7 +912,7 @@ private fun HomeTopAppbar(navController: NavHostController,
                 )
             }
         }
-        BottomNavigationScreens.MyList.route -> {
+        BottomNavigationScreens.Music.route -> {
 
             val focusManager = LocalFocusManager.current
             val interactionSource = remember { MutableInteractionSource() }
@@ -924,7 +922,6 @@ private fun HomeTopAppbar(navController: NavHostController,
 
             if (!interactionSource.collectIsFocusedAsState().value) {
                 onSearchClick = false
-
             }
 
             LaunchedEffect(key1 = null) {
@@ -939,7 +936,7 @@ private fun HomeTopAppbar(navController: NavHostController,
                 TopAppBar(
                     title = {
                         if (!onSearchClick) {
-                            Text(text = stringResource(id = R.string.my_list), fontWeight = FontWeight.SemiBold)
+                            Text(text = "Music", fontWeight = FontWeight.SemiBold)
                         } else {
                             OutlinedTextField(value = searchValue,
                                 onValueChange = onDownloadSearch,
@@ -1076,8 +1073,9 @@ private fun HomeTopAppbar(navController: NavHostController,
                     }
                 },
                 actions = {
-                    IconButton(onClick = onHomeSearchClick) {
-                        Icon(imageVector = Icons.Rounded.Search, contentDescription = null, tint = Color.White)
+
+                    IconButton(onClick = onBookmarkClicked) {
+                        Icon(imageVector = Icons.Rounded.Bookmark, contentDescription = null, tint = Color.White)
                     }
 
                     IconButton(onClick = { NotificationActivity.startActivity(context as Activity) }) {
@@ -1098,7 +1096,7 @@ private fun HomeBottomBarNavigation(navController: NavHostController,
     val navigationBarItems = listOf(
         BottomNavigationScreens.Home,
         BottomNavigationScreens.Explore,
-        BottomNavigationScreens.MyList,
+        BottomNavigationScreens.Music,
         BottomNavigationScreens.Download,
         BottomNavigationScreens.Profile)
 
@@ -1143,7 +1141,7 @@ enum class Categories(val title: String) {
 sealed class BottomNavigationScreens(val route: String, @StringRes val stringResource: Int, val vectorResource: ImageVector) {
     object Home: BottomNavigationScreens(route = "Home", stringResource = R.string.home, vectorResource = Icons.Rounded.Home)
     object Explore: BottomNavigationScreens(route = "Explore", stringResource = R.string.explore, vectorResource = Icons.Rounded.Explore)
-    object MyList: BottomNavigationScreens(route = "MyList", stringResource = R.string.mylist, vectorResource = Icons.Rounded.Bookmark)
+    object Music: BottomNavigationScreens(route = "Music", stringResource = R.string.music, vectorResource = Icons.Rounded.MusicNote)
     object Download: BottomNavigationScreens(route = "Download", stringResource = R.string.download, vectorResource = Icons.Rounded.FileDownload)
     object Profile: BottomNavigationScreens(route = "Profile", stringResource = R.string.profile, vectorResource = Icons.Rounded.Person)
 }

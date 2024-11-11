@@ -118,6 +118,13 @@
             android:theme="@style/Theme.MoviesApp"
             tools:ignore="LockedOrientationActivity" />
         <activity
+            android:name=".ui.home.mylist.MyListActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MoviesApp"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
             android:name=".ui.home.NotificationActivity"
             android:exported="true"
             android:label="@string/app_name"
