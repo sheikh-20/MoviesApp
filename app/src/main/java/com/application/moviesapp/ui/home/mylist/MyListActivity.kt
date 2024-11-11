@@ -40,7 +40,7 @@ class MyListActivity: BaseActivity() {
                             modifier = Modifier.fillMaxSize(),
                             color = MaterialTheme.colorScheme.background
                         ) {
-                            NotificationApp()
+                            MyListApp()
                         }
                     }
                 }
