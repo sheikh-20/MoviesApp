@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -102,6 +103,7 @@ import com.application.moviesapp.domain.model.TvSeriesTrailerWithYoutube
 import com.application.moviesapp.ui.play.PlayActivity
 import com.application.moviesapp.ui.play.Screen
 import com.application.moviesapp.ui.theme.MoviesAppTheme
+import com.application.moviesapp.ui.utility.shimmerEffect
 import com.application.moviesapp.ui.utility.toImageUrl
 import com.application.moviesapp.ui.utility.toOneDecimal
 import com.application.moviesapp.ui.utility.toYoutubeDuration
@@ -163,9 +165,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
         IS_TYPE.Movie.name -> {
             when (movieUIState) {
                 is Resource.Loading -> {
-                    CircularProgressIndicator(modifier = modifier
-                        .fillMaxSize()
-                        .wrapContentSize(align = Alignment.Center))
+                    DetailScreenShimmer()
                 }
                 is Resource.Success -> {
 
@@ -471,9 +471,7 @@ fun DetailScreen(modifier: Modifier = Modifier,
         IS_TYPE.TvSeries.name -> {
             when (tvSeriesUIState) {
                 is Resource.Loading -> {
-                    CircularProgressIndicator(modifier = modifier
-                        .fillMaxSize()
-                        .wrapContentSize(align = Alignment.Center))
+                    DetailScreenShimmer()
                 }
                 is Resource.Success -> {
 
@@ -1056,16 +1054,125 @@ fun CommentsCompose(modifier: Modifier = Modifier,
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun SpannableText(text: String = "") {
-    ClickableText(text = buildAnnotatedString {
-        append(text)
-        withStyle(style = SpanStyle(Color.Blue)) {
-            append("View More")
-        }
-    }, onClick = {})
-}
+fun DetailScreenShimmer(modifier: Modifier = Modifier) {
+    Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Box(
+            modifier = modifier.fillMaxWidth()
+            .height(250.dp)
+            .shimmerEffect()
+        )
 
+        Row(modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+
+            Box(
+                modifier = modifier
+                    .width(100.dp)
+                    .height(20.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .shimmerEffect()
+            )
+        }
+
+        Row(modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+
+            Box(
+                modifier = modifier
+                    .width(100.dp)
+                    .height(20.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .shimmerEffect()
+            )
+        }
+
+        Row(modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+
+            Box(
+                modifier = modifier.weight(1f)
+                    .height(36.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .shimmerEffect()
+            )
+
+            Box(
+                modifier = modifier.weight(1f)
+                    .height(36.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .shimmerEffect()
+            )
+        }
+
+        Box(
+            modifier = modifier.fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .height(20.dp)
+                .clip(RoundedCornerShape(4.dp))
+                .shimmerEffect()
+        )
+
+        Box(
+            modifier = modifier.fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .height(100.dp)
+                .clip(RoundedCornerShape(4.dp))
+                .shimmerEffect()
+        )
+
+        LazyRow(modifier = modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+
+            items(count = 5) { index ->
+
+                Row(modifier = modifier,
+                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Box(
+                        modifier = modifier
+                            .size(50.dp)
+                            .clip(RoundedCornerShape(50.dp))
+                            .shimmerEffect()
+                    )
+
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Box(
+                            modifier = modifier
+                                .width(80.dp)
+                                .height(16.dp)
+                                .clip(RoundedCornerShape(4.dp))
+                                .shimmerEffect()
+                        )
+                        Box(
+                            modifier = modifier
+                                .width(50.dp)
+                                .height(16.dp)
+                                .clip(RoundedCornerShape(4.dp))
+                                .shimmerEffect()
+                        )
+                    }
+                }
+            }
+        }
+
+        Box(
+            modifier = modifier.fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .height(100.dp)
+                .clip(RoundedCornerShape(4.dp))
+                .shimmerEffect()
+        )
+    }
+}
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
