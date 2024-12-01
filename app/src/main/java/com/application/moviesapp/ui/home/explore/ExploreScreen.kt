@@ -57,7 +57,6 @@ import com.application.moviesapp.ui.detail.IS_TYPE
 import com.application.moviesapp.ui.home.Categories
 import com.application.moviesapp.ui.theme.MoviesAppTheme
 import com.application.moviesapp.ui.utility.MovieImageShimmerCard
-import com.application.moviesapp.ui.utility.ShimmerListItem
 import com.application.moviesapp.ui.utility.toImageUrl
 import com.application.moviesapp.ui.utility.toOneDecimal
 import com.application.moviesapp.ui.viewmodel.ExploreUiState

@@ -29,6 +29,7 @@ import com.application.moviesapp.domain.usecase.worker.VideoInfoUseCase
 import com.application.moviesapp.ui.utility.getStream
 import com.application.moviesapp.worker.VideoInfoWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
