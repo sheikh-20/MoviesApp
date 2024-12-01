@@ -11,7 +11,7 @@ class NetworkInterceptor @Inject constructor(@Named("movies_api_key") private va
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request().newBuilder()
         request.addHeader(name = "Authorization", value = "Bearer $apiKey")
-
+        Thread.sleep(3_000L)
         return chain.proceed(request.build())
     }
 }

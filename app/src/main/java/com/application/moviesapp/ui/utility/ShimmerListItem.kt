@@ -37,35 +37,6 @@ import com.application.moviesapp.R
 import com.application.moviesapp.ui.detail.DetailActivity
 import com.application.moviesapp.ui.detail.IS_TYPE
 
-@Composable
-fun ShimmerListItem(modifier: Modifier = Modifier) {
-    Row(modifier = modifier) {
-        Box(
-            modifier = Modifier
-                .size(100.dp)
-                .clip(CircleShape)
-                .shimmerEffect()
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(20.dp)
-                    .shimmerEffect()
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(0.7f)
-                    .height(20.dp)
-                    .shimmerEffect()
-            )
-        }
-    }
-}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MovieImageShimmerCard(modifier: Modifier = Modifier) {
